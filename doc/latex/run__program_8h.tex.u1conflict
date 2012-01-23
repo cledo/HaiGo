@@ -1,0 +1,35 @@
+\hypertarget{run__program_8h}{
+\section{src/run\_\-program.h File Reference}
+\label{run__program_8h}\index{src/run\_\-program.h@{src/run\_\-program.h}}
+}
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{run__program_8h_a713840100e793ae1f2587d5abbf635ee}{COUNT\_\-KNOWN\_\-COMMANDS}~11
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{run__program_8h_ac1f545534cdaab9094198a5dc2c2a79f}{run} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\subsection{Define Documentation}
+\hypertarget{run__program_8h_a713840100e793ae1f2587d5abbf635ee}{
+\index{run\_\-program.h@{run\_\-program.h}!COUNT\_\-KNOWN\_\-COMMANDS@{COUNT\_\-KNOWN\_\-COMMANDS}}
+\index{COUNT\_\-KNOWN\_\-COMMANDS@{COUNT\_\-KNOWN\_\-COMMANDS}!run_program.h@{run\_\-program.h}}
+\subsubsection[{COUNT\_\-KNOWN\_\-COMMANDS}]{\setlength{\rightskip}{0pt plus 5cm}\#define COUNT\_\-KNOWN\_\-COMMANDS~11}}
+\label{run__program_8h_a713840100e793ae1f2587d5abbf635ee}
+
+
+\subsection{Function Documentation}
+\hypertarget{run__program_8h_ac1f545534cdaab9094198a5dc2c2a79f}{
+\index{run\_\-program.h@{run\_\-program.h}!run@{run}}
+\index{run@{run}!run_program.h@{run\_\-program.h}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}int run (
+\begin{DoxyParamCaption}
+\item[{int}]{ argc, }
+\item[{char $\ast$$\ast$}]{ argv}
+\end{DoxyParamCaption}
+)}}
+\label{run__program_8h_ac1f545534cdaab9094198a5dc2c2a79f}

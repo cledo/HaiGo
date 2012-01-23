@@ -1,0 +1,117 @@
+\hypertarget{group___g_t_p___core___play___commands}{
+\section{Go Text Protocol Core Play Commands}
+\label{group___g_t_p___core___play___commands}\index{Go Text Protocol Core Play Commands@{Go Text Protocol Core Play Commands}}
+}
+
+
+Collaboration diagram for Go Text Protocol Core Play Commands:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=400pt]{group___g_t_p___core___play___commands}
+\end{center}
+\end{figure}
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{group___g_t_p___core___play___commands_ga16a060c01868977200be0b381b03c6f9}{gtp\_\-play} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Description missing! \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{group___g_t_p___core___play___commands_ga16a060c01868977200be0b381b03c6f9}{
+\index{GTP\_\-Core\_\-Play\_\-Commands@{GTP\_\-Core\_\-Play\_\-Commands}!gtp\_\-play@{gtp\_\-play}}
+\index{gtp\_\-play@{gtp\_\-play}!GTP_Core_Play_Commands@{GTP\_\-Core\_\-Play\_\-Commands}}
+\subsubsection[{gtp\_\-play}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-play (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___core___play___commands_ga16a060c01868977200be0b381b03c6f9}
+
+
+Description missing! 
+
+\hyperlink{group___g_t_p___core___play___commands_ga16a060c01868977200be0b381b03c6f9}{gtp\_\-play()} Description missing!
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000004}{Todo}]Description is missing!\end{Desc}
+
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.3 Core Play Commands 
+\end{DoxySeeAlso}
+
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000005}{Todo}]Remove captured stones here ... \end{Desc}
+\begin{Desc}
+\item[\hyperlink{todo__todo000006}{Todo}]Update move history ... \end{Desc}
+
+
+
+
+Definition at line 545 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+    int color;
+    int i, j;
+
+    // Check if first argument is black or white:
+    str_toupper( gtp_argv[0] );
+    if ( strcmp( gtp_argv[0], "B" ) == 0 || strcmp( gtp_argv[0], "BLACK" ) == 0 )
+       {
+        color = BLACK;
+    }
+    else if ( strcmp( gtp_argv[0], "W" ) == 0 || strcmp( gtp_argv[0], "WHITE" ) =
+      = 0 ) {
+        color = WHITE;
+    }
+    else {
+        set_output_error();
+        add_output("invalid color");
+        return;
+    }
+
+    // Check vertex if first coordinate is valid:
+    i = (int) toupper( gtp_argv[1][0] ) - 65;
+    if ( i > 8 ) {
+        i--;
+    }
+    if ( i < 0 || i >= get_board_size() ) {
+        set_output_error();
+        add_output("invalid coordinate");
+        return;
+    }
+
+    // Check if second coordinate is valid:
+    gtp_argv[1][0] = ' ';
+    j = (int) atoi( gtp_argv[1] );
+    j--;
+    if ( j < 0 || j >= get_board_size() ) {
+        set_output_error();
+        add_output("invalid coordinate");
+        return;
+    }
+
+    set_vertex( color, i, j );
+
+
+    return;
+}
+\end{DoxyCode}
+
+

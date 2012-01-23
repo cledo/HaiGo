@@ -1,0 +1,568 @@
+\hypertarget{io_8h}{
+\section{src/io.h File Reference}
+\label{io_8h}\index{src/io.h@{src/io.h}}
+}
+{\ttfamily \#include $<$stdbool.h$>$}\par
+{\ttfamily \#include \char`\"{}global\_\-const.h\char`\"{}}\par
+Include dependency graph for io.h:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{io_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=252pt]{io_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structcommand}{command}
+\end{DoxyCompactItemize}
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{io_8h_a6bf23a007255bce0fe1fd922130f6cd6}{SIZE\_\-INPUT\_\-BUFFER}~256
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{io_8h_af6dafebf6767ddb1f453059f63968cfa}{read\_\-gtp\_\-input} (struct \hyperlink{structcommand}{command} $\ast$command\_\-data)
+\begin{DoxyCompactList}\small\item\em Read GTP command from STDIN. \item\end{DoxyCompactList}\item 
+void \hyperlink{io_8h_add90506be30c4ba9e5be8a6c3c6490a3}{add\_\-output} (const char to\_\-output\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{io_8h_a2b37ea825b377573cc5ba1926636fac7}{set\_\-output\_\-error} (void)
+\item 
+bool \hyperlink{io_8h_a2a55445d2f8582b642b0812b3350b7b4}{get\_\-output\_\-error} (void)
+\item 
+void \hyperlink{io_8h_a84addba8fd5fd0fad9e2f8727ef48127}{print\_\-output} (int command\_\-id)
+\item 
+void \hyperlink{io_8h_a0268c75a0ce2925365247fb5840392d2}{trim} (char $\ast$input)
+\item 
+void \hyperlink{io_8h_a67efb5aef9656c26f6bc14c91ca1bbba}{drop\_\-comment} (char $\ast$input)
+\item 
+void \hyperlink{io_8h_afb4d7e594c7910a1e528dd826cdde2bf}{parse\_\-gtp\_\-input} (char $\ast$\hyperlink{io_8c_a6b224d51bbc57f2a09a055e2345cda8e}{command\_\-input\_\-buffer}, char \hyperlink{structcommand}{command}\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\item 
+void \hyperlink{io_8h_a264f14a49c3575cdd898f81e03243a3c}{init\_\-tokens} (char tokens\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\item 
+void \hyperlink{io_8h_a953fa7252e26e5c019ccef5e98682678}{identify\_\-tokens} (char tokens\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}, struct \hyperlink{structcommand}{command} $\ast$command\_\-data)
+\item 
+bool \hyperlink{io_8h_a65a3f2710b61f5e5a38f6439be41b29a}{is\_\-input\_\-empty} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{Define Documentation}
+\hypertarget{io_8h_a6bf23a007255bce0fe1fd922130f6cd6}{
+\index{io.h@{io.h}!SIZE\_\-INPUT\_\-BUFFER@{SIZE\_\-INPUT\_\-BUFFER}}
+\index{SIZE\_\-INPUT\_\-BUFFER@{SIZE\_\-INPUT\_\-BUFFER}!io.h@{io.h}}
+\subsubsection[{SIZE\_\-INPUT\_\-BUFFER}]{\setlength{\rightskip}{0pt plus 5cm}\#define SIZE\_\-INPUT\_\-BUFFER~256}}
+\label{io_8h_a6bf23a007255bce0fe1fd922130f6cd6}
+
+
+Definition at line 7 of file io.h.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{io_8h_add90506be30c4ba9e5be8a6c3c6490a3}{
+\index{io.h@{io.h}!add\_\-output@{add\_\-output}}
+\index{add\_\-output@{add\_\-output}!io.h@{io.h}}
+\subsubsection[{add\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}void add\_\-output (
+\begin{DoxyParamCaption}
+\item[{const char}]{ to\_\-output\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_add90506be30c4ba9e5be8a6c3c6490a3}
+
+
+Definition at line 115 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                                          {
+
+    int new_output_length
+        = (int)( strlen(output) + strlen(to_output) + 1 );
+    if ( new_output_length > MAX_OUTPUT_LENGTH ) {
+        fprintf( stderr, "MAX_OUTPUT_LENGTH exceeded\n" );
+        exit(EXIT_FAILURE);
+    }
+
+    strcat( output, to_output );
+    strcat( output, "\n" );
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a67efb5aef9656c26f6bc14c91ca1bbba}{
+\index{io.h@{io.h}!drop\_\-comment@{drop\_\-comment}}
+\index{drop\_\-comment@{drop\_\-comment}!io.h@{io.h}}
+\subsubsection[{drop\_\-comment}]{\setlength{\rightskip}{0pt plus 5cm}void drop\_\-comment (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{ input}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a67efb5aef9656c26f6bc14c91ca1bbba}
+
+
+Definition at line 233 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                                  {
+    int i = 0;
+    char current_char = '\0';
+
+    for ( i = 0; i < SIZE_INPUT_BUFFER; i++ ) {
+        current_char = input[i];
+        if ( current_char == '#' ) {
+            input[i] = '\0';
+            break;
+        }
+        if ( current_char == '\0' ) {
+            break;
+        }
+    }
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a2a55445d2f8582b642b0812b3350b7b4}{
+\index{io.h@{io.h}!get\_\-output\_\-error@{get\_\-output\_\-error}}
+\index{get\_\-output\_\-error@{get\_\-output\_\-error}!io.h@{io.h}}
+\subsubsection[{get\_\-output\_\-error}]{\setlength{\rightskip}{0pt plus 5cm}bool get\_\-output\_\-error (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a2a55445d2f8582b642b0812b3350b7b4}
+
+
+Definition at line 100 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                            {
+
+    return output_error;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a953fa7252e26e5c019ccef5e98682678}{
+\index{io.h@{io.h}!identify\_\-tokens@{identify\_\-tokens}}
+\index{identify\_\-tokens@{identify\_\-tokens}!io.h@{io.h}}
+\subsubsection[{identify\_\-tokens}]{\setlength{\rightskip}{0pt plus 5cm}void identify\_\-tokens (
+\begin{DoxyParamCaption}
+\item[{char}]{ tokens\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}, }
+\item[{struct {\bf command} $\ast$}]{ command\_\-data}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a953fa7252e26e5c019ccef5e98682678}
+
+
+Definition at line 350 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                                                                                 
+           {
+    int id;
+    int arg_start;  // Index of first argument
+    int i, j;
+
+    // Check if first token is regular id,
+    // if not it must be the command name.
+    id = atoi( tokens[0] );
+    if ( id > 0 ) {
+        command_data->id = id;
+        my_strcpy( command_data->name, tokens[1], MAX_TOKEN_LENGTH );
+        arg_start = 2;
+    }
+    else if ( id < 0 ) {
+        command_data->id = -1;
+        my_strcpy( command_data->name, tokens[1], MAX_TOKEN_LENGTH );
+        arg_start = 2;
+    }
+    else {
+        command_data->id = -1;
+        my_strcpy( command_data->name, tokens[0], MAX_TOKEN_LENGTH );
+        arg_start = 1;
+    }
+
+    // Check for special case id 0:
+    if ( strcmp( tokens[0], "0" ) == 0 ) {
+        command_data->id = 0;
+        my_strcpy( command_data->name, tokens[1], MAX_TOKEN_LENGTH );
+        arg_start = 2;
+    }
+
+    // Copy arguments into command struct:
+    j = 0;
+    for ( i = arg_start; i < MAX_TOKEN_COUNT; i++ ) {
+        if ( tokens[i][0] == '\0' ) {
+            break;
+        }
+        my_strcpy( command_data->gtp_argv[j], tokens[i], MAX_TOKEN_LENGTH );
+        j++;
+    }
+    command_data->gtp_argc = j;
+
+    // Add terminating argument:
+    my_strcpy( command_data->gtp_argv[j], "\0", MAX_TOKEN_LENGTH );
+
+    // DEBUG
+    /*
+    printf( "ID: %d\n", command_data->id );
+    printf( "NAME: %s\n", command_data->name );
+    printf( "ARGC: %d\n", command_data->argc );
+    for ( i = 0; i < j; i++ ) {
+        printf( "ARG %d: %s\n", i, command_data->argv[i] );
+    }
+    */
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a264f14a49c3575cdd898f81e03243a3c}{
+\index{io.h@{io.h}!init\_\-tokens@{init\_\-tokens}}
+\index{init\_\-tokens@{init\_\-tokens}!io.h@{io.h}}
+\subsubsection[{init\_\-tokens}]{\setlength{\rightskip}{0pt plus 5cm}void init\_\-tokens (
+\begin{DoxyParamCaption}
+\item[{char}]{ tokens\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a264f14a49c3575cdd898f81e03243a3c}
+
+
+Definition at line 329 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                                                    {
+    int i;
+
+    for ( i = 0; i < MAX_TOKEN_COUNT; i++ ) {
+        tokens[i][0] = '\0';
+    }
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a65a3f2710b61f5e5a38f6439be41b29a}{
+\index{io.h@{io.h}!is\_\-input\_\-empty@{is\_\-input\_\-empty}}
+\index{is\_\-input\_\-empty@{is\_\-input\_\-empty}!io.h@{io.h}}
+\subsubsection[{is\_\-input\_\-empty}]{\setlength{\rightskip}{0pt plus 5cm}bool is\_\-input\_\-empty (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a65a3f2710b61f5e5a38f6439be41b29a}
+
+
+Definition at line 260 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                          {
+
+    return input_empty;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_afb4d7e594c7910a1e528dd826cdde2bf}{
+\index{io.h@{io.h}!parse\_\-gtp\_\-input@{parse\_\-gtp\_\-input}}
+\index{parse\_\-gtp\_\-input@{parse\_\-gtp\_\-input}!io.h@{io.h}}
+\subsubsection[{parse\_\-gtp\_\-input}]{\setlength{\rightskip}{0pt plus 5cm}void parse\_\-gtp\_\-input (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{ command\_\-input\_\-buffer, }
+\item[{char}]{ command\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_afb4d7e594c7910a1e528dd826cdde2bf}
+
+
+Definition at line 275 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                                                                                 
+          {
+    char current_char = '\0';
+    int i = 0;  // Index of input buffer
+    int j = 0;  // Counts number of tokens
+    int k = 0;  // Index of each token
+
+    // Get tokens from input:
+    for ( i = 0; i < SIZE_INPUT_BUFFER; i++ ) {
+        current_char = command_input_buffer[i];
+        if ( ! isspace(current_char) && current_char != '\0' ) {
+            if ( k < MAX_TOKEN_LENGTH ) {
+                tokens[j][k] = current_char;
+                k++;
+            }
+            else {
+                set_output_error();
+                add_output( "MAX_TOKEN_LENGTH exceeded" );
+                init_tokens(tokens);
+                return;
+            }
+        }
+        else {
+            tokens[j][k] = '\0';
+            j++;
+            k = 0;
+
+            if ( j >= MAX_TOKEN_COUNT ) {
+                set_output_error();
+                add_output( "MAX_TOKEN_COUNT exceeded" );
+                init_tokens(tokens);
+                return;
+            }
+
+            // Set terminating argument:
+            tokens[j][0] = '\0';
+        }
+
+        if ( current_char == '\0' ) {
+            break;
+        }
+    }
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a84addba8fd5fd0fad9e2f8727ef48127}{
+\index{io.h@{io.h}!print\_\-output@{print\_\-output}}
+\index{print\_\-output@{print\_\-output}!io.h@{io.h}}
+\subsubsection[{print\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}void print\_\-output (
+\begin{DoxyParamCaption}
+\item[{int}]{ command\_\-id}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a84addba8fd5fd0fad9e2f8727ef48127}
+
+
+Definition at line 140 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                                    {
+
+    /*
+    if ( input_empty == true ) {
+        input_empty = false;
+        return;
+    }
+    */
+
+    if ( output_error == false ) {
+        printf("=");
+    }
+    else {
+        printf("?");
+    }
+
+    if ( command_id >= 0 ) {
+        printf( "%d", command_id );
+    }
+
+    printf(" ");
+    
+    // If output is empty we fill it with an empty string to
+    // get that additional newline:
+    if ( strlen(output) == 0 ) {
+        add_output("");
+    }
+
+    printf( "%s\n", output );
+
+    my_strcpy( output, "", MAX_OUTPUT_LENGTH );
+    //output_error = false;
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_af6dafebf6767ddb1f453059f63968cfa}{
+\index{io.h@{io.h}!read\_\-gtp\_\-input@{read\_\-gtp\_\-input}}
+\index{read\_\-gtp\_\-input@{read\_\-gtp\_\-input}!io.h@{io.h}}
+\subsubsection[{read\_\-gtp\_\-input}]{\setlength{\rightskip}{0pt plus 5cm}void read\_\-gtp\_\-input (
+\begin{DoxyParamCaption}
+\item[{struct {\bf command} $\ast$}]{ command\_\-data}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_af6dafebf6767ddb1f453059f63968cfa}
+
+
+Read GTP command from STDIN. 
+
+Reads a GTP command from STDIN. Input which is larger than SIZE\_\-INPUT\_\-BUFFER is simply ignored. The behaviour {\itshape should\/} be the same as with \char`\"{}gnugo -\/-\/mode gtp\char`\"{}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$command\_\-data}]Pointer to struct command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://www.lysator.liu.se/~gunnar/gtp/}{\tt GTP version 2.0} 
+\end{DoxySeeAlso}
+
+
+Definition at line 40 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+{
+    int c = '\n';
+    int i = 0;
+    char tokens[MAX_TOKEN_COUNT][MAX_TOKEN_LENGTH];
+
+    init_tokens(tokens);
+
+    input_empty  = false;
+    output_error = false;
+
+    do {
+        c = getchar();
+        command_input_buffer[i] = (char) c;
+        i++;
+    } while ( c != '\n' && i < SIZE_INPUT_BUFFER );
+
+    // Overwrite last char with newline
+    command_input_buffer[i-1] = '\0';
+
+    drop_comment(command_input_buffer);
+    trim(command_input_buffer);
+
+    if ( strlen(command_input_buffer) == 0 ) {
+        input_empty = true;
+        return;
+    }
+
+    parse_gtp_input( command_input_buffer, tokens );
+    identify_tokens( tokens, command_data );
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a2b37ea825b377573cc5ba1926636fac7}{
+\index{io.h@{io.h}!set\_\-output\_\-error@{set\_\-output\_\-error}}
+\index{set\_\-output\_\-error@{set\_\-output\_\-error}!io.h@{io.h}}
+\subsubsection[{set\_\-output\_\-error}]{\setlength{\rightskip}{0pt plus 5cm}void set\_\-output\_\-error (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a2b37ea825b377573cc5ba1926636fac7}
+
+
+Definition at line 84 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                            {
+
+    output_error = true;
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{io_8h_a0268c75a0ce2925365247fb5840392d2}{
+\index{io.h@{io.h}!trim@{trim}}
+\index{trim@{trim}!io.h@{io.h}}
+\subsubsection[{trim}]{\setlength{\rightskip}{0pt plus 5cm}void trim (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{ input}
+\end{DoxyParamCaption}
+)}}
+\label{io_8h_a0268c75a0ce2925365247fb5840392d2}
+
+
+Definition at line 187 of file io.c.
+
+
+
+
+\begin{DoxyCode}
+                          {
+    char temp_input[SIZE_INPUT_BUFFER];
+    char current_char = '\0';
+    char last_char    = '\0';
+    int i = 0;
+    int j = 0;
+
+    for ( i = 0; i < SIZE_INPUT_BUFFER; i++ ) {
+        current_char = input[i];
+
+        /* Skip leading whitespace */
+        if ( isspace(current_char) && j == 0 ) {
+            continue;
+        }
+        
+        /* Write only one whitespace */
+        if ( isspace(last_char) && !isspace(current_char) && current_char != '\0'
+       ) {
+            temp_input[j] = ' ';
+            j++;
+        }
+
+        /* Write non-whitespace characters */
+        if ( ! isspace(current_char) ) {
+            temp_input[j] = current_char;
+            j++;
+        }
+
+        last_char = current_char;
+    }
+
+    temp_input[j] = '\0';
+
+    strncpy( input, temp_input, SIZE_INPUT_BUFFER );
+
+    return;
+}
+\end{DoxyCode}
+
+

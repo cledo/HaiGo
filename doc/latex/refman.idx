@@ -1,0 +1,199 @@
+\indexentry{Go Text Protocol Commands@{Go Text Protocol Commands}|hyperpage}{7}
+\indexentry{Go Text Protocol Administrative Commands@{Go Text Protocol Administrative Commands}|hyperpage}{8}
+\indexentry{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}known\_\discretionary {-}{}{}command@{gtp\_\discretionary {-}{}{}known\_\discretionary {-}{}{}command}|hyperpage}{8}
+\indexentry{gtp\_\discretionary {-}{}{}known\_\discretionary {-}{}{}command@{gtp\_\discretionary {-}{}{}known\_\discretionary {-}{}{}command}!GTP_Administrative_Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}|hyperpage}{8}
+\indexentry{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}list\_\discretionary {-}{}{}commands@{gtp\_\discretionary {-}{}{}list\_\discretionary {-}{}{}commands}|hyperpage}{9}
+\indexentry{gtp\_\discretionary {-}{}{}list\_\discretionary {-}{}{}commands@{gtp\_\discretionary {-}{}{}list\_\discretionary {-}{}{}commands}!GTP_Administrative_Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}|hyperpage}{9}
+\indexentry{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}name@{gtp\_\discretionary {-}{}{}name}|hyperpage}{10}
+\indexentry{gtp\_\discretionary {-}{}{}name@{gtp\_\discretionary {-}{}{}name}!GTP_Administrative_Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}|hyperpage}{10}
+\indexentry{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}protocol\_\discretionary {-}{}{}version@{gtp\_\discretionary {-}{}{}protocol\_\discretionary {-}{}{}version}|hyperpage}{10}
+\indexentry{gtp\_\discretionary {-}{}{}protocol\_\discretionary {-}{}{}version@{gtp\_\discretionary {-}{}{}protocol\_\discretionary {-}{}{}version}!GTP_Administrative_Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}|hyperpage}{10}
+\indexentry{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}quit@{gtp\_\discretionary {-}{}{}quit}|hyperpage}{11}
+\indexentry{gtp\_\discretionary {-}{}{}quit@{gtp\_\discretionary {-}{}{}quit}!GTP_Administrative_Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}|hyperpage}{11}
+\indexentry{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}version@{gtp\_\discretionary {-}{}{}version}|hyperpage}{11}
+\indexentry{gtp\_\discretionary {-}{}{}version@{gtp\_\discretionary {-}{}{}version}!GTP_Administrative_Commands@{GTP\_\discretionary {-}{}{}Administrative\_\discretionary {-}{}{}Commands}|hyperpage}{11}
+\indexentry{Go Text Protocol Setup Commands@{Go Text Protocol Setup Commands}|hyperpage}{12}
+\indexentry{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}boardsize@{gtp\_\discretionary {-}{}{}boardsize}|hyperpage}{12}
+\indexentry{gtp\_\discretionary {-}{}{}boardsize@{gtp\_\discretionary {-}{}{}boardsize}!GTP_Setup_Commands@{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands}|hyperpage}{12}
+\indexentry{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}clear\_\discretionary {-}{}{}board@{gtp\_\discretionary {-}{}{}clear\_\discretionary {-}{}{}board}|hyperpage}{13}
+\indexentry{gtp\_\discretionary {-}{}{}clear\_\discretionary {-}{}{}board@{gtp\_\discretionary {-}{}{}clear\_\discretionary {-}{}{}board}!GTP_Setup_Commands@{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands}|hyperpage}{13}
+\indexentry{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}komi@{gtp\_\discretionary {-}{}{}komi}|hyperpage}{13}
+\indexentry{gtp\_\discretionary {-}{}{}komi@{gtp\_\discretionary {-}{}{}komi}!GTP_Setup_Commands@{GTP\_\discretionary {-}{}{}Setup\_\discretionary {-}{}{}Commands}|hyperpage}{13}
+\indexentry{Go Text Protocol Core Play Commands@{Go Text Protocol Core Play Commands}|hyperpage}{14}
+\indexentry{GTP\_\discretionary {-}{}{}Core\_\discretionary {-}{}{}Play\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Core\_\discretionary {-}{}{}Play\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}play@{gtp\_\discretionary {-}{}{}play}|hyperpage}{14}
+\indexentry{gtp\_\discretionary {-}{}{}play@{gtp\_\discretionary {-}{}{}play}!GTP_Core_Play_Commands@{GTP\_\discretionary {-}{}{}Core\_\discretionary {-}{}{}Play\_\discretionary {-}{}{}Commands}|hyperpage}{14}
+\indexentry{Go Text Protocol Debug Commands@{Go Text Protocol Debug Commands}|hyperpage}{16}
+\indexentry{GTP\_\discretionary {-}{}{}Debug\_\discretionary {-}{}{}Commands@{GTP\_\discretionary {-}{}{}Debug\_\discretionary {-}{}{}Commands}!gtp\_\discretionary {-}{}{}showboard@{gtp\_\discretionary {-}{}{}showboard}|hyperpage}{16}
+\indexentry{gtp\_\discretionary {-}{}{}showboard@{gtp\_\discretionary {-}{}{}showboard}!GTP_Debug_Commands@{GTP\_\discretionary {-}{}{}Debug\_\discretionary {-}{}{}Commands}|hyperpage}{16}
+\indexentry{command@{command}|hyperpage}{17}
+\indexentry{command@{command}!argc@{argc}|hyperpage}{17}
+\indexentry{argc@{argc}!command@{command}|hyperpage}{17}
+\indexentry{command@{command}!argv@{argv}|hyperpage}{17}
+\indexentry{argv@{argv}!command@{command}|hyperpage}{17}
+\indexentry{command@{command}!id@{id}|hyperpage}{17}
+\indexentry{id@{id}!command@{command}|hyperpage}{17}
+\indexentry{command@{command}!name@{name}|hyperpage}{17}
+\indexentry{name@{name}!command@{command}|hyperpage}{17}
+\indexentry{command\_\discretionary {-}{}{}func@{command\_\discretionary {-}{}{}func}|hyperpage}{18}
+\indexentry{command\_\discretionary {-}{}{}func@{command\_\discretionary {-}{}{}func}!command@{command}|hyperpage}{18}
+\indexentry{command@{command}!command_func@{command\_\discretionary {-}{}{}func}|hyperpage}{18}
+\indexentry{command\_\discretionary {-}{}{}func@{command\_\discretionary {-}{}{}func}!function@{function}|hyperpage}{18}
+\indexentry{function@{function}!command_func@{command\_\discretionary {-}{}{}func}|hyperpage}{18}
+\indexentry{src/board.c@{src/board.c}|hyperpage}{19}
+\indexentry{board.c@{board.c}!free\_\discretionary {-}{}{}board@{free\_\discretionary {-}{}{}board}|hyperpage}{20}
+\indexentry{free\_\discretionary {-}{}{}board@{free\_\discretionary {-}{}{}board}!board.c@{board.c}|hyperpage}{20}
+\indexentry{board.c@{board.c}!get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string}|hyperpage}{20}
+\indexentry{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string}!board.c@{board.c}|hyperpage}{20}
+\indexentry{board.c@{board.c}!get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size}|hyperpage}{21}
+\indexentry{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size}!board.c@{board.c}|hyperpage}{21}
+\indexentry{board.c@{board.c}!get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}x@{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}x}|hyperpage}{21}
+\indexentry{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}x@{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}x}!board.c@{board.c}|hyperpage}{21}
+\indexentry{board.c@{board.c}!get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}left@{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}left}|hyperpage}{21}
+\indexentry{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}left@{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}left}!board.c@{board.c}|hyperpage}{21}
+\indexentry{board.c@{board.c}!get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}right@{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}right}|hyperpage}{22}
+\indexentry{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}right@{get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}right}!board.c@{board.c}|hyperpage}{22}
+\indexentry{board.c@{board.c}!init\_\discretionary {-}{}{}board@{init\_\discretionary {-}{}{}board}|hyperpage}{22}
+\indexentry{init\_\discretionary {-}{}{}board@{init\_\discretionary {-}{}{}board}!board.c@{board.c}|hyperpage}{22}
+\indexentry{board.c@{board.c}!is\_\discretionary {-}{}{}hoshi@{is\_\discretionary {-}{}{}hoshi}|hyperpage}{23}
+\indexentry{is\_\discretionary {-}{}{}hoshi@{is\_\discretionary {-}{}{}hoshi}!board.c@{board.c}|hyperpage}{23}
+\indexentry{board.c@{board.c}!set\_\discretionary {-}{}{}vertex@{set\_\discretionary {-}{}{}vertex}|hyperpage}{23}
+\indexentry{set\_\discretionary {-}{}{}vertex@{set\_\discretionary {-}{}{}vertex}!board.c@{board.c}|hyperpage}{23}
+\indexentry{board.c@{board.c}!board@{board}|hyperpage}{24}
+\indexentry{board@{board}!board.c@{board.c}|hyperpage}{24}
+\indexentry{board.c@{board.c}!board\_\discretionary {-}{}{}size@{board\_\discretionary {-}{}{}size}|hyperpage}{24}
+\indexentry{board\_\discretionary {-}{}{}size@{board\_\discretionary {-}{}{}size}!board.c@{board.c}|hyperpage}{24}
+\indexentry{board.c@{board.c}!hoshi@{hoshi}|hyperpage}{24}
+\indexentry{hoshi@{hoshi}!board.c@{board.c}|hyperpage}{24}
+\indexentry{src/board.h@{src/board.h}|hyperpage}{24}
+\indexentry{board.h@{board.h}!free\_\discretionary {-}{}{}board@{free\_\discretionary {-}{}{}board}|hyperpage}{24}
+\indexentry{free\_\discretionary {-}{}{}board@{free\_\discretionary {-}{}{}board}!board.h@{board.h}|hyperpage}{24}
+\indexentry{board.h@{board.h}!get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string}|hyperpage}{25}
+\indexentry{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string}!board.h@{board.h}|hyperpage}{25}
+\indexentry{board.h@{board.h}!get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size}|hyperpage}{26}
+\indexentry{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size@{get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size}!board.h@{board.h}|hyperpage}{26}
+\indexentry{board.h@{board.h}!init\_\discretionary {-}{}{}board@{init\_\discretionary {-}{}{}board}|hyperpage}{26}
+\indexentry{init\_\discretionary {-}{}{}board@{init\_\discretionary {-}{}{}board}!board.h@{board.h}|hyperpage}{26}
+\indexentry{board.h@{board.h}!set\_\discretionary {-}{}{}vertex@{set\_\discretionary {-}{}{}vertex}|hyperpage}{27}
+\indexentry{set\_\discretionary {-}{}{}vertex@{set\_\discretionary {-}{}{}vertex}!board.h@{board.h}|hyperpage}{27}
+\indexentry{src/global\_\discretionary {-}{}{}const.h@{src/global\_\discretionary {-}{}{}const.h}|hyperpage}{28}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!BLACK@{BLACK}|hyperpage}{29}
+\indexentry{BLACK@{BLACK}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!BLACK\_\discretionary {-}{}{}STONE@{BLACK\_\discretionary {-}{}{}STONE}|hyperpage}{29}
+\indexentry{BLACK\_\discretionary {-}{}{}STONE@{BLACK\_\discretionary {-}{}{}STONE}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}DEF@{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}DEF}|hyperpage}{29}
+\indexentry{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}DEF@{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}DEF}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MAX@{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MAX}|hyperpage}{29}
+\indexentry{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MAX@{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MAX}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MIN@{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MIN}|hyperpage}{29}
+\indexentry{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MIN@{BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MIN}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!EMPTY@{EMPTY}|hyperpage}{29}
+\indexentry{EMPTY@{EMPTY}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!FIELD\_\discretionary {-}{}{}EMPTY@{FIELD\_\discretionary {-}{}{}EMPTY}|hyperpage}{29}
+\indexentry{FIELD\_\discretionary {-}{}{}EMPTY@{FIELD\_\discretionary {-}{}{}EMPTY}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{29}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!FIELD\_\discretionary {-}{}{}HOSHI@{FIELD\_\discretionary {-}{}{}HOSHI}|hyperpage}{30}
+\indexentry{FIELD\_\discretionary {-}{}{}HOSHI@{FIELD\_\discretionary {-}{}{}HOSHI}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{30}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!MAX\_\discretionary {-}{}{}OUTPUT\_\discretionary {-}{}{}LENGTH@{MAX\_\discretionary {-}{}{}OUTPUT\_\discretionary {-}{}{}LENGTH}|hyperpage}{30}
+\indexentry{MAX\_\discretionary {-}{}{}OUTPUT\_\discretionary {-}{}{}LENGTH@{MAX\_\discretionary {-}{}{}OUTPUT\_\discretionary {-}{}{}LENGTH}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{30}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}COUNT@{MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}COUNT}|hyperpage}{30}
+\indexentry{MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}COUNT@{MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}COUNT}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{30}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}LENGTH@{MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}LENGTH}|hyperpage}{30}
+\indexentry{MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}LENGTH@{MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}LENGTH}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{30}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!WHITE@{WHITE}|hyperpage}{30}
+\indexentry{WHITE@{WHITE}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{30}
+\indexentry{global\_\discretionary {-}{}{}const.h@{global\_\discretionary {-}{}{}const.h}!WHITE\_\discretionary {-}{}{}STONE@{WHITE\_\discretionary {-}{}{}STONE}|hyperpage}{30}
+\indexentry{WHITE\_\discretionary {-}{}{}STONE@{WHITE\_\discretionary {-}{}{}STONE}!global_const.h@{global\_\discretionary {-}{}{}const.h}|hyperpage}{30}
+\indexentry{src/io.c@{src/io.c}|hyperpage}{30}
+\indexentry{io.c@{io.c}!add\_\discretionary {-}{}{}output@{add\_\discretionary {-}{}{}output}|hyperpage}{31}
+\indexentry{add\_\discretionary {-}{}{}output@{add\_\discretionary {-}{}{}output}!io.c@{io.c}|hyperpage}{31}
+\indexentry{io.c@{io.c}!drop\_\discretionary {-}{}{}comment@{drop\_\discretionary {-}{}{}comment}|hyperpage}{32}
+\indexentry{drop\_\discretionary {-}{}{}comment@{drop\_\discretionary {-}{}{}comment}!io.c@{io.c}|hyperpage}{32}
+\indexentry{io.c@{io.c}!get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}|hyperpage}{32}
+\indexentry{get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}!io.c@{io.c}|hyperpage}{32}
+\indexentry{io.c@{io.c}!identify\_\discretionary {-}{}{}tokens@{identify\_\discretionary {-}{}{}tokens}|hyperpage}{32}
+\indexentry{identify\_\discretionary {-}{}{}tokens@{identify\_\discretionary {-}{}{}tokens}!io.c@{io.c}|hyperpage}{32}
+\indexentry{io.c@{io.c}!init\_\discretionary {-}{}{}tokens@{init\_\discretionary {-}{}{}tokens}|hyperpage}{33}
+\indexentry{init\_\discretionary {-}{}{}tokens@{init\_\discretionary {-}{}{}tokens}!io.c@{io.c}|hyperpage}{33}
+\indexentry{io.c@{io.c}!is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty@{is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty}|hyperpage}{33}
+\indexentry{is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty@{is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty}!io.c@{io.c}|hyperpage}{33}
+\indexentry{io.c@{io.c}!parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}|hyperpage}{34}
+\indexentry{parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}!io.c@{io.c}|hyperpage}{34}
+\indexentry{io.c@{io.c}!print\_\discretionary {-}{}{}output@{print\_\discretionary {-}{}{}output}|hyperpage}{34}
+\indexentry{print\_\discretionary {-}{}{}output@{print\_\discretionary {-}{}{}output}!io.c@{io.c}|hyperpage}{34}
+\indexentry{io.c@{io.c}!read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}|hyperpage}{35}
+\indexentry{read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}!io.c@{io.c}|hyperpage}{35}
+\indexentry{io.c@{io.c}!set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}|hyperpage}{36}
+\indexentry{set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}!io.c@{io.c}|hyperpage}{36}
+\indexentry{io.c@{io.c}!trim@{trim}|hyperpage}{36}
+\indexentry{trim@{trim}!io.c@{io.c}|hyperpage}{36}
+\indexentry{io.c@{io.c}!command\_\discretionary {-}{}{}input\_\discretionary {-}{}{}buffer@{command\_\discretionary {-}{}{}input\_\discretionary {-}{}{}buffer}|hyperpage}{37}
+\indexentry{command\_\discretionary {-}{}{}input\_\discretionary {-}{}{}buffer@{command\_\discretionary {-}{}{}input\_\discretionary {-}{}{}buffer}!io.c@{io.c}|hyperpage}{37}
+\indexentry{io.c@{io.c}!input\_\discretionary {-}{}{}empty@{input\_\discretionary {-}{}{}empty}|hyperpage}{37}
+\indexentry{input\_\discretionary {-}{}{}empty@{input\_\discretionary {-}{}{}empty}!io.c@{io.c}|hyperpage}{37}
+\indexentry{io.c@{io.c}!output@{output}|hyperpage}{37}
+\indexentry{output@{output}!io.c@{io.c}|hyperpage}{37}
+\indexentry{io.c@{io.c}!output\_\discretionary {-}{}{}error@{output\_\discretionary {-}{}{}error}|hyperpage}{37}
+\indexentry{output\_\discretionary {-}{}{}error@{output\_\discretionary {-}{}{}error}!io.c@{io.c}|hyperpage}{37}
+\indexentry{src/io.h@{src/io.h}|hyperpage}{37}
+\indexentry{io.h@{io.h}!SIZE\_\discretionary {-}{}{}INPUT\_\discretionary {-}{}{}BUFFER@{SIZE\_\discretionary {-}{}{}INPUT\_\discretionary {-}{}{}BUFFER}|hyperpage}{39}
+\indexentry{SIZE\_\discretionary {-}{}{}INPUT\_\discretionary {-}{}{}BUFFER@{SIZE\_\discretionary {-}{}{}INPUT\_\discretionary {-}{}{}BUFFER}!io.h@{io.h}|hyperpage}{39}
+\indexentry{io.h@{io.h}!add\_\discretionary {-}{}{}output@{add\_\discretionary {-}{}{}output}|hyperpage}{39}
+\indexentry{add\_\discretionary {-}{}{}output@{add\_\discretionary {-}{}{}output}!io.h@{io.h}|hyperpage}{39}
+\indexentry{io.h@{io.h}!drop\_\discretionary {-}{}{}comment@{drop\_\discretionary {-}{}{}comment}|hyperpage}{39}
+\indexentry{drop\_\discretionary {-}{}{}comment@{drop\_\discretionary {-}{}{}comment}!io.h@{io.h}|hyperpage}{39}
+\indexentry{io.h@{io.h}!get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}|hyperpage}{39}
+\indexentry{get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}!io.h@{io.h}|hyperpage}{39}
+\indexentry{io.h@{io.h}!identify\_\discretionary {-}{}{}tokens@{identify\_\discretionary {-}{}{}tokens}|hyperpage}{40}
+\indexentry{identify\_\discretionary {-}{}{}tokens@{identify\_\discretionary {-}{}{}tokens}!io.h@{io.h}|hyperpage}{40}
+\indexentry{io.h@{io.h}!init\_\discretionary {-}{}{}tokens@{init\_\discretionary {-}{}{}tokens}|hyperpage}{41}
+\indexentry{init\_\discretionary {-}{}{}tokens@{init\_\discretionary {-}{}{}tokens}!io.h@{io.h}|hyperpage}{41}
+\indexentry{io.h@{io.h}!is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty@{is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty}|hyperpage}{41}
+\indexentry{is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty@{is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty}!io.h@{io.h}|hyperpage}{41}
+\indexentry{io.h@{io.h}!parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}|hyperpage}{41}
+\indexentry{parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}!io.h@{io.h}|hyperpage}{41}
+\indexentry{io.h@{io.h}!print\_\discretionary {-}{}{}output@{print\_\discretionary {-}{}{}output}|hyperpage}{42}
+\indexentry{print\_\discretionary {-}{}{}output@{print\_\discretionary {-}{}{}output}!io.h@{io.h}|hyperpage}{42}
+\indexentry{io.h@{io.h}!read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}|hyperpage}{42}
+\indexentry{read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input@{read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}!io.h@{io.h}|hyperpage}{42}
+\indexentry{io.h@{io.h}!set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}|hyperpage}{43}
+\indexentry{set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error@{set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}!io.h@{io.h}|hyperpage}{43}
+\indexentry{io.h@{io.h}!trim@{trim}|hyperpage}{43}
+\indexentry{trim@{trim}!io.h@{io.h}|hyperpage}{43}
+\indexentry{src/main.c@{src/main.c}|hyperpage}{44}
+\indexentry{main.c@{main.c}!main@{main}|hyperpage}{45}
+\indexentry{main@{main}!main.c@{main.c}|hyperpage}{45}
+\indexentry{src/run\_\discretionary {-}{}{}program.c@{src/run\_\discretionary {-}{}{}program.c}|hyperpage}{46}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!init\_\discretionary {-}{}{}known\_\discretionary {-}{}{}commands@{init\_\discretionary {-}{}{}known\_\discretionary {-}{}{}commands}|hyperpage}{47}
+\indexentry{init\_\discretionary {-}{}{}known\_\discretionary {-}{}{}commands@{init\_\discretionary {-}{}{}known\_\discretionary {-}{}{}commands}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{47}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!print\_\discretionary {-}{}{}help\_\discretionary {-}{}{}message@{print\_\discretionary {-}{}{}help\_\discretionary {-}{}{}message}|hyperpage}{48}
+\indexentry{print\_\discretionary {-}{}{}help\_\discretionary {-}{}{}message@{print\_\discretionary {-}{}{}help\_\discretionary {-}{}{}message}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{48}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!print\_\discretionary {-}{}{}version@{print\_\discretionary {-}{}{}version}|hyperpage}{48}
+\indexentry{print\_\discretionary {-}{}{}version@{print\_\discretionary {-}{}{}version}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{48}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!read\_\discretionary {-}{}{}opts@{read\_\discretionary {-}{}{}opts}|hyperpage}{48}
+\indexentry{read\_\discretionary {-}{}{}opts@{read\_\discretionary {-}{}{}opts}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{48}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!run@{run}|hyperpage}{49}
+\indexentry{run@{run}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{49}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!select\_\discretionary {-}{}{}command@{select\_\discretionary {-}{}{}command}|hyperpage}{50}
+\indexentry{select\_\discretionary {-}{}{}command@{select\_\discretionary {-}{}{}command}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{50}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!set\_\discretionary {-}{}{}quit\_\discretionary {-}{}{}program@{set\_\discretionary {-}{}{}quit\_\discretionary {-}{}{}program}|hyperpage}{50}
+\indexentry{set\_\discretionary {-}{}{}quit\_\discretionary {-}{}{}program@{set\_\discretionary {-}{}{}quit\_\discretionary {-}{}{}program}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{50}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!str\_\discretionary {-}{}{}toupper@{str\_\discretionary {-}{}{}toupper}|hyperpage}{51}
+\indexentry{str\_\discretionary {-}{}{}toupper@{str\_\discretionary {-}{}{}toupper}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{51}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!GTP\_\discretionary {-}{}{}VERSION@{GTP\_\discretionary {-}{}{}VERSION}|hyperpage}{51}
+\indexentry{GTP\_\discretionary {-}{}{}VERSION@{GTP\_\discretionary {-}{}{}VERSION}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{51}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!help\_\discretionary {-}{}{}message@{help\_\discretionary {-}{}{}message}|hyperpage}{51}
+\indexentry{help\_\discretionary {-}{}{}message@{help\_\discretionary {-}{}{}message}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{51}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!known\_\discretionary {-}{}{}commands@{known\_\discretionary {-}{}{}commands}|hyperpage}{51}
+\indexentry{known\_\discretionary {-}{}{}commands@{known\_\discretionary {-}{}{}commands}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{51}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!komi@{komi}|hyperpage}{51}
+\indexentry{komi@{komi}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{51}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!PROGRAM\_\discretionary {-}{}{}NAME@{PROGRAM\_\discretionary {-}{}{}NAME}|hyperpage}{51}
+\indexentry{PROGRAM\_\discretionary {-}{}{}NAME@{PROGRAM\_\discretionary {-}{}{}NAME}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{51}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!PROGRAM\_\discretionary {-}{}{}VERSION@{PROGRAM\_\discretionary {-}{}{}VERSION}|hyperpage}{52}
+\indexentry{PROGRAM\_\discretionary {-}{}{}VERSION@{PROGRAM\_\discretionary {-}{}{}VERSION}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{52}
+\indexentry{run\_\discretionary {-}{}{}program.c@{run\_\discretionary {-}{}{}program.c}!quit\_\discretionary {-}{}{}program@{quit\_\discretionary {-}{}{}program}|hyperpage}{52}
+\indexentry{quit\_\discretionary {-}{}{}program@{quit\_\discretionary {-}{}{}program}!run_program.c@{run\_\discretionary {-}{}{}program.c}|hyperpage}{52}
+\indexentry{src/run\_\discretionary {-}{}{}program.h@{src/run\_\discretionary {-}{}{}program.h}|hyperpage}{52}
+\indexentry{run\_\discretionary {-}{}{}program.h@{run\_\discretionary {-}{}{}program.h}!COUNT\_\discretionary {-}{}{}KNOWN\_\discretionary {-}{}{}COMMANDS@{COUNT\_\discretionary {-}{}{}KNOWN\_\discretionary {-}{}{}COMMANDS}|hyperpage}{53}
+\indexentry{COUNT\_\discretionary {-}{}{}KNOWN\_\discretionary {-}{}{}COMMANDS@{COUNT\_\discretionary {-}{}{}KNOWN\_\discretionary {-}{}{}COMMANDS}!run_program.h@{run\_\discretionary {-}{}{}program.h}|hyperpage}{53}
+\indexentry{run\_\discretionary {-}{}{}program.h@{run\_\discretionary {-}{}{}program.h}!run@{run}|hyperpage}{53}
+\indexentry{run@{run}!run_program.h@{run\_\discretionary {-}{}{}program.h}|hyperpage}{53}

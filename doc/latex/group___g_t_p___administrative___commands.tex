@@ -1,0 +1,313 @@
+\hypertarget{group___g_t_p___administrative___commands}{
+\section{Go Text Protocol Administrative Commands}
+\label{group___g_t_p___administrative___commands}\index{Go Text Protocol Administrative Commands@{Go Text Protocol Administrative Commands}}
+}
+
+
+Collaboration diagram for Go Text Protocol Administrative Commands:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=400pt]{group___g_t_p___administrative___commands}
+\end{center}
+\end{figure}
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{group___g_t_p___administrative___commands_ga625849e565ca8f4e13fc521165d73910}{gtp\_\-quit} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Quits the program. \item\end{DoxyCompactList}\item 
+void \hyperlink{group___g_t_p___administrative___commands_ga264cb45ac6de56306d1006a4ee8a1f4d}{gtp\_\-version} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Shows the program's version number. \item\end{DoxyCompactList}\item 
+void \hyperlink{group___g_t_p___administrative___commands_ga57d397237b5bc6129ada6cdcfeaa9aad}{gtp\_\-protocol\_\-version} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Shows the used GTP version number. \item\end{DoxyCompactList}\item 
+void \hyperlink{group___g_t_p___administrative___commands_ga493e544f8b83dd08fb5ebf25c127fb60}{gtp\_\-name} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Shows the program's name. \item\end{DoxyCompactList}\item 
+void \hyperlink{group___g_t_p___administrative___commands_gac1f9e22691e53c8b8aa46d473008c262}{gtp\_\-known\_\-command} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Shows whether a given GTP command is implemented or not. \item\end{DoxyCompactList}\item 
+void \hyperlink{group___g_t_p___administrative___commands_gabe46d9c2f68c87415a2550ec8358c664}{gtp\_\-list\_\-commands} (int gtp\_\-argc, char gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]})
+\begin{DoxyCompactList}\small\item\em Shows a list of all know GTP commands. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{group___g_t_p___administrative___commands_gac1f9e22691e53c8b8aa46d473008c262}{
+\index{GTP\_\-Administrative\_\-Commands@{GTP\_\-Administrative\_\-Commands}!gtp\_\-known\_\-command@{gtp\_\-known\_\-command}}
+\index{gtp\_\-known\_\-command@{gtp\_\-known\_\-command}!GTP_Administrative_Commands@{GTP\_\-Administrative\_\-Commands}}
+\subsubsection[{gtp\_\-known\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-known\_\-command (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___administrative___commands_gac1f9e22691e53c8b8aa46d473008c262}
+
+
+Shows whether a given GTP command is implemented or not. 
+
+\hyperlink{group___g_t_p___administrative___commands_gac1f9e22691e53c8b8aa46d473008c262}{gtp\_\-known\_\-command()} $<$command\_\-name$>$ returns either the string \char`\"{}true\char`\"{} or \char`\"{}false\char`\"{} therefore showing whether a given GTP command is known or not.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\char`\"{}true\char`\"{} $|$ \char`\"{}false\char`\"{} 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.1 Administrative Commands 
+\end{DoxySeeAlso}
+
+
+Definition at line 390 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+    int  i;
+    bool is_command_known = false;
+
+    if ( gtp_argc < 1 ) {
+        set_output_error();
+        add_output( "missing argument: command_name" );
+        return;
+    }
+    if ( gtp_argc > 1 ) {
+        set_output_error();
+        add_output( "only one argument required: command_name" );
+        return;
+    }
+
+    for ( i = 0; i < COUNT_KNOWN_COMMANDS; i++ ) {
+        if ( strcmp( known_commands[i].command, gtp_argv[0] ) == 0 ) {
+            is_command_known = true;
+            break;
+        }
+    }
+
+    if ( is_command_known == true ) {
+        add_output("true");
+    }
+    else {
+        add_output("false");
+    }
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{group___g_t_p___administrative___commands_gabe46d9c2f68c87415a2550ec8358c664}{
+\index{GTP\_\-Administrative\_\-Commands@{GTP\_\-Administrative\_\-Commands}!gtp\_\-list\_\-commands@{gtp\_\-list\_\-commands}}
+\index{gtp\_\-list\_\-commands@{gtp\_\-list\_\-commands}!GTP_Administrative_Commands@{GTP\_\-Administrative\_\-Commands}}
+\subsubsection[{gtp\_\-list\_\-commands}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-list\_\-commands (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___administrative___commands_gabe46d9c2f68c87415a2550ec8358c664}
+
+
+Shows a list of all know GTP commands. 
+
+\hyperlink{group___g_t_p___administrative___commands_gabe46d9c2f68c87415a2550ec8358c664}{gtp\_\-list\_\-commands()} shows the name of the program as defined by PROGRAM\_\-NAME.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.1 Administrative Commands 
+\end{DoxySeeAlso}
+
+
+Definition at line 436 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+    int i;
+
+    for ( i = 0; i < COUNT_KNOWN_COMMANDS; i++ ) {
+        add_output( known_commands[i].command );
+    }
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{group___g_t_p___administrative___commands_ga493e544f8b83dd08fb5ebf25c127fb60}{
+\index{GTP\_\-Administrative\_\-Commands@{GTP\_\-Administrative\_\-Commands}!gtp\_\-name@{gtp\_\-name}}
+\index{gtp\_\-name@{gtp\_\-name}!GTP_Administrative_Commands@{GTP\_\-Administrative\_\-Commands}}
+\subsubsection[{gtp\_\-name}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-name (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___administrative___commands_ga493e544f8b83dd08fb5ebf25c127fb60}
+
+
+Shows the program's name. 
+
+\hyperlink{group___g_t_p___administrative___commands_ga493e544f8b83dd08fb5ebf25c127fb60}{gtp\_\-name()} shows the name of the program as defined by PROGRAM\_\-NAME.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.1 Administrative Commands 
+\end{DoxySeeAlso}
+
+
+Definition at line 368 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+
+    add_output(PROGRAM_NAME);
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{group___g_t_p___administrative___commands_ga57d397237b5bc6129ada6cdcfeaa9aad}{
+\index{GTP\_\-Administrative\_\-Commands@{GTP\_\-Administrative\_\-Commands}!gtp\_\-protocol\_\-version@{gtp\_\-protocol\_\-version}}
+\index{gtp\_\-protocol\_\-version@{gtp\_\-protocol\_\-version}!GTP_Administrative_Commands@{GTP\_\-Administrative\_\-Commands}}
+\subsubsection[{gtp\_\-protocol\_\-version}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-protocol\_\-version (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___administrative___commands_ga57d397237b5bc6129ada6cdcfeaa9aad}
+
+
+Shows the used GTP version number. 
+
+\hyperlink{group___g_t_p___administrative___commands_ga57d397237b5bc6129ada6cdcfeaa9aad}{gtp\_\-protocol\_\-version()} shows the currently used Go Text Protocol version number. Currently this is version number 2 as defined in GTP\_\-VERSION.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.1 Administrative Commands 
+\end{DoxySeeAlso}
+
+
+Definition at line 348 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+
+    add_output(GTP_VERSION);
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{group___g_t_p___administrative___commands_ga625849e565ca8f4e13fc521165d73910}{
+\index{GTP\_\-Administrative\_\-Commands@{GTP\_\-Administrative\_\-Commands}!gtp\_\-quit@{gtp\_\-quit}}
+\index{gtp\_\-quit@{gtp\_\-quit}!GTP_Administrative_Commands@{GTP\_\-Administrative\_\-Commands}}
+\subsubsection[{gtp\_\-quit}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-quit (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___administrative___commands_ga625849e565ca8f4e13fc521165d73910}
+
+
+Quits the program. 
+
+\hyperlink{group___g_t_p___administrative___commands_ga625849e565ca8f4e13fc521165d73910}{gtp\_\-quit()} quits the whole program by calling \hyperlink{run__program_8c_a1e1c6b03caa51f0c2aa5879f82be64c9}{set\_\-quit\_\-program()}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.1 Administrative Commands 
+\end{DoxySeeAlso}
+
+
+Definition at line 306 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+
+    set_quit_program();
+
+    return;
+}
+\end{DoxyCode}
+
+
+\hypertarget{group___g_t_p___administrative___commands_ga264cb45ac6de56306d1006a4ee8a1f4d}{
+\index{GTP\_\-Administrative\_\-Commands@{GTP\_\-Administrative\_\-Commands}!gtp\_\-version@{gtp\_\-version}}
+\index{gtp\_\-version@{gtp\_\-version}!GTP_Administrative_Commands@{GTP\_\-Administrative\_\-Commands}}
+\subsubsection[{gtp\_\-version}]{\setlength{\rightskip}{0pt plus 5cm}void gtp\_\-version (
+\begin{DoxyParamCaption}
+\item[{int}]{ gtp\_\-argc, }
+\item[{char}]{ gtp\_\-argv\mbox{[}$\,$\mbox{]}\mbox{[}MAX\_\-TOKEN\_\-LENGTH\mbox{]}}
+\end{DoxyParamCaption}
+)}}
+\label{group___g_t_p___administrative___commands_ga264cb45ac6de56306d1006a4ee8a1f4d}
+
+
+Shows the program's version number. 
+
+\hyperlink{group___g_t_p___administrative___commands_ga264cb45ac6de56306d1006a4ee8a1f4d}{gtp\_\-version()} shows the version number as defined by PROGRAM\_\-VERSION.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em gtp\_\-argc}]Number of arguments of GTP command \item[\mbox{\tt[in]} {\em gtp\_\-argv}]Array of all arguments for GTP command \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+Go Text Protokol version 2, 6.3.1 Administrative Commands 
+\end{DoxySeeAlso}
+
+
+Definition at line 326 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+
+    add_output(PROGRAM_VERSION);
+
+    return;
+}
+\end{DoxyCode}
+
+

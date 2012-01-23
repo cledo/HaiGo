@@ -1,0 +1,138 @@
+\contentsline {chapter}{\numberline {1}Module Index}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Modules}{1}{section.1.1}
+\contentsline {chapter}{\numberline {2}Data Structure Index}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Data Structures}{3}{section.2.1}
+\contentsline {chapter}{\numberline {3}File Index}{5}{chapter.3}
+\contentsline {section}{\numberline {3.1}File List}{5}{section.3.1}
+\contentsline {chapter}{\numberline {4}Module Documentation}{7}{chapter.4}
+\contentsline {section}{\numberline {4.1}Go Text Protocol Commands}{7}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Detailed Description}{7}{subsection.4.1.1}
+\contentsline {section}{\numberline {4.2}Go Text Protocol Administrative Commands}{8}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Function Documentation}{8}{subsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.1.1}gtp\_\discretionary {-}{}{}known\_\discretionary {-}{}{}command}{8}{subsubsection.4.2.1.1}
+\contentsline {subsubsection}{\numberline {4.2.1.2}gtp\_\discretionary {-}{}{}list\_\discretionary {-}{}{}commands}{9}{subsubsection.4.2.1.2}
+\contentsline {subsubsection}{\numberline {4.2.1.3}gtp\_\discretionary {-}{}{}name}{10}{subsubsection.4.2.1.3}
+\contentsline {subsubsection}{\numberline {4.2.1.4}gtp\_\discretionary {-}{}{}protocol\_\discretionary {-}{}{}version}{10}{subsubsection.4.2.1.4}
+\contentsline {subsubsection}{\numberline {4.2.1.5}gtp\_\discretionary {-}{}{}quit}{11}{subsubsection.4.2.1.5}
+\contentsline {subsubsection}{\numberline {4.2.1.6}gtp\_\discretionary {-}{}{}version}{11}{subsubsection.4.2.1.6}
+\contentsline {section}{\numberline {4.3}Go Text Protocol Setup Commands}{12}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Function Documentation}{12}{subsection.4.3.1}
+\contentsline {subsubsection}{\numberline {4.3.1.1}gtp\_\discretionary {-}{}{}boardsize}{12}{subsubsection.4.3.1.1}
+\contentsline {subsubsection}{\numberline {4.3.1.2}gtp\_\discretionary {-}{}{}clear\_\discretionary {-}{}{}board}{13}{subsubsection.4.3.1.2}
+\contentsline {subsubsection}{\numberline {4.3.1.3}gtp\_\discretionary {-}{}{}komi}{14}{subsubsection.4.3.1.3}
+\contentsline {section}{\numberline {4.4}Go Text Protocol Core Play Commands}{14}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}Function Documentation}{14}{subsection.4.4.1}
+\contentsline {subsubsection}{\numberline {4.4.1.1}gtp\_\discretionary {-}{}{}play}{14}{subsubsection.4.4.1.1}
+\contentsline {section}{\numberline {4.5}Go Text Protocol Debug Commands}{16}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Function Documentation}{16}{subsection.4.5.1}
+\contentsline {subsubsection}{\numberline {4.5.1.1}gtp\_\discretionary {-}{}{}showboard}{16}{subsubsection.4.5.1.1}
+\contentsline {chapter}{\numberline {5}Data Structure Documentation}{17}{chapter.5}
+\contentsline {section}{\numberline {5.1}command Struct Reference}{17}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Detailed Description}{17}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Field Documentation}{17}{subsection.5.1.2}
+\contentsline {subsubsection}{\numberline {5.1.2.1}argc}{17}{subsubsection.5.1.2.1}
+\contentsline {subsubsection}{\numberline {5.1.2.2}argv}{17}{subsubsection.5.1.2.2}
+\contentsline {subsubsection}{\numberline {5.1.2.3}id}{17}{subsubsection.5.1.2.3}
+\contentsline {subsubsection}{\numberline {5.1.2.4}name}{17}{subsubsection.5.1.2.4}
+\contentsline {section}{\numberline {5.2}command\_\discretionary {-}{}{}func Struct Reference}{18}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Detailed Description}{18}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}Field Documentation}{18}{subsection.5.2.2}
+\contentsline {subsubsection}{\numberline {5.2.2.1}command}{18}{subsubsection.5.2.2.1}
+\contentsline {subsubsection}{\numberline {5.2.2.2}function}{18}{subsubsection.5.2.2.2}
+\contentsline {chapter}{\numberline {6}File Documentation}{19}{chapter.6}
+\contentsline {section}{\numberline {6.1}src/board.c File Reference}{19}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}Function Documentation}{20}{subsection.6.1.1}
+\contentsline {subsubsection}{\numberline {6.1.1.1}free\_\discretionary {-}{}{}board}{20}{subsubsection.6.1.1.1}
+\contentsline {subsubsection}{\numberline {6.1.1.2}get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string}{20}{subsubsection.6.1.1.2}
+\contentsline {subsubsection}{\numberline {6.1.1.3}get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size}{21}{subsubsection.6.1.1.3}
+\contentsline {subsubsection}{\numberline {6.1.1.4}get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}x}{21}{subsubsection.6.1.1.4}
+\contentsline {subsubsection}{\numberline {6.1.1.5}get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}left}{22}{subsubsection.6.1.1.5}
+\contentsline {subsubsection}{\numberline {6.1.1.6}get\_\discretionary {-}{}{}label\_\discretionary {-}{}{}y\_\discretionary {-}{}{}right}{22}{subsubsection.6.1.1.6}
+\contentsline {subsubsection}{\numberline {6.1.1.7}init\_\discretionary {-}{}{}board}{22}{subsubsection.6.1.1.7}
+\contentsline {subsubsection}{\numberline {6.1.1.8}is\_\discretionary {-}{}{}hoshi}{23}{subsubsection.6.1.1.8}
+\contentsline {subsubsection}{\numberline {6.1.1.9}set\_\discretionary {-}{}{}vertex}{23}{subsubsection.6.1.1.9}
+\contentsline {subsection}{\numberline {6.1.2}Variable Documentation}{24}{subsection.6.1.2}
+\contentsline {subsubsection}{\numberline {6.1.2.1}board}{24}{subsubsection.6.1.2.1}
+\contentsline {subsubsection}{\numberline {6.1.2.2}board\_\discretionary {-}{}{}size}{24}{subsubsection.6.1.2.2}
+\contentsline {subsubsection}{\numberline {6.1.2.3}hoshi}{24}{subsubsection.6.1.2.3}
+\contentsline {section}{\numberline {6.2}src/board.h File Reference}{24}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}Function Documentation}{24}{subsection.6.2.1}
+\contentsline {subsubsection}{\numberline {6.2.1.1}free\_\discretionary {-}{}{}board}{24}{subsubsection.6.2.1.1}
+\contentsline {subsubsection}{\numberline {6.2.1.2}get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}as\_\discretionary {-}{}{}string}{25}{subsubsection.6.2.1.2}
+\contentsline {subsubsection}{\numberline {6.2.1.3}get\_\discretionary {-}{}{}board\_\discretionary {-}{}{}size}{26}{subsubsection.6.2.1.3}
+\contentsline {subsubsection}{\numberline {6.2.1.4}init\_\discretionary {-}{}{}board}{26}{subsubsection.6.2.1.4}
+\contentsline {subsubsection}{\numberline {6.2.1.5}set\_\discretionary {-}{}{}vertex}{27}{subsubsection.6.2.1.5}
+\contentsline {section}{\numberline {6.3}src/global\_\discretionary {-}{}{}const.h File Reference}{28}{section.6.3}
+\contentsline {subsection}{\numberline {6.3.1}Define Documentation}{29}{subsection.6.3.1}
+\contentsline {subsubsection}{\numberline {6.3.1.1}BLACK}{29}{subsubsection.6.3.1.1}
+\contentsline {subsubsection}{\numberline {6.3.1.2}BLACK\_\discretionary {-}{}{}STONE}{29}{subsubsection.6.3.1.2}
+\contentsline {subsubsection}{\numberline {6.3.1.3}BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}DEF}{29}{subsubsection.6.3.1.3}
+\contentsline {subsubsection}{\numberline {6.3.1.4}BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MAX}{29}{subsubsection.6.3.1.4}
+\contentsline {subsubsection}{\numberline {6.3.1.5}BOARD\_\discretionary {-}{}{}SIZE\_\discretionary {-}{}{}MIN}{29}{subsubsection.6.3.1.5}
+\contentsline {subsubsection}{\numberline {6.3.1.6}EMPTY}{29}{subsubsection.6.3.1.6}
+\contentsline {subsubsection}{\numberline {6.3.1.7}FIELD\_\discretionary {-}{}{}EMPTY}{30}{subsubsection.6.3.1.7}
+\contentsline {subsubsection}{\numberline {6.3.1.8}FIELD\_\discretionary {-}{}{}HOSHI}{30}{subsubsection.6.3.1.8}
+\contentsline {subsubsection}{\numberline {6.3.1.9}MAX\_\discretionary {-}{}{}OUTPUT\_\discretionary {-}{}{}LENGTH}{30}{subsubsection.6.3.1.9}
+\contentsline {subsubsection}{\numberline {6.3.1.10}MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}COUNT}{30}{subsubsection.6.3.1.10}
+\contentsline {subsubsection}{\numberline {6.3.1.11}MAX\_\discretionary {-}{}{}TOKEN\_\discretionary {-}{}{}LENGTH}{30}{subsubsection.6.3.1.11}
+\contentsline {subsubsection}{\numberline {6.3.1.12}WHITE}{30}{subsubsection.6.3.1.12}
+\contentsline {subsubsection}{\numberline {6.3.1.13}WHITE\_\discretionary {-}{}{}STONE}{30}{subsubsection.6.3.1.13}
+\contentsline {section}{\numberline {6.4}src/io.c File Reference}{30}{section.6.4}
+\contentsline {subsection}{\numberline {6.4.1}Function Documentation}{31}{subsection.6.4.1}
+\contentsline {subsubsection}{\numberline {6.4.1.1}add\_\discretionary {-}{}{}output}{31}{subsubsection.6.4.1.1}
+\contentsline {subsubsection}{\numberline {6.4.1.2}drop\_\discretionary {-}{}{}comment}{32}{subsubsection.6.4.1.2}
+\contentsline {subsubsection}{\numberline {6.4.1.3}get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}{32}{subsubsection.6.4.1.3}
+\contentsline {subsubsection}{\numberline {6.4.1.4}identify\_\discretionary {-}{}{}tokens}{32}{subsubsection.6.4.1.4}
+\contentsline {subsubsection}{\numberline {6.4.1.5}init\_\discretionary {-}{}{}tokens}{33}{subsubsection.6.4.1.5}
+\contentsline {subsubsection}{\numberline {6.4.1.6}is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty}{34}{subsubsection.6.4.1.6}
+\contentsline {subsubsection}{\numberline {6.4.1.7}parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}{34}{subsubsection.6.4.1.7}
+\contentsline {subsubsection}{\numberline {6.4.1.8}print\_\discretionary {-}{}{}output}{35}{subsubsection.6.4.1.8}
+\contentsline {subsubsection}{\numberline {6.4.1.9}read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}{35}{subsubsection.6.4.1.9}
+\contentsline {subsubsection}{\numberline {6.4.1.10}set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}{36}{subsubsection.6.4.1.10}
+\contentsline {subsubsection}{\numberline {6.4.1.11}trim}{36}{subsubsection.6.4.1.11}
+\contentsline {subsection}{\numberline {6.4.2}Variable Documentation}{37}{subsection.6.4.2}
+\contentsline {subsubsection}{\numberline {6.4.2.1}command\_\discretionary {-}{}{}input\_\discretionary {-}{}{}buffer}{37}{subsubsection.6.4.2.1}
+\contentsline {subsubsection}{\numberline {6.4.2.2}input\_\discretionary {-}{}{}empty}{37}{subsubsection.6.4.2.2}
+\contentsline {subsubsection}{\numberline {6.4.2.3}output}{37}{subsubsection.6.4.2.3}
+\contentsline {subsubsection}{\numberline {6.4.2.4}output\_\discretionary {-}{}{}error}{37}{subsubsection.6.4.2.4}
+\contentsline {section}{\numberline {6.5}src/io.h File Reference}{37}{section.6.5}
+\contentsline {subsection}{\numberline {6.5.1}Define Documentation}{39}{subsection.6.5.1}
+\contentsline {subsubsection}{\numberline {6.5.1.1}SIZE\_\discretionary {-}{}{}INPUT\_\discretionary {-}{}{}BUFFER}{39}{subsubsection.6.5.1.1}
+\contentsline {subsection}{\numberline {6.5.2}Function Documentation}{39}{subsection.6.5.2}
+\contentsline {subsubsection}{\numberline {6.5.2.1}add\_\discretionary {-}{}{}output}{39}{subsubsection.6.5.2.1}
+\contentsline {subsubsection}{\numberline {6.5.2.2}drop\_\discretionary {-}{}{}comment}{39}{subsubsection.6.5.2.2}
+\contentsline {subsubsection}{\numberline {6.5.2.3}get\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}{40}{subsubsection.6.5.2.3}
+\contentsline {subsubsection}{\numberline {6.5.2.4}identify\_\discretionary {-}{}{}tokens}{40}{subsubsection.6.5.2.4}
+\contentsline {subsubsection}{\numberline {6.5.2.5}init\_\discretionary {-}{}{}tokens}{41}{subsubsection.6.5.2.5}
+\contentsline {subsubsection}{\numberline {6.5.2.6}is\_\discretionary {-}{}{}input\_\discretionary {-}{}{}empty}{41}{subsubsection.6.5.2.6}
+\contentsline {subsubsection}{\numberline {6.5.2.7}parse\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}{41}{subsubsection.6.5.2.7}
+\contentsline {subsubsection}{\numberline {6.5.2.8}print\_\discretionary {-}{}{}output}{42}{subsubsection.6.5.2.8}
+\contentsline {subsubsection}{\numberline {6.5.2.9}read\_\discretionary {-}{}{}gtp\_\discretionary {-}{}{}input}{43}{subsubsection.6.5.2.9}
+\contentsline {subsubsection}{\numberline {6.5.2.10}set\_\discretionary {-}{}{}output\_\discretionary {-}{}{}error}{43}{subsubsection.6.5.2.10}
+\contentsline {subsubsection}{\numberline {6.5.2.11}trim}{44}{subsubsection.6.5.2.11}
+\contentsline {section}{\numberline {6.6}src/main.c File Reference}{44}{section.6.6}
+\contentsline {subsection}{\numberline {6.6.1}Function Documentation}{45}{subsection.6.6.1}
+\contentsline {subsubsection}{\numberline {6.6.1.1}main}{45}{subsubsection.6.6.1.1}
+\contentsline {section}{\numberline {6.7}src/run\_\discretionary {-}{}{}program.c File Reference}{46}{section.6.7}
+\contentsline {subsection}{\numberline {6.7.1}Function Documentation}{47}{subsection.6.7.1}
+\contentsline {subsubsection}{\numberline {6.7.1.1}init\_\discretionary {-}{}{}known\_\discretionary {-}{}{}commands}{47}{subsubsection.6.7.1.1}
+\contentsline {subsubsection}{\numberline {6.7.1.2}print\_\discretionary {-}{}{}help\_\discretionary {-}{}{}message}{48}{subsubsection.6.7.1.2}
+\contentsline {subsubsection}{\numberline {6.7.1.3}print\_\discretionary {-}{}{}version}{48}{subsubsection.6.7.1.3}
+\contentsline {subsubsection}{\numberline {6.7.1.4}read\_\discretionary {-}{}{}opts}{48}{subsubsection.6.7.1.4}
+\contentsline {subsubsection}{\numberline {6.7.1.5}run}{49}{subsubsection.6.7.1.5}
+\contentsline {subsubsection}{\numberline {6.7.1.6}select\_\discretionary {-}{}{}command}{50}{subsubsection.6.7.1.6}
+\contentsline {subsubsection}{\numberline {6.7.1.7}set\_\discretionary {-}{}{}quit\_\discretionary {-}{}{}program}{50}{subsubsection.6.7.1.7}
+\contentsline {subsubsection}{\numberline {6.7.1.8}str\_\discretionary {-}{}{}toupper}{51}{subsubsection.6.7.1.8}
+\contentsline {subsection}{\numberline {6.7.2}Variable Documentation}{51}{subsection.6.7.2}
+\contentsline {subsubsection}{\numberline {6.7.2.1}GTP\_\discretionary {-}{}{}VERSION}{51}{subsubsection.6.7.2.1}
+\contentsline {subsubsection}{\numberline {6.7.2.2}help\_\discretionary {-}{}{}message}{51}{subsubsection.6.7.2.2}
+\contentsline {subsubsection}{\numberline {6.7.2.3}known\_\discretionary {-}{}{}commands}{51}{subsubsection.6.7.2.3}
+\contentsline {subsubsection}{\numberline {6.7.2.4}komi}{51}{subsubsection.6.7.2.4}
+\contentsline {subsubsection}{\numberline {6.7.2.5}PROGRAM\_\discretionary {-}{}{}NAME}{52}{subsubsection.6.7.2.5}
+\contentsline {subsubsection}{\numberline {6.7.2.6}PROGRAM\_\discretionary {-}{}{}VERSION}{52}{subsubsection.6.7.2.6}
+\contentsline {subsubsection}{\numberline {6.7.2.7}quit\_\discretionary {-}{}{}program}{52}{subsubsection.6.7.2.7}
+\contentsline {section}{\numberline {6.8}src/run\_\discretionary {-}{}{}program.h File Reference}{52}{section.6.8}
+\contentsline {subsection}{\numberline {6.8.1}Define Documentation}{53}{subsection.6.8.1}
+\contentsline {subsubsection}{\numberline {6.8.1.1}COUNT\_\discretionary {-}{}{}KNOWN\_\discretionary {-}{}{}COMMANDS}{53}{subsubsection.6.8.1.1}
+\contentsline {subsection}{\numberline {6.8.2}Function Documentation}{53}{subsection.6.8.2}
+\contentsline {subsubsection}{\numberline {6.8.2.1}run}{53}{subsubsection.6.8.2.1}

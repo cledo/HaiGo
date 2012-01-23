@@ -1,0 +1,115 @@
+\hypertarget{run__program_8h}{
+\section{src/run\_\-program.h File Reference}
+\label{run__program_8h}\index{src/run\_\-program.h@{src/run\_\-program.h}}
+}
+This graph shows which files directly or indirectly include this file:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=268pt]{run__program_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{run__program_8h_a713840100e793ae1f2587d5abbf635ee}{COUNT\_\-KNOWN\_\-COMMANDS}~11
+\begin{DoxyCompactList}\small\item\em Defines the number of known GTP commands. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{run__program_8h_ac1f545534cdaab9094198a5dc2c2a79f}{run} (int argc, char $\ast$$\ast$argv)
+\begin{DoxyCompactList}\small\item\em Substitute for \hyperlink{main_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main()} function, because \hyperlink{main_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main()} itself cannot be unit-\/tested with check. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Define Documentation}
+\hypertarget{run__program_8h_a713840100e793ae1f2587d5abbf635ee}{
+\index{run\_\-program.h@{run\_\-program.h}!COUNT\_\-KNOWN\_\-COMMANDS@{COUNT\_\-KNOWN\_\-COMMANDS}}
+\index{COUNT\_\-KNOWN\_\-COMMANDS@{COUNT\_\-KNOWN\_\-COMMANDS}!run_program.h@{run\_\-program.h}}
+\subsubsection[{COUNT\_\-KNOWN\_\-COMMANDS}]{\setlength{\rightskip}{0pt plus 5cm}\#define COUNT\_\-KNOWN\_\-COMMANDS~11}}
+\label{run__program_8h_a713840100e793ae1f2587d5abbf635ee}
+
+
+Defines the number of known GTP commands. 
+
+
+
+Definition at line 5 of file run\_\-program.h.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{run__program_8h_ac1f545534cdaab9094198a5dc2c2a79f}{
+\index{run\_\-program.h@{run\_\-program.h}!run@{run}}
+\index{run@{run}!run_program.h@{run\_\-program.h}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}int run (
+\begin{DoxyParamCaption}
+\item[{int}]{ argc, }
+\item[{char $\ast$$\ast$}]{ argv}
+\end{DoxyParamCaption}
+)}}
+\label{run__program_8h_ac1f545534cdaab9094198a5dc2c2a79f}
+
+
+Substitute for \hyperlink{main_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main()} function, because \hyperlink{main_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main()} itself cannot be unit-\/tested with check. 
+
+The \hyperlink{run__program_8c_ac1f545534cdaab9094198a5dc2c2a79f}{run()} function performs the following tasks:
+\begin{DoxyEnumerate}
+\item Initialization
+\item STDOUT buffer size set to NULL
+\item Checking command line arguments (like -\/h, -\/v, etc.)
+\item Starting the working loop
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em argc}]Number of command line arguments (same as for \hyperlink{main_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main()}). \item[\mbox{\tt[in]} {\em argv}]Array of all command line arguments (same as for \hyperlink{main_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main()}). \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+EXIT\_\-SUCCESS $|$ EXIT\_\-FAILURE 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+info check 
+\end{DoxySeeAlso}
+
+
+Definition at line 80 of file run\_\-program.c.
+
+
+
+
+\begin{DoxyCode}
+{
+    struct command command_data;
+
+    // Initialization
+    init_board(BOARD_SIZE_DEFAULT);
+    init_known_commands();
+
+    // STDOUT must be unbuffered:
+    setbuf( stdout, NULL );
+
+    // Read command line arguments:
+    read_opts( argc, argv );
+
+    // Working loop:
+    while ( quit_program == 0 ) {
+        read_gtp_input(&command_data);
+
+        // Ignore empty lines:
+        if ( is_input_empty() == true ) {
+            continue;
+        }
+
+        if ( get_output_error() == false ) {
+            select_command(&command_data);
+        }
+
+        print_output(command_data.id);
+    }
+
+    free_board();
+
+    return EXIT_SUCCESS;
+}
+\end{DoxyCode}
+
+
