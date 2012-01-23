@@ -1,0 +1,91 @@
+
+check_io.c,965
+START_TEST (test_drop_comment_1)START_TEST7,103
+START_TEST (test_drop_comment_2)START_TEST17,306
+START_TEST (test_drop_comment_3)START_TEST26,516
+START_TEST (test_trim_1)START_TEST36,730
+START_TEST (test_trim_2)START_TEST45,913
+START_TEST (test_trim_3)START_TEST55,1111
+START_TEST (test_trim_4)START_TEST64,1307
+START_TEST (test_trim_5)START_TEST73,1518
+START_TEST (test_trim_6)START_TEST82,1715
+START_TEST (test_trim_7)START_TEST91,1922
+START_TEST (test_trim_8)START_TEST100,2131
+START_TEST (test_init_tokens_1)START_TEST109,2377
+START_TEST (test_identify_tokens_1)START_TEST126,2714
+START_TEST (test_identify_tokens_2)START_TEST145,3273
+START_TEST (test_identify_tokens_3)START_TEST162,3773
+START_TEST (test_identify_tokens_4)START_TEST183,4458
+START_TEST (test_identify_tokens_5)START_TEST203,5115
+START_TEST (test_identify_tokens_6)START_TEST230,6117
+Suite * io_suite(void) {io_suite256,7091
+int main(void) {main294,8561
+
+../src/board.c,638
+int  **board;board9,127
+bool **hoshi;hoshi10,141
+int board_size = 0;board_size12,156
+void init_board( int wanted_board_size )init_board33,786
+void free_board(void) {free_board100,2959
+void get_board_as_string( char board_output[] ) {get_board_as_string122,3770
+void get_label_x( int i, char x[] ) {get_label_x188,5737
+void get_label_y_left( int j, char y[] ) {get_label_y_left200,5882
+void get_label_y_right( int j, char y[] ) {get_label_y_right214,6093
+bool is_hoshi( int i, int j ) {is_hoshi229,6327
+int get_board_size(void) {get_board_size234,6387
+void set_vertex( int color, int i, int j ) {set_vertex239,6441
+
+../src/global_tools.c,147
+void str_toupper( char string[] )str_toupper17,364
+void my_strcpy( char destination[], char source[], int destination_length )my_strcpy42,1012
+
+check_run_program.c,224
+START_TEST (run_h_param)START_TEST18,312
+START_TEST (run_v_param)START_TEST28,532
+START_TEST (run_invalid_param)START_TEST38,752
+Suite * run_program_suite(void) {run_program_suite48,986
+int main(void) {main62,1420
+
+../src/run_program.c,1861
+const char help_message[] =help_message15,276
+int quit_program = 0;quit_program21,489
+struct command_func {command_func25,643
+    char command[MAX_TOKEN_LENGTH]; //!< Sets the name of the GTP command.command26,665
+    void (*function)();             //!< Sets the pointer to the function for GTP command.function27,740
+struct command_func known_commands[COUNT_KNOWN_COMMANDS];known_commands31,877
+float komi = 0.0;komi34,963
+int run( int argc, char **argv )run80,2845
+void set_quit_program(void)set_quit_program126,3781
+void read_opts( int argc, char **argv )read_opts147,4339
+void print_help_message(void)print_help_message179,5093
+void print_version(void)print_version199,5553
+void init_known_commands(void)init_known_commands216,5903
+void select_command( struct command *command_data )select_command265,7889
+void gtp_quit( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_quit306,9036
+void gtp_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_version326,9550
+void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_protocol_version348,10156
+void gtp_name( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_name368,10676
+void gtp_known_command( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_known_command390,11308
+void gtp_list_commands( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_list_commands436,12457
+void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_boardsize463,13149
+void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_clear_board493,13938
+void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_komi518,14542
+void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_play545,15166
+void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )gtp_showboard609,16863
+
+../src/io.c,981
+char command_input_buffer[SIZE_INPUT_BUFFER];command_input_buffer10,168
+bool input_empty    = false;input_empty12,215
+bool output_error   = false;output_error13,244
+char output[MAX_OUTPUT_LENGTH];output14,273
+void read_gtp_input( struct command *command_data )read_gtp_input40,1436
+void set_output_error(void) {set_output_error84,2861
+bool get_output_error(void) {get_output_error100,3563
+void add_output( const char to_output[] ) {add_output115,4322
+void print_output( int command_id ) {print_output140,5305
+void trim( char * input ) {trim187,6692
+void drop_comment( char * input ) {drop_comment233,8172
+bool is_input_empty(void) {is_input_empty260,9149
+void parse_gtp_input( char * command_input_buffer, char tokens[][MAX_TOKEN_LENGTH] ) {parse_gtp_input275,9905
+void init_tokens( char tokens[][MAX_TOKEN_LENGTH] ) {init_tokens329,11759
+void identify_tokens( char tokens[][MAX_TOKEN_LENGTH], struct command *command_data ) {identify_tokens350,12692

@@ -1,0 +1,836 @@
+        -:    0:Source:../src/run_program.c
+        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-run_program.gcno
+        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-run_program.gcda
+        -:    0:Runs:4
+        -:    0:Programs:1
+        -:    1:#include <unistd.h>
+        -:    2:#include <stdio.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <string.h>
+        -:    5:#include <ctype.h>
+        -:    6:#include <stdbool.h>
+        -:    7:#include "global_const.h"
+        -:    8:#include "run_program.h"
+        -:    9:#include "io.h"
+        -:   10:#include "board.h"
+        -:   11:#include "global_tools.h"
+        -:   12:
+        -:   13:
+        -:   14://! The default help message shown with -h
+        -:   15:const char help_message[] =
+        -:   16:"This is a placeholder for the help message.\n\
+        -:   17:This message is shown when the program is called\n\
+        -:   18:with the command line argument -h.\n";
+        -:   19:
+        -:   20://! If set to 1 the main control loop exits.
+        -:   21:int quit_program = 0;
+        -:   22:
+        -:   23://! @brief Connects one given command name with proper function pointer.
+        -:   24://! @todo Check if function declaration needs parameters!
+        -:   25:struct command_func {
+        -:   26:    char command[MAX_TOKEN_LENGTH]; //!< Sets the name of the GTP command.
+        -:   27:    void (*function)();             //!< Sets the pointer to the function for GTP command.
+        -:   28:};
+        -:   29:
+        -:   30://! Array of known (implemented) commands
+        -:   31:struct command_func known_commands[COUNT_KNOWN_COMMANDS];
+        -:   32:
+        -:   33://! The current komi value
+        -:   34:float komi = 0.0;
+        -:   35:
+        -:   36:void init_known_commands(void);
+        -:   37:void read_opts( int argc, char ** argv );
+        -:   38:void select_command( struct command *command_data );
+        -:   39:void print_help_message(void);
+        -:   40:void print_version(void);
+        -:   41:void set_quit_program(void);
+        -:   42:
+        -:   43:/* Administrative commands */
+        -:   44:void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   45:void gtp_name( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   46:void gtp_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   47:void gtp_known_command( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   48:void gtp_list_commands( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   49:void gtp_quit( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   50:
+        -:   51:/* Setup commands */
+        -:   52:void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   53:void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   54:void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   55:
+        -:   56:/* Core play commands */
+        -:   57:void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   58:/// @todo These functions have to be implemmted: gtp_genmove, gtp_undo.
+        -:   59:/// - void gtp_genmove( int argc, char argv[][MAX_TOKEN_LENGTH] );
+        -:   60:/// - void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
+        -:   61:
+        -:   62:/* Debug commands */
+        -:   63:void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+        -:   64:
+        -:   65:
+        -:   66:/**
+        -:   67: *  @brief Substitute for main() function, because main() itself cannot be unit-tested with check.
+        -:   68: * 
+        -:   69: *  The run() function performs the following tasks:
+        -:   70: *      -# Initialization
+        -:   71: *      -# STDOUT buffer size set to NULL
+        -:   72: *      -# Checking command line arguments (like -h, -v, etc.)
+        -:   73: *      -# Starting the working loop
+        -:   74: * 
+        -:   75: *  @param[in]  argc    Number of command line arguments (same as for main()).
+        -:   76: *  @param[in]  argv    Array of all command line arguments (same as for main()).
+        -:   77: *  @return         EXIT_SUCCESS | EXIT_FAILURE
+        -:   78: *  @sa     info check
+        -:   79: */
+function run called 3 returned 67% blocks executed 50%
+        3:   80:int run( int argc, char **argv )
+        -:   81:{
+        -:   82:    struct command command_data;
+        -:   83:
+        -:   84:    // Initialization
+        3:   85:    init_board(BOARD_SIZE_DEFAULT);
+        3:   85-block  0
+call    0 returned 3
+        3:   86:    init_known_commands();
+call    0 returned 3
+        -:   87:
+        -:   88:    // STDOUT must be unbuffered:
+        3:   89:    setbuf( stdout, NULL );
+call    0 returned 3
+        -:   90:
+        -:   91:    // Read command line arguments:
+        3:   92:    read_opts( argc, argv );
+call    0 returned 2
+        -:   93:
+        -:   94:    // Working loop:
+        2:   95:    while ( quit_program == 0 ) {
+        2:   95-block  0
+branch  0 taken 0
+branch  1 taken 2 (fallthrough)
+    #####:   96:        read_gtp_input(&command_data);
+    $$$$$:   96-block  0
+call    0 never executed
+        -:   97:
+        -:   98:        // Ignore empty lines:
+    #####:   99:        if ( is_input_empty() == true ) {
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+    #####:  100:            continue;
+    $$$$$:  100-block  0
+        -:  101:        }
+        -:  102:
+    #####:  103:        if ( get_output_error() == false ) {
+    $$$$$:  103-block  0
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+    #####:  104:            select_command(&command_data);
+    $$$$$:  104-block  0
+call    0 never executed
+        -:  105:        }
+        -:  106:
+    #####:  107:        print_output(command_data.id);
+    $$$$$:  107-block  0
+call    0 never executed
+        -:  108:    }
+        -:  109:
+        2:  110:    free_board();
+        2:  110-block  0
+call    0 returned 2
+        -:  111:
+        2:  112:    return EXIT_SUCCESS;
+        -:  113:}
+        -:  114:
+        -:  115:
+        -:  116:/**
+        -:  117: *  @brief Sets control variable for working loop.
+        -:  118: * 
+        -:  119: *  The set_quit_program() function sets the variable quit_program
+        -:  120: *  to 1. When this variable is 1, the control loop stops and the
+        -:  121: *  program exits.
+        -:  122: *  
+        -:  123: *  @return nothing
+        -:  124: *  @sa     [n/a]
+        -:  125: */
+function set_quit_program called 2 returned 100% blocks executed 100%
+        2:  126:void set_quit_program(void)
+        -:  127:{
+        -:  128:
+        2:  129:    quit_program = 1;
+        2:  129-block  0
+        -:  130:
+        -:  131:    return;
+        -:  132:}
+        -:  133:
+        -:  134:/**
+        -:  135: *  @brief Parses command line arguments.
+        -:  136: * 
+        -:  137: *  read_opts() parses the command line arguments with which the
+        -:  138: *  program has been started. ( Do not confuse these with the
+        -:  139: *  arguments given to a GTP command. ) For certain arguments --
+        -:  140: *  like -h or -v -- the appropriate function is called.
+        -:  141: * 
+        -:  142: *  @param[in]  argc    Number of arguments (same as for main())
+        -:  143: *  @param[in]  argv    Array of arguments (same as for main())
+        -:  144: *  @return     nothing
+        -:  145: *  @sa         man 3 getopt
+        -:  146: */
+function read_opts called 3 returned 67% blocks executed 100%
+        3:  147:void read_opts( int argc, char **argv )
+        -:  148:{
+        -:  149:    int opt;
+        -:  150:
+        5:  151:    while ( ( opt = getopt( argc, argv, VALID_OPTIONS ) ) != -1 ) {
+        3:  151-block  0
+        5:  151-block  1
+call    0 returned 5
+branch  1 taken 3
+branch  2 taken 2 (fallthrough)
+        2:  151-block  2
+        3:  152:        switch (opt) {
+        3:  152-block  0
+branch  0 taken 1
+branch  1 taken 1
+branch  2 taken 1
+        -:  153:            case 'h':
+        1:  154:                print_help_message();
+        1:  154-block  0
+call    0 returned 1
+        1:  155:                set_quit_program();
+call    0 returned 1
+        1:  156:                break;
+        -:  157:            case 'v':
+        1:  158:                print_version();
+        1:  158-block  0
+call    0 returned 1
+        1:  159:                set_quit_program();
+call    0 returned 1
+        1:  160:                break;
+        -:  161:            default:
+        1:  162:                exit(EXIT_FAILURE);
+        1:  162-block  0
+call    0 returned 0
+        -:  163:        }
+        -:  164:    }
+        -:  165:
+        -:  166:    return;
+        -:  167:}
+        -:  168:
+        -:  169:/**
+        -:  170: *  @brief Prints help message to STDOT.
+        -:  171: *
+        -:  172: *  print_help_message() prints a help message to STDOUT.
+        -:  173: *  The help message itself is defined in help_message.
+        -:  174: *  This function is called when the command line paramter -h is set.
+        -:  175: *
+        -:  176: *  @return     nothing
+        -:  177: *  @sa         [n/a]
+        -:  178: */
+function print_help_message called 1 returned 100% blocks executed 100%
+        1:  179:void print_help_message(void)
+        -:  180:{
+        -:  181:
+        1:  182:    printf( "%s", help_message );
+        1:  182-block  0
+call    0 returned 1
+        -:  183:
+        -:  184:    return;
+        -:  185:}
+        -:  186:
+        -:  187:/**
+        -:  188: *  @brief Prints name and version number to STDOUT.
+        -:  189: *
+        -:  190: *  print_version() prints the name aof the program and its version number of
+        -:  191: *  the program to STDOUT.
+        -:  192: *  The name is defined in PROGRAM_NAME, the version is defined in
+        -:  193: *  PROGRAM_VERSION.
+        -:  194: *  This function is called when the command line parameter -v is set.
+        -:  195: *
+        -:  196: *  @return     nothing
+        -:  197: *  @sa         [n/a]
+        -:  198: */
+function print_version called 1 returned 100% blocks executed 100%
+        1:  199:void print_version(void)
+        -:  200:{
+        -:  201:
+        1:  202:    printf( "%s %s\n", PROGRAM_NAME, PROGRAM_VERSION );
+        1:  202-block  0
+call    0 returned 1
+        -:  203:
+        -:  204:    return;
+        -:  205:}
+        -:  206:
+        -:  207:/**
+        -:  208: *  @brief Initializes all known GTP commands.
+        -:  209: *
+        -:  210: *  Initializes a data structure for all implemented GTP commands.
+        -:  211: *  The data structure is an array of pairs of names and function pointers.
+        -:  212: *
+        -:  213: *  @return     nothing
+        -:  214: *  @sa         [n/a]
+        -:  215: */
+function init_known_commands called 3 returned 100% blocks executed 87%
+        3:  216:void init_known_commands(void)
+        -:  217:{
+        3:  218:    int i = 0;
+        -:  219:
+        3:  220:    my_strcpy( known_commands[i].command, "protocol_version", MAX_TOKEN_LENGTH );
+        3:  220-block  0
+call    0 returned 3
+        3:  221:    known_commands[i++].function = (*gtp_protocol_version);
+        3:  222:    my_strcpy( known_commands[i].command, "name", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  223:    known_commands[i++].function = (*gtp_name);
+        3:  224:    my_strcpy( known_commands[i].command, "version", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  225:    known_commands[i++].function = (*gtp_version);
+        3:  226:    my_strcpy( known_commands[i].command, "known_command", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  227:    known_commands[i++].function = (*gtp_known_command);
+        3:  228:    my_strcpy( known_commands[i].command, "list_commands", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  229:    known_commands[i++].function = (*gtp_list_commands);
+        3:  230:    my_strcpy( known_commands[i].command, "quit", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  231:    known_commands[i++].function = (*gtp_quit);
+        3:  232:    my_strcpy( known_commands[i].command, "boardsize", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  233:    known_commands[i++].function = (*gtp_boardsize);
+        3:  234:    my_strcpy( known_commands[i].command, "clear_board", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  235:    known_commands[i++].function = (*gtp_clear_board);
+        3:  236:    my_strcpy( known_commands[i].command, "komi", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  237:    known_commands[i++].function = (*gtp_komi);
+        3:  238:    my_strcpy( known_commands[i].command, "play", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  239:    known_commands[i++].function = (*gtp_play);
+        3:  240:    my_strcpy( known_commands[i].command, "showboard", MAX_TOKEN_LENGTH );
+call    0 returned 3
+        3:  241:    known_commands[i++].function = (*gtp_showboard);
+        -:  242:
+        3:  243:    if ( i != COUNT_KNOWN_COMMANDS ) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 3
+    #####:  244:        fprintf(
+    $$$$$:  244-block  0
+call    0 never executed
+        -:  245:            stdout
+        -:  246:          , "Commands implemented: %d\nCOUNT_KNOWN_COMMANDS: %d\n"
+        -:  247:          , i, COUNT_KNOWN_COMMANDS
+        -:  248:        );
+        3:  249:        exit(1);
+call    0 never executed
+        3:  249-block  0
+        -:  250:    }
+        -:  251:
+        -:  252:    return;
+        -:  253:}
+        -:  254:
+        -:  255:/**
+        -:  256: *  @brief Selects the function that is associated with a certain GTP command.
+        -:  257: *
+        -:  258: *  select_command() receives a comman data structure and calls the function
+        -:  259: *  which is associated with this GTP command.
+        -:  260: *
+        -:  261: *  @param[in]  *command_data   struct command
+        -:  262: *  @return     nothing
+        -:  263: *  @sa         [n/a]
+        -:  264: */
+function select_command called 0 returned 0% blocks executed 0%
+    #####:  265:void select_command( struct command *command_data )
+        -:  266:{
+        -:  267:    int  i;
+    #####:  268:    bool is_command = false;
+        -:  269:
+    #####:  270:    for ( i = 0; i < COUNT_KNOWN_COMMANDS; i++ ) {
+    $$$$$:  270-block  0
+    $$$$$:  270-block  1
+    $$$$$:  270-block  2
+branch  0 never executed
+branch  1 never executed
+    #####:  271:        if ( strcmp( known_commands[i].command, command_data->name ) == 0 ) {
+    $$$$$:  271-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  272:            is_command = true;
+    #####:  273:            known_commands[i].function( command_data->gtp_argc, command_data->gtp_argv );
+    $$$$$:  273-block  0
+call    0 never executed
+    #####:  274:            break;
+        -:  275:        }
+        -:  276:    }
+        -:  277:
+    #####:  278:    if ( is_command == false ) {
+    $$$$$:  278-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  279:        set_output_error();
+    $$$$$:  279-block  0
+call    0 never executed
+    #####:  280:        add_output("unknown command");
+call    0 never executed
+    $$$$$:  280-block  0
+        -:  281:    }
+        -:  282:
+        -:  283:    return;
+        -:  284:}
+        -:  285:
+        -:  286:
+        -:  287:/// @defgroup GTP_Commands Go Text Protocol Commands
+        -:  288:/// The following functions are implemented as defined in the
+        -:  289:/// Go Text Protocol version 2
+        -:  290:
+        -:  291:/// @defgroup GTP_Administrative_Commands Go Text Protocol Administrative Commands
+        -:  292:/// @ingroup GTP_Commands
+        -:  293:
+        -:  294:/**
+        -:  295: *  @brief Quits the program.
+        -:  296: * 
+        -:  297: *  gtp_quit() quits the whole program by calling set_quit_program().
+        -:  298: * 
+        -:  299: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  300: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  301: *  @return     nothing
+        -:  302: *  @sa     Go Text Protokol version 2, 6.3.1 Administrative Commands
+        -:  303: * 
+        -:  304: *  @ingroup GTP_Administrative_Commands
+        -:  305: */
+function gtp_quit called 0 returned 0% blocks executed 0%
+    #####:  306:void gtp_quit( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  307:{
+        -:  308:
+    #####:  309:    set_quit_program();
+    $$$$$:  309-block  0
+call    0 never executed
+        -:  310:
+        -:  311:    return;
+        -:  312:}
+        -:  313:
+        -:  314:/**
+        -:  315: *  @brief Shows the program's version number.
+        -:  316: * 
+        -:  317: *  gtp_version() shows the version number as defined by PROGRAM_VERSION.
+        -:  318: * 
+        -:  319: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  320: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  321: *  @return     nothing
+        -:  322: *  @sa     Go Text Protokol version 2, 6.3.1 Administrative Commands
+        -:  323: * 
+        -:  324: *  @ingroup GTP_Administrative_Commands
+        -:  325: */
+function gtp_version called 0 returned 0% blocks executed 0%
+    #####:  326:void gtp_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  327:{
+        -:  328:
+    #####:  329:    add_output(PROGRAM_VERSION);
+    $$$$$:  329-block  0
+call    0 never executed
+        -:  330:
+        -:  331:    return;
+        -:  332:}
+        -:  333:
+        -:  334:/**
+        -:  335: *  @brief Shows the used GTP version number.
+        -:  336: * 
+        -:  337: *  gtp_protocol_version() shows the currently used Go Text Protocol
+        -:  338: *  version number. Currently this is version number 2 as defined
+        -:  339: *  in GTP_VERSION.
+        -:  340: * 
+        -:  341: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  342: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  343: *  @return     nothing
+        -:  344: *  @sa     Go Text Protokol version 2, 6.3.1 Administrative Commands
+        -:  345: * 
+        -:  346: *  @ingroup GTP_Administrative_Commands
+        -:  347: */
+function gtp_protocol_version called 0 returned 0% blocks executed 0%
+    #####:  348:void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  349:{
+        -:  350:
+    #####:  351:    add_output(GTP_VERSION);
+    $$$$$:  351-block  0
+call    0 never executed
+        -:  352:
+        -:  353:    return;
+        -:  354:}
+        -:  355:
+        -:  356:/**
+        -:  357: *  @brief Shows the program's name.
+        -:  358: * 
+        -:  359: *  gtp_name() shows the name of the program as defined by PROGRAM_NAME.
+        -:  360: * 
+        -:  361: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  362: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  363: *  @return     nothing
+        -:  364: *  @sa     Go Text Protokol version 2, 6.3.1 Administrative Commands
+        -:  365: * 
+        -:  366: *  @ingroup GTP_Administrative_Commands
+        -:  367: */
+function gtp_name called 0 returned 0% blocks executed 0%
+    #####:  368:void gtp_name( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  369:{
+        -:  370:
+    #####:  371:    add_output(PROGRAM_NAME);
+    $$$$$:  371-block  0
+call    0 never executed
+        -:  372:
+        -:  373:    return;
+        -:  374:}
+        -:  375:
+        -:  376:/**
+        -:  377: *  @brief Shows whether a given GTP command is implemented or not.
+        -:  378: * 
+        -:  379: *  gtp_known_command() \<command_name\> returns either the string
+        -:  380: *  "true" or "false" therefore showing whether a given GTP command
+        -:  381: *  is known or not.
+        -:  382: * 
+        -:  383: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  384: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  385: *  @return     "true" | "false"
+        -:  386: *  @sa     Go Text Protokol version 2, 6.3.1 Administrative Commands
+        -:  387: * 
+        -:  388: *  @ingroup GTP_Administrative_Commands
+        -:  389: */
+function gtp_known_command called 0 returned 0% blocks executed 0%
+    #####:  390:void gtp_known_command( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  391:{
+        -:  392:    int  i;
+    #####:  393:    bool is_command_known = false;
+        -:  394:
+    #####:  395:    if ( gtp_argc < 1 ) {
+    $$$$$:  395-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  396:        set_output_error();
+    $$$$$:  396-block  0
+call    0 never executed
+    #####:  397:        add_output( "missing argument: command_name" );
+call    0 never executed
+    #####:  398:        return;
+        -:  399:    }
+    #####:  400:    if ( gtp_argc > 1 ) {
+    $$$$$:  400-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  401:        set_output_error();
+    $$$$$:  401-block  0
+call    0 never executed
+    #####:  402:        add_output( "only one argument required: command_name" );
+call    0 never executed
+    #####:  403:        return;
+        -:  404:    }
+        -:  405:
+    #####:  406:    for ( i = 0; i < COUNT_KNOWN_COMMANDS; i++ ) {
+    $$$$$:  406-block  0
+    $$$$$:  406-block  1
+    $$$$$:  406-block  2
+branch  0 never executed
+branch  1 never executed
+    #####:  407:        if ( strcmp( known_commands[i].command, gtp_argv[0] ) == 0 ) {
+    $$$$$:  407-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  408:            is_command_known = true;
+    #####:  409:            break;
+    $$$$$:  409-block  0
+        -:  410:        }
+        -:  411:    }
+        -:  412:
+    #####:  413:    if ( is_command_known == true ) {
+    $$$$$:  413-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  414:        add_output("true");
+    $$$$$:  414-block  0
+call    0 never executed
+        -:  415:    }
+        -:  416:    else {
+    #####:  417:        add_output("false");
+    $$$$$:  417-block  0
+call    0 never executed
+        -:  418:    }
+        -:  419:
+    #####:  420:    return;
+    $$$$$:  420-block  0
+    $$$$$:  420-block  1
+        -:  421:}
+        -:  422:
+        -:  423:/**
+        -:  424: *  @brief Shows a list of all know GTP commands.
+        -:  425: * 
+        -:  426: *  gtp_list_commands() shows the name of the program as defined
+        -:  427: *  by PROGRAM_NAME.
+        -:  428: * 
+        -:  429: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  430: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  431: *  @return     nothing
+        -:  432: *  @sa     Go Text Protokol version 2, 6.3.1 Administrative Commands
+        -:  433: * 
+        -:  434: *  @ingroup GTP_Administrative_Commands
+        -:  435: */
+function gtp_list_commands called 0 returned 0% blocks executed 0%
+    #####:  436:void gtp_list_commands( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  437:{
+        -:  438:    int i;
+        -:  439:
+    #####:  440:    for ( i = 0; i < COUNT_KNOWN_COMMANDS; i++ ) {
+    $$$$$:  440-block  0
+    $$$$$:  440-block  1
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  440-block  2
+    #####:  441:        add_output( known_commands[i].command );
+    $$$$$:  441-block  0
+call    0 never executed
+        -:  442:    }
+        -:  443:
+        -:  444:    return;
+        -:  445:}
+        -:  446:
+        -:  447:/// @defgroup GTP_Setup_Commands Go Text Protocol Setup Commands
+        -:  448:/// @ingroup GTP_Commands
+        -:  449:
+        -:  450:/**
+        -:  451: *  @brief Changes the current board size.
+        -:  452: * 
+        -:  453: *  gtp_boardsize() changes the current size of the board.
+        -:  454: *  by PROGRAM_NAME.
+        -:  455: * 
+        -:  456: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  457: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  458: *  @return     nothing
+        -:  459: *  @sa     Go Text Protokol version 2, 6.3.2 Setup Commands
+        -:  460: * 
+        -:  461: *  @ingroup GTP_Setup_Commands
+        -:  462: */
+function gtp_boardsize called 0 returned 0% blocks executed 0%
+    #####:  463:void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  464:{
+    #####:  465:    int board_size = (int) atoi( gtp_argv[0] );
+    $$$$$:  465-block  0
+call    0 never executed
+        -:  466:
+    #####:  467:    if ( board_size < BOARD_SIZE_MIN || board_size > BOARD_SIZE_MAX ) {
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  467-block  0
+branch  2 never executed
+branch  3 never executed
+    #####:  468:        set_output_error();
+    $$$$$:  468-block  0
+call    0 never executed
+    #####:  469:        add_output("unacceptable size");
+call    0 never executed
+    #####:  470:        return;
+        -:  471:    }
+        -:  472:
+    #####:  473:    free_board();
+    $$$$$:  473-block  0
+call    0 never executed
+    #####:  474:    init_board(board_size);
+call    0 never executed
+        -:  475:
+    #####:  476:    return;
+    $$$$$:  476-block  0
+        -:  477:}
+        -:  478:
+        -:  479:/**
+        -:  480: *  @brief Clears the board.
+        -:  481: * 
+        -:  482: *  gtp_clear_board() clears the board. The number of captured stones
+        -:  483: *  is set to zero for both colors. The move history is reset to
+        -:  484: *  empty.
+        -:  485: * 
+        -:  486: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  487: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  488: *  @return     nothing
+        -:  489: *  @sa     Go Text Protokol version 2, 6.3.2 Setup Commands
+        -:  490: * 
+        -:  491: *  @ingroup GTP_Setup_Commands
+        -:  492: */
+function gtp_clear_board called 0 returned 0% blocks executed 0%
+    #####:  493:void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  494:{
+    #####:  495:    int board_size = get_board_size();
+    $$$$$:  495-block  0
+call    0 never executed
+        -:  496:
+    #####:  497:    free_board();
+call    0 never executed
+    #####:  498:    init_board(board_size);
+call    0 never executed
+        -:  499:
+        -:  500:    // number of captured stones must be set to zero
+        -:  501:    // move history must be emptied
+        -:  502:
+        -:  503:    return;
+        -:  504:}
+        -:  505:
+        -:  506:/**
+        -:  507: *  @brief Sets komi.
+        -:  508: * 
+        -:  509: *  gtp_komi() sets the komi to the given value.
+        -:  510: * 
+        -:  511: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  512: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  513: *  @return     nothing
+        -:  514: *  @sa     Go Text Protokol version 2, 6.3.2 Setup Commands
+        -:  515: * 
+        -:  516: *  @ingroup GTP_Setup_Commands
+        -:  517: */
+function gtp_komi called 0 returned 0% blocks executed 0%
+    #####:  518:void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  519:{
+        -:  520:
+        -:  521:    // Check arg here!
+        -:  522:    
+    #####:  523:    komi = atof( gtp_argv[0] );
+    $$$$$:  523-block  0
+call    0 never executed
+        -:  524:
+        -:  525:    return;
+        -:  526:}
+        -:  527:
+        -:  528:/// @defgroup GTP_Core_Play_Commands Go Text Protocol Core Play Commands
+        -:  529:/// @ingroup GTP_Commands
+        -:  530:
+        -:  531:/**
+        -:  532: *  @brief Description missing!
+        -:  533: * 
+        -:  534: *  gtp_play() Description missing!
+        -:  535: *
+        -:  536: *  @todo Description is missing!
+        -:  537: * 
+        -:  538: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  539: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  540: *  @return     nothing
+        -:  541: *  @sa     Go Text Protokol version 2, 6.3.3 Core Play Commands
+        -:  542: * 
+        -:  543: *  @ingroup GTP_Core_Play_Commands
+        -:  544: */
+function gtp_play called 0 returned 0% blocks executed 0%
+    #####:  545:void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  546:{
+        -:  547:    int color;
+        -:  548:    int i, j;
+        -:  549:
+        -:  550:    // Check if first argument is black or white:
+    #####:  551:    str_toupper( gtp_argv[0] );
+    $$$$$:  551-block  0
+call    0 never executed
+    #####:  552:    if ( strcmp( gtp_argv[0], "B" ) == 0 || strcmp( gtp_argv[0], "BLACK" ) == 0 ) {
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  552-block  0
+branch  2 never executed
+branch  3 never executed
+    $$$$$:  552-block  1
+    #####:  553:        color = BLACK;
+        -:  554:    }
+    #####:  555:    else if ( strcmp( gtp_argv[0], "W" ) == 0 || strcmp( gtp_argv[0], "WHITE" ) == 0 ) {
+    $$$$$:  555-block  0
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  555-block  1
+branch  2 never executed
+branch  3 never executed
+    $$$$$:  555-block  2
+    #####:  556:        color = WHITE;
+        -:  557:    }
+        -:  558:    else {
+    #####:  559:        set_output_error();
+    $$$$$:  559-block  0
+call    0 never executed
+    #####:  560:        add_output("invalid color");
+call    0 never executed
+    #####:  561:        return;
+        -:  562:    }
+        -:  563:
+        -:  564:    // Check vertex if first coordinate is valid:
+    #####:  565:    i = (int) toupper( gtp_argv[1][0] ) - 65;
+    #####:  566:    if ( i > 8 ) {
+    $$$$$:  566-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  567:        i--;
+    $$$$$:  567-block  0
+        -:  568:    }
+    #####:  569:    if ( i < 0 || i >= get_board_size() ) {
+    $$$$$:  569-block  0
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  569-block  1
+call    2 never executed
+branch  3 never executed
+branch  4 never executed
+    #####:  570:        set_output_error();
+    $$$$$:  570-block  0
+call    0 never executed
+    #####:  571:        add_output("invalid coordinate");
+call    0 never executed
+    #####:  572:        return;
+        -:  573:    }
+        -:  574:
+        -:  575:    // Check if second coordinate is valid:
+    #####:  576:    gtp_argv[1][0] = ' ';
+    #####:  577:    j = (int) atoi( gtp_argv[1] );
+    $$$$$:  577-block  0
+call    0 never executed
+    #####:  578:    j--;
+    #####:  579:    if ( j < 0 || j >= get_board_size() ) {
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  579-block  0
+call    2 never executed
+branch  3 never executed
+branch  4 never executed
+    #####:  580:        set_output_error();
+    $$$$$:  580-block  0
+call    0 never executed
+    #####:  581:        add_output("invalid coordinate");
+call    0 never executed
+    #####:  582:        return;
+        -:  583:    }
+        -:  584:
+    #####:  585:    set_vertex( color, i, j );
+    $$$$$:  585-block  0
+call    0 never executed
+        -:  586:
+        -:  587:    /// @todo Remove captured stones here ...
+        -:  588:    /// @todo Update move history ...
+        -:  589:
+    #####:  590:    return;
+    $$$$$:  590-block  0
+        -:  591:}
+        -:  592:
+        -:  593:/// @defgroup GTP_Debug_Commands Go Text Protocol Debug Commands
+        -:  594:/// @ingroup GTP_Commands
+        -:  595:
+        -:  596:/**
+        -:  597: *  @brief Shows a simple ASCII board.
+        -:  598: * 
+        -:  599: *  gtp_showboard() gets a string representation of the board and
+        -:  600: *  sends it to the board_output variable, so it can then be printed.
+        -:  601: * 
+        -:  602: *  @param[in]  gtp_argc    Number of arguments of GTP command
+        -:  603: *  @param[in]  gtp_argv    Array of all arguments for GTP command
+        -:  604: *  @return     nothing
+        -:  605: *  @sa     Go Text Protokol version 2, 6.3.6 Debug Commands
+        -:  606: * 
+        -:  607: *  @ingroup GTP_Debug_Commands
+        -:  608: */
+function gtp_showboard called 0 returned 0% blocks executed 0%
+    #####:  609:void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+        -:  610:{
+        -:  611:    char board_output[MAX_OUTPUT_LENGTH];
+        -:  612:
+    #####:  613:    get_board_as_string(board_output);
+    $$$$$:  613-block  0
+call    0 never executed
+    #####:  614:    add_output(board_output);
+call    0 never executed
+        -:  615:
+        -:  616:    return;
+        -:  617:}

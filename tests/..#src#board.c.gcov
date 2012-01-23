@@ -1,0 +1,358 @@
+        -:    0:Source:../src/board.c
+        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-board.gcno
+        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-board.gcda
+        -:    0:Runs:4
+        -:    0:Programs:1
+        -:    1:#include <stdlib.h>
+        -:    2:#include <stdio.h>
+        -:    3:#include <string.h>
+        -:    4:#include <stdbool.h>
+        -:    5:#include "global_const.h"
+        -:    6:#include "board.h"
+        -:    7:
+        -:    8:
+        -:    9:int  **board;
+        -:   10:bool **hoshi;
+        -:   11:
+        -:   12:int board_size = 0;
+        -:   13:
+        -:   14:void get_label_x( int i, char x[] );
+        -:   15:void get_label_y_left( int i, char x[] );
+        -:   16:void get_label_y_right( int j, char y[] );
+        -:   17:bool is_hoshi( int i, int j );
+        -:   18://void set_vertex( int color, int i, int j );
+        -:   19:
+        -:   20:/**
+        -:   21: *  @brief Allocates memory for all board data structures.
+        -:   22: *
+        -:   23: *  Allocates memory for the data structures board and hoshi. Its sets the
+        -:   24: *  board fields to EMPTY and sets the correct hoshi points depending on board
+        -:   25: *  size.
+        -:   26: *
+        -:   27: *  @param[in]  wanted_board_size  Integer of intended board size
+        -:   28: *  @return     nothing
+        -:   29: *  @sa         [n/a]
+        -:   30: *
+        -:   31: *  @todo   A size check has to be implemented probably.
+        -:   32: */
+function init_board called 3 returned 100% blocks executed 68%
+        3:   33:void init_board( int wanted_board_size )
+        -:   34:{
+        -:   35:    int i, j;
+        -:   36:
+        3:   37:    board_size = wanted_board_size;
+        -:   38:
+        3:   39:    board = malloc( board_size * sizeof(int *) );
+        3:   40:    hoshi = malloc( board_size * sizeof(bool *) );
+        3:   41:    if ( board == NULL || hoshi == NULL ) {
+        3:   41-block  0
+branch  0 taken 3 (fallthrough)
+branch  1 taken 0
+        3:   41-block  1
+branch  2 taken 0 (fallthrough)
+branch  3 taken 3
+    #####:   42:        fprintf( stderr, "Failed to malloc memory");
+    $$$$$:   42-block  0
+call    0 never executed
+    #####:   43:        exit(EXIT_FAILURE);
+call    0 never executed
+        -:   44:    }
+        -:   45:
+       60:   46:    for ( i = 0; i < board_size; i++ ) {
+        3:   46-block  0
+       57:   46-block  1
+       60:   46-block  2
+branch  0 taken 57
+branch  1 taken 3 (fallthrough)
+       57:   47:        board[i] = malloc( board_size * sizeof(int) );
+       57:   48:        hoshi[i] = malloc( board_size * sizeof(bool) );
+       57:   49:        if ( board[i] == NULL || hoshi[i] == NULL ) {
+       57:   49-block  0
+branch  0 taken 57 (fallthrough)
+branch  1 taken 0
+       57:   49-block  1
+branch  2 taken 0 (fallthrough)
+branch  3 taken 57
+    #####:   50:            fprintf( stderr, "Failed to malloc memory");
+    $$$$$:   50-block  0
+call    0 never executed
+    #####:   51:            exit(EXIT_FAILURE);
+call    0 never executed
+        -:   52:        }
+        -:   53:
+     1140:   54:        for ( j = 0; j < board_size; j++ ) {
+       57:   54-block  0
+     1083:   54-block  1
+     1140:   54-block  2
+branch  0 taken 1083
+branch  1 taken 57 (fallthrough)
+     1083:   55:            board[i][j] = EMPTY;
+     1083:   56:            hoshi[i][j] = false;
+        -:   57:        }
+        -:   58:    }
+        -:   59:
+        3:   60:    switch (board_size) {
+        3:   60-block  0
+branch  0 taken 3
+branch  1 taken 0
+branch  2 taken 0
+branch  3 taken 0
+        -:   61:        case 19:
+        3:   62:            hoshi[3][3]   = true;
+        3:   63:            hoshi[3][9]   = true;
+        3:   64:            hoshi[3][15]  = true;
+        3:   65:            hoshi[9][3]   = true;
+        3:   66:            hoshi[9][9]   = true;
+        3:   67:            hoshi[9][15]  = true;
+        3:   68:            hoshi[15][3]  = true;
+        3:   69:            hoshi[15][9]  = true;
+        3:   70:            hoshi[15][15] = true;
+        3:   71:            break;
+        3:   71-block  0
+        -:   72:        case 13:
+    #####:   73:            hoshi[3][3] = true;
+    #####:   74:            hoshi[3][9] = true;
+    #####:   75:            hoshi[9][3] = true;
+    #####:   76:            hoshi[9][9] = true;
+    #####:   77:            hoshi[6][6] = true;
+    #####:   78:            break;
+    $$$$$:   78-block  0
+        -:   79:        case 9:
+    #####:   80:            hoshi[2][2] = true;
+    #####:   81:            hoshi[2][6] = true;
+    #####:   82:            hoshi[6][2] = true;
+    #####:   83:            hoshi[6][6] = true;
+        3:   84:            hoshi[4][4] = true;
+    $$$$$:   84-block  0
+        3:   84-block  1
+        -:   85:            break;
+        -:   86:    }
+        -:   87:
+        -:   88:    return;
+        -:   89:}
+        -:   90:
+        -:   91:/*******************************************************************/
+        -:   92:/*  Usage     : free_board()                                       */
+        -:   93:/*  Purpose   : Frees the memory allocated for board and hoshi     */
+        -:   94:/*  Parameter : none                                               */
+        -:   95:/*  Returns   : nothing                                            */
+        -:   96:/*  Throws    : Nothing                                            */
+        -:   97:/*  Comment   : none                                               */
+        -:   98:/*  See also  : [n/a]                                              */
+        -:   99:/*******************************************************************/
+function free_board called 2 returned 100% blocks executed 100%
+        2:  100:void free_board(void) {
+        -:  101:    int i;
+        -:  102:
+       40:  103:    for ( i = 0; i < board_size; i++ ) {
+        2:  103-block  0
+       38:  103-block  1
+       40:  103-block  2
+branch  0 taken 38
+branch  1 taken 2 (fallthrough)
+       38:  104:        free(board[i]);
+       38:  105:        free(hoshi[i]);
+        -:  106:    }
+        2:  107:    free(board);
+        2:  108:    free(hoshi);
+        2:  108-block  0
+        -:  109:
+        -:  110:    return;
+        -:  111:}
+        -:  112:
+        -:  113:/*******************************************************************/
+        -:  114:/*  Usage     : get_board_as_string()                              */
+        -:  115:/*  Purpose   : Returns a printable represantation of the board    */
+        -:  116:/*  Parameter : none                                               */
+        -:  117:/*  Returns   : String of complete board                           */
+        -:  118:/*  Throws    : Nothing                                            */
+        -:  119:/*  Comment   : This should look exactly what is shown by GnuGo    */
+        -:  120:/*  See also  : [n/a]                                              */
+        -:  121:/*******************************************************************/
+function get_board_as_string called 0 returned 0% blocks executed 0%
+    #####:  122:void get_board_as_string( char board_output[] ) {
+        -:  123:    int i; // Index for x-axis
+        -:  124:    int j; // Index for y-axis
+        -:  125:    char x[3];      // Label for x-axis
+        -:  126:    char y[2];      // Label for y-axis
+        -:  127:
+    #####:  128:    board_output[0] = '\0';
+    #####:  129:    strcat( board_output, "\n" );
+        -:  130:
+        -:  131:    /* Print uppercase letters above the board */
+    #####:  132:    strcat( board_output, "   " );
+    #####:  133:    for ( i = 0; i < board_size; i++ ) {
+    $$$$$:  133-block  0
+    $$$$$:  133-block  1
+branch  0 never executed
+branch  1 never executed
+    #####:  134:        get_label_x( i, x );
+    $$$$$:  134-block  0
+call    0 never executed
+    #####:  135:        strcat( board_output, " " );
+    #####:  136:        strcat( board_output, x );
+        -:  137:    }
+    #####:  138:    strcat( board_output, "\n" );
+        -:  139:
+    #####:  140:    for ( j = board_size - 1; j >= 0; j-- ) {
+    $$$$$:  140-block  0
+    $$$$$:  140-block  1
+branch  0 never executed
+branch  1 never executed
+        -:  141:
+        -:  142:        /* Print numbers left of board */
+    #####:  143:        get_label_y_left( j, y );
+    $$$$$:  143-block  0
+call    0 never executed
+    #####:  144:        strcat( board_output, " " );
+    #####:  145:        strcat( board_output, y );
+        -:  146:
+        -:  147:        /* Print board fields */
+    #####:  148:        for ( i = 0; i < board_size; i++ ) {
+    $$$$$:  148-block  0
+    $$$$$:  148-block  1
+branch  0 never executed
+branch  1 never executed
+    #####:  149:            strcat( board_output, " " );
+    #####:  150:            switch ( board[i][j] ) {
+    $$$$$:  150-block  0
+branch  0 never executed
+branch  1 never executed
+branch  2 never executed
+branch  3 never executed
+        -:  151:                case WHITE:
+    #####:  152:                    strcat( board_output, WHITE_STONE );
+    #####:  153:                    break;
+    $$$$$:  153-block  0
+        -:  154:                case BLACK:
+    #####:  155:                    strcat( board_output, BLACK_STONE );
+    #####:  156:                    break;
+    $$$$$:  156-block  0
+        -:  157:                case EMPTY:
+    #####:  158:                    switch ( is_hoshi( i, j ) ) {
+    $$$$$:  158-block  0
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+        -:  159:                        case true:
+    #####:  160:                            strcat( board_output, FIELD_HOSHI );
+    #####:  161:                            break;
+    $$$$$:  161-block  0
+        -:  162:                        case false:
+    #####:  163:                            strcat( board_output, FIELD_EMPTY );
+    $$$$$:  163-block  0
+        -:  164:                            break;
+        -:  165:                    }
+        -:  166:                    break;
+        -:  167:            }
+        -:  168:        }
+        -:  169:
+        -:  170:        /* Print numbers right of board */
+    #####:  171:        get_label_y_right( j, y );
+    $$$$$:  171-block  0
+call    0 never executed
+    #####:  172:        strcat( board_output,  " " );
+    #####:  173:        strcat( board_output,    y );
+    #####:  174:        strcat( board_output, "\n" );
+        -:  175:    }
+        -:  176:
+        -:  177:    /* Print uppercase letters below board */
+    #####:  178:    strcat( board_output, "   " );
+    #####:  179:    for ( i = 0; i < board_size; i++ ) {
+    $$$$$:  179-block  0
+    $$$$$:  179-block  1
+branch  0 never executed
+branch  1 never executed
+    $$$$$:  179-block  2
+    #####:  180:        get_label_x( i, x );
+    $$$$$:  180-block  0
+call    0 never executed
+    #####:  181:        strcat( board_output, " " );
+    #####:  182:        strcat( board_output, x );
+        -:  183:    }
+        -:  184:
+        -:  185:    return;
+        -:  186:}
+        -:  187:
+function get_label_x called 0 returned 0% blocks executed 0%
+    #####:  188:void get_label_x( int i, char x[] ) {
+        -:  189:
+    #####:  190:    if ( i >= 8 ) {
+    $$$$$:  190-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  191:        i++;
+    $$$$$:  191-block  0
+        -:  192:    }
+    #####:  193:    i += 65;
+    #####:  194:    x[0] = (char) i;
+    #####:  195:    x[1] = '\0';
+    $$$$$:  195-block  0
+        -:  196:
+        -:  197:    return;
+        -:  198:}
+        -:  199:
+function get_label_y_left called 0 returned 0% blocks executed 0%
+    #####:  200:void get_label_y_left( int j, char y[] ) {
+        -:  201:
+    #####:  202:    j++;
+        -:  203:
+    #####:  204:    y[0] = (char)(int)( j / 10 + 48 );
+    #####:  205:    y[1] = (char)( j % 10 + 48 );
+    #####:  206:    y[2] = '\0';
+    #####:  207:    if ( y[0] == '0' ) {
+    $$$$$:  207-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  208:        y[0] = ' ';
+    $$$$$:  208-block  0
+    $$$$$:  208-block  1
+        -:  209:    }
+        -:  210:
+        -:  211:    return;
+        -:  212:}
+        -:  213:
+function get_label_y_right called 0 returned 0% blocks executed 0%
+    #####:  214:void get_label_y_right( int j, char y[] ) {
+        -:  215:
+    #####:  216:    j++;
+        -:  217:
+    #####:  218:    y[0] = (char)(int)( j / 10 + 48 );
+    #####:  219:    y[1] = (char)( j % 10 + 48 );
+    #####:  220:    y[2] = '\0';
+    #####:  221:    if ( y[0] == '0' ) {
+    $$$$$:  221-block  0
+branch  0 never executed
+branch  1 never executed
+    #####:  222:        y[0] = y[1];
+    #####:  223:        y[1] = '\0';
+    $$$$$:  223-block  0
+    $$$$$:  223-block  1
+        -:  224:    }
+        -:  225:
+        -:  226:    return;
+        -:  227:}
+        -:  228:
+function is_hoshi called 0 returned 0% blocks executed 0%
+    #####:  229:bool is_hoshi( int i, int j ) {
+        -:  230:
+    #####:  231:    return hoshi[i][j];
+    $$$$$:  231-block  0
+        -:  232:}
+        -:  233:
+function get_board_size called 0 returned 0% blocks executed 0%
+    #####:  234:int get_board_size(void) {
+        -:  235:
+    #####:  236:    return board_size;
+    $$$$$:  236-block  0
+        -:  237:}
+        -:  238:
+function set_vertex called 0 returned 0% blocks executed 0%
+    #####:  239:void set_vertex( int color, int i, int j ) {
+        -:  240:
+    #####:  241:    board[i][j] = color;
+    $$$$$:  241-block  0
+        -:  242:
+        -:  243:    return;
+        -:  244:}
+        -:  245:

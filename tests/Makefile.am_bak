@@ -1,0 +1,6 @@
+AM_CFLAGS = -Wall
+TESTS = check_run_program
+check_PROGRAMS = check_run_program
+check_run_program_SOURCES = check_run_program.c $(top_builddir)/src/run_program.c $(top_builddir)/src/io.c
+check_run_program_CFLAGS = $(AM_CFLAGS) @CHECK_CFLAGS@
+check_run_program_LDADD = @CHECK_LIBS@

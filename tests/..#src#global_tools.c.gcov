@@ -1,0 +1,73 @@
+        -:    0:Source:../src/global_tools.c
+        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-global_tools.gcno
+        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-global_tools.gcda
+        -:    0:Runs:4
+        -:    0:Programs:1
+        -:    1:#include <stdlib.h>
+        -:    2:#include <stdio.h>
+        -:    3:#include <ctype.h>
+        -:    4:#include <string.h>
+        -:    5:#include "global_tools.h"
+        -:    6:
+        -:    7:/**
+        -:    8: *  @brief Converts a given string into upper case.
+        -:    9: *
+        -:   10: *  Converts a given string into upper case. The string is converted inplace.
+        -:   11: *  No copying is being done.
+        -:   12: *
+        -:   13: *  @param[in]  string  a given string
+        -:   14: *  @return     nothing
+        -:   15: *  @sa         [n/a]
+        -:   16: */
+function str_toupper called 0 returned 0% blocks executed 0%
+    #####:   17:void str_toupper( char string[] )
+        -:   18:{
+        -:   19:    int i;
+    #####:   20:    int str_length = (int) strlen(string);
+        -:   21:
+    #####:   22:    for ( i = 0; i < str_length; i++ ) {
+    $$$$$:   22-block  0
+    $$$$$:   22-block  1
+    $$$$$:   22-block  2
+branch  0 never executed
+branch  1 never executed
+    $$$$$:   22-block  3
+    #####:   23:        string[i] = toupper( string[i] );
+        -:   24:    }
+        -:   25:
+        -:   26:    return;
+        -:   27:}
+        -:   28:
+        -:   29:/**
+        -:   30: *  @brief Safe form of string copy
+        -:   31: *
+        -:   32: *  my_strcpy() copies one string into another but does a size check before
+        -:   33: *  that.
+        -:   34: *
+        -:   35: *  @param[out] destination         string copied to
+        -:   36: *  @param[in]  source              string copied from
+        -:   37: *  @param[in]  destination_length  length of destination buffer
+        -:   38: *  @return     nothing
+        -:   39: *  @sa         Discussion of strncpy: @link1
+        -:   40: *  @sa         You cannot use sizeof here. See: <a href=@link2>CERT</a>
+        -:   41: */
+function my_strcpy called 33 returned 100% blocks executed 50%
+       33:   42:void my_strcpy( char destination[], char source[], int destination_length )
+        -:   43:{
+       33:   44:    if ( (int) strlen(source) <= destination_length ) {
+       33:   44-block  0
+branch  0 taken 33 (fallthrough)
+branch  1 taken 0
+       33:   45:        strcpy( destination, source );
+       33:   45-block  0
+        -:   46:    }
+        -:   47:    else {
+    #####:   48:        fprintf( stderr, "Cannot copy destination string into source string\n");
+    $$$$$:   48-block  0
+call    0 never executed
+    #####:   49:        exit(1);
+call    0 never executed
+        -:   50:    }
+        -:   51:
+        -:   52:    return;
+        -:   53:}
