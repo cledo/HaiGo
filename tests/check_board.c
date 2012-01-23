@@ -1,18 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <stdbool.h>
+#include <check.h>
 #include "../src/board.h"
 
 START_TEST (test_init_board_1)
 {
-    int **board;
-    int **hoshi;
+    int  **board;
+    bool **hoshi;
 
     init_board(19);
 
     fail_if( board == NULL, "board initialised" );
+    fail_if( hoshi == NULL, "hoshi initialised" );
+
+    free_board();
 
 }
+END_TEST
 
 Suite * board_suite(void) {
     Suite *s             = suite_create("Run");
