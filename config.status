@@ -448,7 +448,7 @@ Copyright (C) 2010 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/cdorner/haigo'
+ac_pwd='/home/xabbu/haigo/HaiGo'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -655,7 +655,7 @@ S["PKG_CONFIG_PATH"]=""
 S["PKG_CONFIG"]="/usr/bin/pkg-config"
 S["am__untar"]="${AMTAR} xf -"
 S["am__tar"]="${AMTAR} chof - \"$$tardir\""
-S["AMTAR"]="${SHELL} /home/cdorner/haigo/missing --run tar"
+S["AMTAR"]="${SHELL} /home/xabbu/haigo/HaiGo/missing --run tar"
 S["am__leading_dot"]="."
 S["SET_MAKE"]=""
 S["AWK"]="gawk"
@@ -663,12 +663,12 @@ S["mkdir_p"]="/bin/mkdir -p"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]=""
-S["install_sh"]="${SHELL} /home/cdorner/haigo/install-sh"
-S["MAKEINFO"]="${SHELL} /home/cdorner/haigo/missing --run makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/cdorner/haigo/missing --run autoheader"
-S["AUTOMAKE"]="${SHELL} /home/cdorner/haigo/missing --run automake-1.11"
-S["AUTOCONF"]="${SHELL} /home/cdorner/haigo/missing --run autoconf"
-S["ACLOCAL"]="${SHELL} /home/cdorner/haigo/missing --run aclocal-1.11"
+S["install_sh"]="${SHELL} /home/xabbu/haigo/HaiGo/install-sh"
+S["MAKEINFO"]="${SHELL} /home/xabbu/haigo/HaiGo/missing --run makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/xabbu/haigo/HaiGo/missing --run autoheader"
+S["AUTOMAKE"]="${SHELL} /home/xabbu/haigo/HaiGo/missing --run automake-1.11"
+S["AUTOCONF"]="${SHELL} /home/xabbu/haigo/HaiGo/missing --run autoconf"
+S["ACLOCAL"]="${SHELL} /home/xabbu/haigo/HaiGo/missing --run aclocal-1.11"
 S["VERSION"]="0.1"
 S["PACKAGE"]="haigo"
 S["CYGPATH_W"]="echo"
