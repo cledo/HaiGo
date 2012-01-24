@@ -4,10 +4,10 @@ haigo-run_program.o: run_program.c /usr/include/unistd.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
- /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stddef.h \
+ /usr/local/lib/gcc/i686-pc-linux-gnu/4.5.0/include/stddef.h \
  /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/stdio.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
- /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdarg.h \
+ /usr/local/lib/gcc/i686-pc-linux-gnu/4.5.0/include/stdarg.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
  /usr/include/bits/waitstatus.h /usr/include/endian.h \
@@ -17,8 +17,8 @@ haigo-run_program.o: run_program.c /usr/include/unistd.h \
  /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
  /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
  /usr/include/string.h /usr/include/xlocale.h /usr/include/ctype.h \
- /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdbool.h global_const.h \
- run_program.h io.h board.h global_tools.h
+ /usr/local/lib/gcc/i686-pc-linux-gnu/4.5.0/include/stdbool.h \
+ global_const.h run_program.h io.h board.h global_tools.h
 
 /usr/include/unistd.h:
 
@@ -42,7 +42,7 @@ haigo-run_program.o: run_program.c /usr/include/unistd.h \
 
 /usr/include/bits/typesizes.h:
 
-/usr/lib/gcc/i686-linux-gnu/4.4.5/include/stddef.h:
+/usr/local/lib/gcc/i686-pc-linux-gnu/4.5.0/include/stddef.h:
 
 /usr/include/bits/confname.h:
 
@@ -56,7 +56,7 @@ haigo-run_program.o: run_program.c /usr/include/unistd.h \
 
 /usr/include/wchar.h:
 
-/usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdarg.h:
+/usr/local/lib/gcc/i686-pc-linux-gnu/4.5.0/include/stdarg.h:
 
 /usr/include/bits/stdio_lim.h:
 
@@ -98,7 +98,7 @@ haigo-run_program.o: run_program.c /usr/include/unistd.h \
 
 /usr/include/ctype.h:
 
-/usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdbool.h:
+/usr/local/lib/gcc/i686-pc-linux-gnu/4.5.0/include/stdbool.h:
 
 global_const.h:
 

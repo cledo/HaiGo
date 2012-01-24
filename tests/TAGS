@@ -21,6 +21,15 @@ START_TEST (test_identify_tokens_6)START_TEST230,6117
 Suite * io_suite(void) {io_suite256,7091
 int main(void) {main294,8561
 
+check_board.c,124
+START_TEST (test_init_board_1)START_TEST8,127
+Suite * board_suite(void) {board_suite23,352
+int main(void) {main34,600
+
+../src/global_tools.c,147
+void str_toupper( char string[] )str_toupper17,364
+void my_strcpy( char destination[], char source[], int destination_length )my_strcpy42,1012
+
 ../src/board.c,638
 int  **board;board9,127
 bool **hoshi;hoshi10,141
@@ -34,10 +43,6 @@ void get_label_y_right( int j, char y[] ) {get_label_y_right214,6093
 bool is_hoshi( int i, int j ) {is_hoshi229,6327
 int get_board_size(void) {get_board_size234,6387
 void set_vertex( int color, int i, int j ) {set_vertex239,6441
-
-../src/global_tools.c,147
-void str_toupper( char string[] )str_toupper17,364
-void my_strcpy( char destination[], char source[], int destination_length )my_strcpy42,1012
 
 check_run_program.c,224
 START_TEST (run_h_param)START_TEST18,312

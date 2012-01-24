@@ -5,10 +5,11 @@
 #include <check.h>
 #include "../src/board.h"
 
+int  **board = NULL;
+bool **hoshi = NULL;
+
 START_TEST (test_init_board_1)
 {
-    int  **board;
-    bool **hoshi;
 
     init_board(19);
 
@@ -17,6 +18,8 @@ START_TEST (test_init_board_1)
 
     free_board();
 
+    fail_if( board != NULL, "board is NULL" );
+    fail_if( hoshi != NULL, "hoshi is NULL" );
 }
 END_TEST
 

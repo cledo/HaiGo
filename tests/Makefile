@@ -31,8 +31,10 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-TESTS = check_run_program$(EXEEXT) check_io$(EXEEXT)
-check_PROGRAMS = check_run_program$(EXEEXT) check_io$(EXEEXT)
+TESTS = check_run_program$(EXEEXT) check_io$(EXEEXT) \
+	check_board$(EXEEXT)
+check_PROGRAMS = check_run_program$(EXEEXT) check_io$(EXEEXT) \
+	check_board$(EXEEXT)
 subdir = tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -43,6 +45,12 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am_check_board_OBJECTS = check_board-check_board.$(OBJEXT) \
+	check_board-board.$(OBJEXT)
+check_board_OBJECTS = $(am_check_board_OBJECTS)
+check_board_DEPENDENCIES =
+check_board_LINK = $(CCLD) $(check_board_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_check_io_OBJECTS = check_io-check_io.$(OBJEXT) \
 	check_io-io.$(OBJEXT) check_io-global_tools.$(OBJEXT)
 check_io_OBJECTS = $(am_check_io_OBJECTS)
@@ -67,18 +75,20 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(check_io_SOURCES) $(check_run_program_SOURCES)
-DIST_SOURCES = $(check_io_SOURCES) $(check_run_program_SOURCES)
+SOURCES = $(check_board_SOURCES) $(check_io_SOURCES) \
+	$(check_run_program_SOURCES)
+DIST_SOURCES = $(check_board_SOURCES) $(check_io_SOURCES) \
+	$(check_run_program_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
 red=; grn=; lgn=; blu=; std=
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} "/home/xabbu/Ubuntu One/Projects/C/haigo/missing" --run aclocal-1.11
-AMTAR = ${SHELL} "/home/xabbu/Ubuntu One/Projects/C/haigo/missing" --run tar
-AUTOCONF = ${SHELL} "/home/xabbu/Ubuntu One/Projects/C/haigo/missing" --run autoconf
-AUTOHEADER = ${SHELL} "/home/xabbu/Ubuntu One/Projects/C/haigo/missing" --run autoheader
-AUTOMAKE = ${SHELL} "/home/xabbu/Ubuntu One/Projects/C/haigo/missing" --run automake-1.11
+ACLOCAL = ${SHELL} /home/cdorner/haigo/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/cdorner/haigo/missing --run tar
+AUTOCONF = ${SHELL} /home/cdorner/haigo/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/cdorner/haigo/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/cdorner/haigo/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -105,7 +115,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} "/home/xabbu/Ubuntu One/Projects/C/haigo/missing" --run makeinfo
+MAKEINFO = ${SHELL} /home/cdorner/haigo/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = haigo
@@ -123,10 +133,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 0.1
-abs_builddir = /home/xabbu/Ubuntu One/Projects/C/haigo/tests
-abs_srcdir = /home/xabbu/Ubuntu One/Projects/C/haigo/tests
-abs_top_builddir = /home/xabbu/Ubuntu One/Projects/C/haigo
-abs_top_srcdir = /home/xabbu/Ubuntu One/Projects/C/haigo
+abs_builddir = /home/cdorner/haigo/tests
+abs_srcdir = /home/cdorner/haigo/tests
+abs_top_builddir = /home/cdorner/haigo
+abs_top_srcdir = /home/cdorner/haigo
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -145,7 +155,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} '/home/xabbu/Ubuntu One/Projects/C/haigo/install-sh'
+install_sh = ${SHELL} /home/cdorner/haigo/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -172,6 +182,9 @@ check_run_program_LDADD = -lcheck
 check_io_SOURCES = check_io.c $(top_builddir)/src/io.c $(top_builddir)/src/global_tools.c
 check_io_CFLAGS = $(AM_CFLAGS)  
 check_io_LDADD = -lcheck  
+check_board_SOURCES = check_board.c $(top_builddir)/src/board.c
+check_board_CFLAGS = $(AM_CFLAGS)  
+check_board_LDADD = -lcheck  
 all: all-am
 
 .SUFFIXES:
@@ -209,6 +222,9 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+check_board$(EXEEXT): $(check_board_OBJECTS) $(check_board_DEPENDENCIES) 
+	@rm -f check_board$(EXEEXT)
+	$(check_board_LINK) $(check_board_OBJECTS) $(check_board_LDADD) $(LIBS)
 check_io$(EXEEXT): $(check_io_OBJECTS) $(check_io_DEPENDENCIES) 
 	@rm -f check_io$(EXEEXT)
 	$(check_io_LINK) $(check_io_OBJECTS) $(check_io_LDADD) $(LIBS)
@@ -222,6 +238,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/check_board-board.Po
+include ./$(DEPDIR)/check_board-check_board.Po
 include ./$(DEPDIR)/check_io-check_io.Po
 include ./$(DEPDIR)/check_io-global_tools.Po
 include ./$(DEPDIR)/check_io-io.Po
@@ -244,6 +262,34 @@ include ./$(DEPDIR)/check_run_program-run_program.Po
 #	source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+check_board-check_board.o: check_board.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -MT check_board-check_board.o -MD -MP -MF $(DEPDIR)/check_board-check_board.Tpo -c -o check_board-check_board.o `test -f 'check_board.c' || echo '$(srcdir)/'`check_board.c
+	$(am__mv) $(DEPDIR)/check_board-check_board.Tpo $(DEPDIR)/check_board-check_board.Po
+#	source='check_board.c' object='check_board-check_board.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -c -o check_board-check_board.o `test -f 'check_board.c' || echo '$(srcdir)/'`check_board.c
+
+check_board-check_board.obj: check_board.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -MT check_board-check_board.obj -MD -MP -MF $(DEPDIR)/check_board-check_board.Tpo -c -o check_board-check_board.obj `if test -f 'check_board.c'; then $(CYGPATH_W) 'check_board.c'; else $(CYGPATH_W) '$(srcdir)/check_board.c'; fi`
+	$(am__mv) $(DEPDIR)/check_board-check_board.Tpo $(DEPDIR)/check_board-check_board.Po
+#	source='check_board.c' object='check_board-check_board.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -c -o check_board-check_board.obj `if test -f 'check_board.c'; then $(CYGPATH_W) 'check_board.c'; else $(CYGPATH_W) '$(srcdir)/check_board.c'; fi`
+
+check_board-board.o: $(top_builddir)/src/board.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -MT check_board-board.o -MD -MP -MF $(DEPDIR)/check_board-board.Tpo -c -o check_board-board.o `test -f '$(top_builddir)/src/board.c' || echo '$(srcdir)/'`$(top_builddir)/src/board.c
+	$(am__mv) $(DEPDIR)/check_board-board.Tpo $(DEPDIR)/check_board-board.Po
+#	source='$(top_builddir)/src/board.c' object='check_board-board.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -c -o check_board-board.o `test -f '$(top_builddir)/src/board.c' || echo '$(srcdir)/'`$(top_builddir)/src/board.c
+
+check_board-board.obj: $(top_builddir)/src/board.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -MT check_board-board.obj -MD -MP -MF $(DEPDIR)/check_board-board.Tpo -c -o check_board-board.obj `if test -f '$(top_builddir)/src/board.c'; then $(CYGPATH_W) '$(top_builddir)/src/board.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/src/board.c'; fi`
+	$(am__mv) $(DEPDIR)/check_board-board.Tpo $(DEPDIR)/check_board-board.Po
+#	source='$(top_builddir)/src/board.c' object='check_board-board.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_board_CFLAGS) $(CFLAGS) -c -o check_board-board.obj `if test -f '$(top_builddir)/src/board.c'; then $(CYGPATH_W) '$(top_builddir)/src/board.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/src/board.c'; fi`
 
 check_io-check_io.o: check_io.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_io_CFLAGS) $(CFLAGS) -MT check_io-check_io.o -MD -MP -MF $(DEPDIR)/check_io-check_io.Tpo -c -o check_io-check_io.o `test -f 'check_io.c' || echo '$(srcdir)/'`check_io.c

@@ -1,6 +1,6 @@
         -:    0:Source:../src/io.c
-        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_io-io.gcno
-        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_io-io.gcda
+        -:    0:Graph:/home/cdorner/haigo/tests/check_io-io.gcno
+        -:    0:Data:/home/cdorner/haigo/tests/check_io-io.gcda
         -:    0:Runs:19
         -:    0:Programs:1
         -:    1:#include <stdlib.h>
@@ -144,7 +144,7 @@ function get_output_error called 0 returned 0% blocks executed 0%
 function add_output called 0 returned 0% blocks executed 0%
     #####:  115:void add_output( const char to_output[] ) {
         -:  116:
-        -:  117:    int new_output_length
+    #####:  117:    int new_output_length
     #####:  118:        = (int)( strlen(output) + strlen(to_output) + 1 );
     #####:  119:    if ( new_output_length > MAX_OUTPUT_LENGTH ) {
     $$$$$:  119-block  0
@@ -404,11 +404,11 @@ branch  2 never executed
     $$$$$:  284-block  1
 branch  3 never executed
 branch  4 never executed
-    $$$$$:  284-block  2
     #####:  285:            if ( k < MAX_TOKEN_LENGTH ) {
     $$$$$:  285-block  0
 branch  0 never executed
 branch  1 never executed
+    $$$$$:  285-block  1
     #####:  286:                tokens[j][k] = current_char;
     #####:  287:                k++;
         -:  288:            }

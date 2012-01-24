@@ -107,6 +107,9 @@ void free_board(void) {
     free(board);
     free(hoshi);
 
+    board = NULL;
+    hoshi = NULL;
+
     return;
 }
 

@@ -1,7 +1,7 @@
         -:    0:Source:../src/board.c
-        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-board.gcno
-        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-board.gcda
-        -:    0:Runs:4
+        -:    0:Graph:/home/cdorner/haigo/tests/check_board-board.gcno
+        -:    0:Data:/home/cdorner/haigo/tests/check_board-board.gcda
+        -:    0:Runs:2
         -:    0:Programs:1
         -:    1:#include <stdlib.h>
         -:    2:#include <stdio.h>
@@ -35,22 +35,22 @@
         -:   30: *
         -:   31: *  @todo   A size check has to be implemented probably.
         -:   32: */
-function init_board called 3 returned 100% blocks executed 68%
-        3:   33:void init_board( int wanted_board_size )
+function init_board called 1 returned 100% blocks executed 68%
+        1:   33:void init_board( int wanted_board_size )
         -:   34:{
         -:   35:    int i, j;
         -:   36:
-        3:   37:    board_size = wanted_board_size;
+        1:   37:    board_size = wanted_board_size;
         -:   38:
-        3:   39:    board = malloc( board_size * sizeof(int *) );
-        3:   40:    hoshi = malloc( board_size * sizeof(bool *) );
-        3:   41:    if ( board == NULL || hoshi == NULL ) {
-        3:   41-block  0
-branch  0 taken 3 (fallthrough)
+        1:   39:    board = malloc( board_size * sizeof(int *) );
+        1:   40:    hoshi = malloc( board_size * sizeof(bool *) );
+        1:   41:    if ( board == NULL || hoshi == NULL ) {
+        1:   41-block  0
+branch  0 taken 1 (fallthrough)
 branch  1 taken 0
-        3:   41-block  1
+        1:   41-block  1
 branch  2 taken 0 (fallthrough)
-branch  3 taken 3
+branch  3 taken 1
     #####:   42:        fprintf( stderr, "Failed to malloc memory");
     $$$$$:   42-block  0
 call    0 never executed
@@ -58,21 +58,21 @@ call    0 never executed
 call    0 never executed
         -:   44:    }
         -:   45:
-       60:   46:    for ( i = 0; i < board_size; i++ ) {
-        3:   46-block  0
-       57:   46-block  1
-       60:   46-block  2
-branch  0 taken 57
-branch  1 taken 3 (fallthrough)
-       57:   47:        board[i] = malloc( board_size * sizeof(int) );
-       57:   48:        hoshi[i] = malloc( board_size * sizeof(bool) );
-       57:   49:        if ( board[i] == NULL || hoshi[i] == NULL ) {
-       57:   49-block  0
-branch  0 taken 57 (fallthrough)
+       20:   46:    for ( i = 0; i < board_size; i++ ) {
+        1:   46-block  0
+       19:   46-block  1
+       20:   46-block  2
+branch  0 taken 19
+branch  1 taken 1 (fallthrough)
+       19:   47:        board[i] = malloc( board_size * sizeof(int) );
+       19:   48:        hoshi[i] = malloc( board_size * sizeof(bool) );
+       19:   49:        if ( board[i] == NULL || hoshi[i] == NULL ) {
+       19:   49-block  0
+branch  0 taken 19 (fallthrough)
 branch  1 taken 0
-       57:   49-block  1
+       19:   49-block  1
 branch  2 taken 0 (fallthrough)
-branch  3 taken 57
+branch  3 taken 19
     #####:   50:            fprintf( stderr, "Failed to malloc memory");
     $$$$$:   50-block  0
 call    0 never executed
@@ -80,35 +80,35 @@ call    0 never executed
 call    0 never executed
         -:   52:        }
         -:   53:
-     1140:   54:        for ( j = 0; j < board_size; j++ ) {
-       57:   54-block  0
-     1083:   54-block  1
-     1140:   54-block  2
-branch  0 taken 1083
-branch  1 taken 57 (fallthrough)
-     1083:   55:            board[i][j] = EMPTY;
-     1083:   56:            hoshi[i][j] = false;
+      380:   54:        for ( j = 0; j < board_size; j++ ) {
+       19:   54-block  0
+      361:   54-block  1
+      380:   54-block  2
+branch  0 taken 361
+branch  1 taken 19 (fallthrough)
+      361:   55:            board[i][j] = EMPTY;
+      361:   56:            hoshi[i][j] = false;
         -:   57:        }
         -:   58:    }
         -:   59:
-        3:   60:    switch (board_size) {
-        3:   60-block  0
-branch  0 taken 3
+        1:   60:    switch (board_size) {
+        1:   60-block  0
+branch  0 taken 1
 branch  1 taken 0
 branch  2 taken 0
 branch  3 taken 0
         -:   61:        case 19:
-        3:   62:            hoshi[3][3]   = true;
-        3:   63:            hoshi[3][9]   = true;
-        3:   64:            hoshi[3][15]  = true;
-        3:   65:            hoshi[9][3]   = true;
-        3:   66:            hoshi[9][9]   = true;
-        3:   67:            hoshi[9][15]  = true;
-        3:   68:            hoshi[15][3]  = true;
-        3:   69:            hoshi[15][9]  = true;
-        3:   70:            hoshi[15][15] = true;
-        3:   71:            break;
-        3:   71-block  0
+        1:   62:            hoshi[3][3]   = true;
+        1:   63:            hoshi[3][9]   = true;
+        1:   64:            hoshi[3][15]  = true;
+        1:   65:            hoshi[9][3]   = true;
+        1:   66:            hoshi[9][9]   = true;
+        1:   67:            hoshi[9][15]  = true;
+        1:   68:            hoshi[15][3]  = true;
+        1:   69:            hoshi[15][9]  = true;
+        1:   70:            hoshi[15][15] = true;
+        1:   71:            break;
+        1:   71-block  0
         -:   72:        case 13:
     #####:   73:            hoshi[3][3] = true;
     #####:   74:            hoshi[3][9] = true;
@@ -122,10 +122,10 @@ branch  3 taken 0
     #####:   81:            hoshi[2][6] = true;
     #####:   82:            hoshi[6][2] = true;
     #####:   83:            hoshi[6][6] = true;
-        3:   84:            hoshi[4][4] = true;
-    $$$$$:   84-block  0
-        3:   84-block  1
-        -:   85:            break;
+    #####:   84:            hoshi[4][4] = true;
+        1:   85:            break;
+    $$$$$:   85-block  0
+        1:   85-block  1
         -:   86:    }
         -:   87:
         -:   88:    return;
@@ -140,22 +140,22 @@ branch  3 taken 0
         -:   97:/*  Comment   : none                                               */
         -:   98:/*  See also  : [n/a]                                              */
         -:   99:/*******************************************************************/
-function free_board called 2 returned 100% blocks executed 100%
-        2:  100:void free_board(void) {
+function free_board called 1 returned 100% blocks executed 100%
+        1:  100:void free_board(void) {
         -:  101:    int i;
         -:  102:
-       40:  103:    for ( i = 0; i < board_size; i++ ) {
-        2:  103-block  0
-       38:  103-block  1
-       40:  103-block  2
-branch  0 taken 38
-branch  1 taken 2 (fallthrough)
-       38:  104:        free(board[i]);
-       38:  105:        free(hoshi[i]);
+       20:  103:    for ( i = 0; i < board_size; i++ ) {
+        1:  103-block  0
+       19:  103-block  1
+       20:  103-block  2
+branch  0 taken 19
+branch  1 taken 1 (fallthrough)
+       19:  104:        free(board[i]);
+       19:  105:        free(hoshi[i]);
         -:  106:    }
-        2:  107:    free(board);
-        2:  108:    free(hoshi);
-        2:  108-block  0
+        1:  107:    free(board);
+        1:  108:    free(hoshi);
+        1:  108-block  0
         -:  109:
         -:  110:    return;
         -:  111:}
@@ -240,10 +240,11 @@ branch  2 never executed
     $$$$$:  161-block  0
         -:  162:                        case false:
     #####:  163:                            strcat( board_output, FIELD_EMPTY );
-    $$$$$:  163-block  0
-        -:  164:                            break;
+    #####:  164:                            break;
+    $$$$$:  164-block  0
         -:  165:                    }
-        -:  166:                    break;
+    #####:  166:                    break;
+    $$$$$:  166-block  0
         -:  167:            }
         -:  168:        }
         -:  169:

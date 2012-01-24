@@ -1,7 +1,7 @@
         -:    0:Source:../src/global_tools.c
-        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-global_tools.gcno
-        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-global_tools.gcda
-        -:    0:Runs:4
+        -:    0:Graph:/home/cdorner/haigo/tests/check_io-global_tools.gcno
+        -:    0:Data:/home/cdorner/haigo/tests/check_io-global_tools.gcda
+        -:    0:Runs:19
         -:    0:Programs:1
         -:    1:#include <stdlib.h>
         -:    2:#include <stdio.h>
@@ -51,15 +51,15 @@ branch  1 never executed
         -:   39: *  @sa         Discussion of strncpy: @link1
         -:   40: *  @sa         You cannot use sizeof here. See: <a href=@link2>CERT</a>
         -:   41: */
-function my_strcpy called 33 returned 100% blocks executed 50%
-       33:   42:void my_strcpy( char destination[], char source[], int destination_length )
+function my_strcpy called 20 returned 100% blocks executed 50%
+       20:   42:void my_strcpy( char destination[], char source[], int destination_length )
         -:   43:{
-       33:   44:    if ( (int) strlen(source) <= destination_length ) {
-       33:   44-block  0
-branch  0 taken 33 (fallthrough)
+       20:   44:    if ( (int) strlen(source) <= destination_length ) {
+       20:   44-block  0
+branch  0 taken 20 (fallthrough)
 branch  1 taken 0
-       33:   45:        strcpy( destination, source );
-       33:   45-block  0
+       20:   45:        strcpy( destination, source );
+       20:   45-block  0
         -:   46:    }
         -:   47:    else {
     #####:   48:        fprintf( stderr, "Cannot copy destination string into source string\n");

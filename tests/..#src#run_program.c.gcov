@@ -1,6 +1,6 @@
         -:    0:Source:../src/run_program.c
-        -:    0:Graph:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-run_program.gcno
-        -:    0:Data:/home/xabbu/Ubuntu One/Projects/C/haigo/tests/check_run_program-run_program.gcda
+        -:    0:Graph:/home/cdorner/haigo/tests/check_run_program-run_program.gcno
+        -:    0:Data:/home/cdorner/haigo/tests/check_run_program-run_program.gcda
         -:    0:Runs:4
         -:    0:Programs:1
         -:    1:#include <unistd.h>
@@ -726,8 +726,8 @@ branch  1 never executed
     $$$$$:  552-block  0
 branch  2 never executed
 branch  3 never executed
-    $$$$$:  552-block  1
     #####:  553:        color = BLACK;
+    $$$$$:  553-block  0
         -:  554:    }
     #####:  555:    else if ( strcmp( gtp_argv[0], "W" ) == 0 || strcmp( gtp_argv[0], "WHITE" ) == 0 ) {
     $$$$$:  555-block  0
@@ -736,8 +736,8 @@ branch  1 never executed
     $$$$$:  555-block  1
 branch  2 never executed
 branch  3 never executed
-    $$$$$:  555-block  2
     #####:  556:        color = WHITE;
+    $$$$$:  556-block  0
         -:  557:    }
         -:  558:    else {
     #####:  559:        set_output_error();
