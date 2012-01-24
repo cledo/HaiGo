@@ -1,5 +1,7 @@
-
 haigo.info
 *.html
 *.Po
+*.gcov
+*.gcda
+*.gcno
 
