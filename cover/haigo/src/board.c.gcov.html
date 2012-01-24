@@ -31,9 +31,9 @@
             <td class="headerValue">haigo.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">95</td>
-            <td class="headerCovTableEntry">107</td>
-            <td class="headerCovTableEntryMed">88.8 %</td>
+            <td class="headerCovTableEntry">97</td>
+            <td class="headerCovTableEntry">109</td>
+            <td class="headerCovTableEntryMed">89.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
@@ -178,142 +178,145 @@
 <span class="lineNum">     107 </span>                :<span class="lineCov">         15 :     free(board);</span>
 <span class="lineNum">     108 </span>                :<span class="lineCov">         15 :     free(hoshi);</span>
 <span class="lineNum">     109 </span>                :            : 
-<span class="lineNum">     110 </span>                :            :     return;
-<span class="lineNum">     111 </span>                :            : }
+<span class="lineNum">     110 </span>                :<span class="lineCov">         15 :     board = NULL;</span>
+<span class="lineNum">     111 </span>                :<span class="lineCov">         15 :     hoshi = NULL;</span>
 <span class="lineNum">     112 </span>                :            : 
-<span class="lineNum">     113 </span>                :            : /*******************************************************************/
-<span class="lineNum">     114 </span>                :            : /*  Usage     : get_board_as_string()                              */
-<span class="lineNum">     115 </span>                :            : /*  Purpose   : Returns a printable represantation of the board    */
-<span class="lineNum">     116 </span>                :            : /*  Parameter : none                                               */
-<span class="lineNum">     117 </span>                :            : /*  Returns   : String of complete board                           */
-<span class="lineNum">     118 </span>                :            : /*  Throws    : Nothing                                            */
-<span class="lineNum">     119 </span>                :            : /*  Comment   : This should look exactly what is shown by GnuGo    */
-<a name="120"><span class="lineNum">     120 </span>                :            : /*  See also  : [n/a]                                              */</a>
-<span class="lineNum">     121 </span>                :            : /*******************************************************************/
-<span class="lineNum">     122 </span>                :<span class="lineCov">          5 : void get_board_as_string( char board_output[] ) {</span>
-<span class="lineNum">     123 </span>                :            :     int i; // Index for x-axis
-<span class="lineNum">     124 </span>                :            :     int j; // Index for y-axis
-<span class="lineNum">     125 </span>                :            :     char x[3];      // Label for x-axis
-<span class="lineNum">     126 </span>                :            :     char y[2];      // Label for y-axis
-<span class="lineNum">     127 </span>                :            : 
-<span class="lineNum">     128 </span>                :<span class="lineCov">          5 :     board_output[0] = '\0';</span>
-<span class="lineNum">     129 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;\n&quot; );</span>
+<span class="lineNum">     113 </span>                :            :     return;
+<span class="lineNum">     114 </span>                :            : }
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            : /*******************************************************************/
+<span class="lineNum">     117 </span>                :            : /*  Usage     : get_board_as_string()                              */
+<span class="lineNum">     118 </span>                :            : /*  Purpose   : Returns a printable represantation of the board    */
+<span class="lineNum">     119 </span>                :            : /*  Parameter : none                                               */
+<span class="lineNum">     120 </span>                :            : /*  Returns   : String of complete board                           */
+<span class="lineNum">     121 </span>                :            : /*  Throws    : Nothing                                            */
+<span class="lineNum">     122 </span>                :            : /*  Comment   : This should look exactly what is shown by GnuGo    */
+<a name="123"><span class="lineNum">     123 </span>                :            : /*  See also  : [n/a]                                              */</a>
+<span class="lineNum">     124 </span>                :            : /*******************************************************************/
+<span class="lineNum">     125 </span>                :<span class="lineCov">          5 : void get_board_as_string( char board_output[] ) {</span>
+<span class="lineNum">     126 </span>                :            :     int i; // Index for x-axis
+<span class="lineNum">     127 </span>                :            :     int j; // Index for y-axis
+<span class="lineNum">     128 </span>                :            :     char x[3];      // Label for x-axis
+<span class="lineNum">     129 </span>                :            :     char y[2];      // Label for y-axis
 <span class="lineNum">     130 </span>                :            : 
-<span class="lineNum">     131 </span>                :            :     /* Print uppercase letters above the board */
-<span class="lineNum">     132 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;   &quot; );</span>
-<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         73 :     for ( i = 0; i &lt; board_size; i++ ) {</span>
-<span class="lineNum">     134 </span>                :<span class="lineCov">         68 :         get_label_x( i, x );</span>
-<span class="lineNum">     135 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot; &quot; );</span>
-<span class="lineNum">     136 </span>                :<span class="lineCov">         68 :         strcat( board_output, x );</span>
-<span class="lineNum">     137 </span>                :            :     }
-<span class="lineNum">     138 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;\n&quot; );</span>
-<span class="lineNum">     139 </span>                :            : 
-<span class="lineNum">     140 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         73 :     for ( j = board_size - 1; j &gt;= 0; j-- ) {</span>
-<span class="lineNum">     141 </span>                :            : 
-<span class="lineNum">     142 </span>                :            :         /* Print numbers left of board */
-<span class="lineNum">     143 </span>                :<span class="lineCov">         68 :         get_label_y_left( j, y );</span>
-<span class="lineNum">     144 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot; &quot; );</span>
-<span class="lineNum">     145 </span>                :<span class="lineCov">         68 :         strcat( board_output, y );</span>
-<span class="lineNum">     146 </span>                :            : 
-<span class="lineNum">     147 </span>                :            :         /* Print board fields */
-<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 0 was taken 1240 times"> + </span><span class="branchCov" title="Branch 1 was taken 68 times"> + </span>]:<span class="lineCov">       1308 :         for ( i = 0; i &lt; board_size; i++ ) {</span>
-<span class="lineNum">     149 </span>                :<span class="lineCov">       1240 :             strcat( board_output, &quot; &quot; );</span>
-<span class="lineNum">     150 </span>  [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1240 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1240 :             switch ( board[i][j] ) {</span>
-<span class="lineNum">     151 </span>                :            :                 case WHITE:
-<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :                     strcat( board_output, WHITE_STONE );</span>
-<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :                     break;</span>
-<span class="lineNum">     154 </span>                :            :                 case BLACK:
-<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :                     strcat( board_output, BLACK_STONE );</span>
+<span class="lineNum">     131 </span>                :<span class="lineCov">          5 :     board_output[0] = '\0';</span>
+<span class="lineNum">     132 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;\n&quot; );</span>
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            :     /* Print uppercase letters above the board */
+<span class="lineNum">     135 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;   &quot; );</span>
+<span class="lineNum">     136 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         73 :     for ( i = 0; i &lt; board_size; i++ ) {</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">         68 :         get_label_x( i, x );</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot; &quot; );</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">         68 :         strcat( board_output, x );</span>
+<span class="lineNum">     140 </span>                :            :     }
+<span class="lineNum">     141 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;\n&quot; );</span>
+<span class="lineNum">     142 </span>                :            : 
+<span class="lineNum">     143 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         73 :     for ( j = board_size - 1; j &gt;= 0; j-- ) {</span>
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :            :         /* Print numbers left of board */
+<span class="lineNum">     146 </span>                :<span class="lineCov">         68 :         get_label_y_left( j, y );</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot; &quot; );</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">         68 :         strcat( board_output, y );</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :         /* Print board fields */
+<span class="lineNum">     151 </span>        [<span class="branchCov" title="Branch 0 was taken 1240 times"> + </span><span class="branchCov" title="Branch 1 was taken 68 times"> + </span>]:<span class="lineCov">       1308 :         for ( i = 0; i &lt; board_size; i++ ) {</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">       1240 :             strcat( board_output, &quot; &quot; );</span>
+<span class="lineNum">     153 </span>  [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1240 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1240 :             switch ( board[i][j] ) {</span>
+<span class="lineNum">     154 </span>                :            :                 case WHITE:
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :                     strcat( board_output, WHITE_STONE );</span>
 <span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :                     break;</span>
-<span class="lineNum">     157 </span>                :            :                 case EMPTY:
-<span class="lineNum">     158 </span>        [<span class="branchCov" title="Branch 1 was taken 19 times"> + </span><span class="branchCov" title="Branch 2 was taken 1221 times"> + </span>]:<span class="lineCov">       1240 :                     switch ( is_hoshi( i, j ) ) {</span>
-<span class="lineNum">     159 </span>                :            :                         case true:
-<span class="lineNum">     160 </span>                :<span class="lineCov">         19 :                             strcat( board_output, FIELD_HOSHI );</span>
-<span class="lineNum">     161 </span>                :<span class="lineCov">         19 :                             break;</span>
-<span class="lineNum">     162 </span>                :            :                         case false:
-<span class="lineNum">     163 </span>                :<span class="lineCov">       1221 :                             strcat( board_output, FIELD_EMPTY );</span>
-<span class="lineNum">     164 </span>                :<span class="lineCov">       1221 :                             break;</span>
-<span class="lineNum">     165 </span>                :            :                     }
-<span class="lineNum">     166 </span>                :<span class="lineCov">       1240 :                     break;</span>
-<span class="lineNum">     167 </span>                :            :             }
-<span class="lineNum">     168 </span>                :            :         }
-<span class="lineNum">     169 </span>                :            : 
-<span class="lineNum">     170 </span>                :            :         /* Print numbers right of board */
-<span class="lineNum">     171 </span>                :<span class="lineCov">         68 :         get_label_y_right( j, y );</span>
-<span class="lineNum">     172 </span>                :<span class="lineCov">         68 :         strcat( board_output,  &quot; &quot; );</span>
-<span class="lineNum">     173 </span>                :<span class="lineCov">         68 :         strcat( board_output,    y );</span>
-<span class="lineNum">     174 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot;\n&quot; );</span>
-<span class="lineNum">     175 </span>                :            :     }
-<span class="lineNum">     176 </span>                :            : 
-<span class="lineNum">     177 </span>                :            :     /* Print uppercase letters below board */
-<span class="lineNum">     178 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;   &quot; );</span>
-<span class="lineNum">     179 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         73 :     for ( i = 0; i &lt; board_size; i++ ) {</span>
-<span class="lineNum">     180 </span>                :<span class="lineCov">         68 :         get_label_x( i, x );</span>
-<span class="lineNum">     181 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot; &quot; );</span>
-<span class="lineNum">     182 </span>                :<span class="lineCov">         68 :         strcat( board_output, x );</span>
-<span class="lineNum">     183 </span>                :            :     }
-<span class="lineNum">     184 </span>                :            : 
-<span class="lineNum">     185 </span>                :            :     return;
-<a name="186"><span class="lineNum">     186 </span>                :            : }</a>
+<span class="lineNum">     157 </span>                :            :                 case BLACK:
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :                     strcat( board_output, BLACK_STONE );</span>
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     160 </span>                :            :                 case EMPTY:
+<span class="lineNum">     161 </span>        [<span class="branchCov" title="Branch 1 was taken 19 times"> + </span><span class="branchCov" title="Branch 2 was taken 1221 times"> + </span>]:<span class="lineCov">       1240 :                     switch ( is_hoshi( i, j ) ) {</span>
+<span class="lineNum">     162 </span>                :            :                         case true:
+<span class="lineNum">     163 </span>                :<span class="lineCov">         19 :                             strcat( board_output, FIELD_HOSHI );</span>
+<span class="lineNum">     164 </span>                :<span class="lineCov">         19 :                             break;</span>
+<span class="lineNum">     165 </span>                :            :                         case false:
+<span class="lineNum">     166 </span>                :<span class="lineCov">       1221 :                             strcat( board_output, FIELD_EMPTY );</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">       1221 :                             break;</span>
+<span class="lineNum">     168 </span>                :            :                     }
+<span class="lineNum">     169 </span>                :<span class="lineCov">       1240 :                     break;</span>
+<span class="lineNum">     170 </span>                :            :             }
+<span class="lineNum">     171 </span>                :            :         }
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :         /* Print numbers right of board */
+<span class="lineNum">     174 </span>                :<span class="lineCov">         68 :         get_label_y_right( j, y );</span>
+<span class="lineNum">     175 </span>                :<span class="lineCov">         68 :         strcat( board_output,  &quot; &quot; );</span>
+<span class="lineNum">     176 </span>                :<span class="lineCov">         68 :         strcat( board_output,    y );</span>
+<span class="lineNum">     177 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot;\n&quot; );</span>
+<span class="lineNum">     178 </span>                :            :     }
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :            :     /* Print uppercase letters below board */
+<span class="lineNum">     181 </span>                :<span class="lineCov">          5 :     strcat( board_output, &quot;   &quot; );</span>
+<span class="lineNum">     182 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         73 :     for ( i = 0; i &lt; board_size; i++ ) {</span>
+<span class="lineNum">     183 </span>                :<span class="lineCov">         68 :         get_label_x( i, x );</span>
+<span class="lineNum">     184 </span>                :<span class="lineCov">         68 :         strcat( board_output, &quot; &quot; );</span>
+<span class="lineNum">     185 </span>                :<span class="lineCov">         68 :         strcat( board_output, x );</span>
+<span class="lineNum">     186 </span>                :            :     }
 <span class="lineNum">     187 </span>                :            : 
-<span class="lineNum">     188 </span>                :<span class="lineCov">        136 : void get_label_x( int i, char x[] ) {</span>
-<span class="lineNum">     189 </span>                :            : 
-<span class="lineNum">     190 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 68 times"> + </span>]:<span class="lineCov">        136 :     if ( i &gt;= 8 ) {</span>
-<span class="lineNum">     191 </span>                :<span class="lineCov">         68 :         i++;</span>
-<span class="lineNum">     192 </span>                :            :     }
-<span class="lineNum">     193 </span>                :<span class="lineCov">        136 :     i += 65;</span>
-<span class="lineNum">     194 </span>                :<span class="lineCov">        136 :     x[0] = (char) i;</span>
-<span class="lineNum">     195 </span>                :<span class="lineCov">        136 :     x[1] = '\0';</span>
-<span class="lineNum">     196 </span>                :            : 
-<span class="lineNum">     197 </span>                :            :     return;
-<a name="198"><span class="lineNum">     198 </span>                :            : }</a>
+<span class="lineNum">     188 </span>                :            :     return;
+<a name="189"><span class="lineNum">     189 </span>                :            : }</a>
+<span class="lineNum">     190 </span>                :            : 
+<span class="lineNum">     191 </span>                :<span class="lineCov">        136 : void get_label_x( int i, char x[] ) {</span>
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchCov" title="Branch 1 was taken 68 times"> + </span>]:<span class="lineCov">        136 :     if ( i &gt;= 8 ) {</span>
+<span class="lineNum">     194 </span>                :<span class="lineCov">         68 :         i++;</span>
+<span class="lineNum">     195 </span>                :            :     }
+<span class="lineNum">     196 </span>                :<span class="lineCov">        136 :     i += 65;</span>
+<span class="lineNum">     197 </span>                :<span class="lineCov">        136 :     x[0] = (char) i;</span>
+<span class="lineNum">     198 </span>                :<span class="lineCov">        136 :     x[1] = '\0';</span>
 <span class="lineNum">     199 </span>                :            : 
-<span class="lineNum">     200 </span>                :<span class="lineCov">         68 : void get_label_y_left( int j, char y[] ) {</span>
-<span class="lineNum">     201 </span>                :            : 
-<span class="lineNum">     202 </span>                :<span class="lineCov">         68 :     j++;</span>
-<span class="lineNum">     203 </span>                :            : 
-<span class="lineNum">     204 </span>                :<span class="lineCov">         68 :     y[0] = (char)(int)( j / 10 + 48 );</span>
-<span class="lineNum">     205 </span>                :<span class="lineCov">         68 :     y[1] = (char)( j % 10 + 48 );</span>
-<span class="lineNum">     206 </span>                :<span class="lineCov">         68 :     y[2] = '\0';</span>
-<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 0 was taken 38 times"> + </span><span class="branchCov" title="Branch 1 was taken 30 times"> + </span>]:<span class="lineCov">         68 :     if ( y[0] == '0' ) {</span>
-<span class="lineNum">     208 </span>                :<span class="lineCov">         68 :         y[0] = ' ';</span>
-<span class="lineNum">     209 </span>                :            :     }
-<span class="lineNum">     210 </span>                :            : 
-<span class="lineNum">     211 </span>                :            :     return;
-<a name="212"><span class="lineNum">     212 </span>                :            : }</a>
+<span class="lineNum">     200 </span>                :            :     return;
+<a name="201"><span class="lineNum">     201 </span>                :            : }</a>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :<span class="lineCov">         68 : void get_label_y_left( int j, char y[] ) {</span>
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>                :<span class="lineCov">         68 :     j++;</span>
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>                :<span class="lineCov">         68 :     y[0] = (char)(int)( j / 10 + 48 );</span>
+<span class="lineNum">     208 </span>                :<span class="lineCov">         68 :     y[1] = (char)( j % 10 + 48 );</span>
+<span class="lineNum">     209 </span>                :<span class="lineCov">         68 :     y[2] = '\0';</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 0 was taken 38 times"> + </span><span class="branchCov" title="Branch 1 was taken 30 times"> + </span>]:<span class="lineCov">         68 :     if ( y[0] == '0' ) {</span>
+<span class="lineNum">     211 </span>                :<span class="lineCov">         68 :         y[0] = ' ';</span>
+<span class="lineNum">     212 </span>                :            :     }
 <span class="lineNum">     213 </span>                :            : 
-<span class="lineNum">     214 </span>                :<span class="lineCov">         68 : void get_label_y_right( int j, char y[] ) {</span>
-<span class="lineNum">     215 </span>                :            : 
-<span class="lineNum">     216 </span>                :<span class="lineCov">         68 :     j++;</span>
-<span class="lineNum">     217 </span>                :            : 
-<span class="lineNum">     218 </span>                :<span class="lineCov">         68 :     y[0] = (char)(int)( j / 10 + 48 );</span>
-<span class="lineNum">     219 </span>                :<span class="lineCov">         68 :     y[1] = (char)( j % 10 + 48 );</span>
-<span class="lineNum">     220 </span>                :<span class="lineCov">         68 :     y[2] = '\0';</span>
-<span class="lineNum">     221 </span>        [<span class="branchCov" title="Branch 0 was taken 38 times"> + </span><span class="branchCov" title="Branch 1 was taken 30 times"> + </span>]:<span class="lineCov">         68 :     if ( y[0] == '0' ) {</span>
-<span class="lineNum">     222 </span>                :<span class="lineCov">         38 :         y[0] = y[1];</span>
-<span class="lineNum">     223 </span>                :<span class="lineCov">         68 :         y[1] = '\0';</span>
-<span class="lineNum">     224 </span>                :            :     }
-<span class="lineNum">     225 </span>                :            : 
-<span class="lineNum">     226 </span>                :            :     return;
-<a name="227"><span class="lineNum">     227 </span>                :            : }</a>
+<span class="lineNum">     214 </span>                :            :     return;
+<a name="215"><span class="lineNum">     215 </span>                :            : }</a>
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :<span class="lineCov">         68 : void get_label_y_right( int j, char y[] ) {</span>
+<span class="lineNum">     218 </span>                :            : 
+<span class="lineNum">     219 </span>                :<span class="lineCov">         68 :     j++;</span>
+<span class="lineNum">     220 </span>                :            : 
+<span class="lineNum">     221 </span>                :<span class="lineCov">         68 :     y[0] = (char)(int)( j / 10 + 48 );</span>
+<span class="lineNum">     222 </span>                :<span class="lineCov">         68 :     y[1] = (char)( j % 10 + 48 );</span>
+<span class="lineNum">     223 </span>                :<span class="lineCov">         68 :     y[2] = '\0';</span>
+<span class="lineNum">     224 </span>        [<span class="branchCov" title="Branch 0 was taken 38 times"> + </span><span class="branchCov" title="Branch 1 was taken 30 times"> + </span>]:<span class="lineCov">         68 :     if ( y[0] == '0' ) {</span>
+<span class="lineNum">     225 </span>                :<span class="lineCov">         38 :         y[0] = y[1];</span>
+<span class="lineNum">     226 </span>                :<span class="lineCov">         68 :         y[1] = '\0';</span>
+<span class="lineNum">     227 </span>                :            :     }
 <span class="lineNum">     228 </span>                :            : 
-<span class="lineNum">     229 </span>                :<span class="lineCov">       1240 : bool is_hoshi( int i, int j ) {</span>
-<span class="lineNum">     230 </span>                :            : 
-<span class="lineNum">     231 </span>                :<span class="lineCov">       1240 :     return hoshi[i][j];</span>
-<a name="232"><span class="lineNum">     232 </span>                :            : }</a>
+<span class="lineNum">     229 </span>                :            :     return;
+<a name="230"><span class="lineNum">     230 </span>                :            : }</a>
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :<span class="lineCov">       1240 : bool is_hoshi( int i, int j ) {</span>
 <span class="lineNum">     233 </span>                :            : 
-<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 : int get_board_size(void) {</span>
-<span class="lineNum">     235 </span>                :            : 
-<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :     return board_size;</span>
-<a name="237"><span class="lineNum">     237 </span>                :            : }</a>
+<span class="lineNum">     234 </span>                :<span class="lineCov">       1240 :     return hoshi[i][j];</span>
+<a name="235"><span class="lineNum">     235 </span>                :            : }</a>
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 : int get_board_size(void) {</span>
 <span class="lineNum">     238 </span>                :            : 
-<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 : void set_vertex( int color, int i, int j ) {</span>
-<span class="lineNum">     240 </span>                :            : 
-<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :     board[i][j] = color;</span>
-<span class="lineNum">     242 </span>                :            : 
-<span class="lineNum">     243 </span>                :            :     return;
-<span class="lineNum">     244 </span>                :            : }
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :     return board_size;</span>
+<a name="240"><span class="lineNum">     240 </span>                :            : }</a>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 : void set_vertex( int color, int i, int j ) {</span>
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :     board[i][j] = color;</span>
 <span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            :     return;
+<span class="lineNum">     247 </span>                :            : }
+<span class="lineNum">     248 </span>                :            : 
 </pre>
       </td>
     </tr>

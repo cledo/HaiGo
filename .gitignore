@@ -4,4 +4,13 @@ haigo.info
 *.gcov
 *.gcda
 *.gcno
+src/haigo
+src/*.o
+tests/*.o
+tests/check_board
+tests/check_io
+tests/check_run_program
+cover/*
+doc/html/
+doc/latex/
 
