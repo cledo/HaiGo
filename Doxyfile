@@ -1634,6 +1634,3 @@ ALIASES += link1="http://www.inspirel.com/articles/Strncpy_And_Safety.html"
 ALIASES += link2="https://www.securecoding.cert.org/confluence/display/cplusplus/ARR01-CPP.+Do+not+apply+the+sizeof+operator+to+a+pointer+when+taking+the+size+of+an+array"
 ALIASES += link3="http://www.lysator.liu.se/~gunnar/gtp/"
 
-# TEST ENTRY
-
-
