@@ -13,4 +13,5 @@ tests/check_run_program
 cover/*
 doc/html/
 doc/latex/
+autom4te.cache/
 
