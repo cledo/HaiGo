@@ -20,4 +20,10 @@ doxygen_warnings
 config.*
 configure
 configure.ac
+aclocal.m4
+compile
+configure.ac
+depcomp
+missing
+stamp-h1
 
