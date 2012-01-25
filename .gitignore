@@ -26,4 +26,8 @@ configure.ac
 depcomp
 missing
 stamp-h1
+TAGS
+src/Makefile
+tests/Makefile
+*/.deps/*.Po
 
