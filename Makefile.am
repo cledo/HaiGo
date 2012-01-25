@@ -6,6 +6,7 @@ cover: FORCE
 	@prove
 	@lcov -d src -c -o cover/haigo.info
 	@genhtml -o cover cover/haigo.info
+	@make cover-clean
 
 cover-clean: FORCE
 	@rm -f src/*.gcov
@@ -15,6 +16,9 @@ cover-clean: FORCE
 	@rm -f tests/*.gcda
 	@rm -f tests/*.gcno
 	@lcov -d src/ -d tests/ -z
+
+doxy: FORCE
+	@doxygen Doxyfile
 
 FORCE:
 
