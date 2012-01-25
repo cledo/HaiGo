@@ -28,6 +28,8 @@ missing
 stamp-h1
 TAGS
 src/Makefile
+src/Makefile.in
 tests/Makefile
+tests/Makefile.in
 */.deps/*.Po
 
