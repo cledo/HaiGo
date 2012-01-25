@@ -27,6 +27,8 @@ depcomp
 missing
 stamp-h1
 TAGS
+src/TAGS
+tests/TAGS
 src/Makefile
 src/Makefile.in
 tests/Makefile
