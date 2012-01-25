@@ -14,4 +14,10 @@ cover/*
 doc/html/
 doc/latex/
 autom4te.cache/
+Makefile
+Makefile.in
+doxygen_warnings
+config.*
+configure
+configure.ac
 
