@@ -9,13 +9,13 @@ cover: FORCE
 	@make cover-clean
 
 cover-clean: FORCE
+	@lcov -d src/ -d tests/ -z
 	@rm -f src/*.gcov
 	@rm -f src/*.gcda
 	@rm -f src/*.gcno
 	@rm -f tests/*.gcov
 	@rm -f tests/*.gcda
 	@rm -f tests/*.gcno
-	@lcov -d src/ -d tests/ -z
 
 doxy: FORCE
 	@doxygen Doxyfile
