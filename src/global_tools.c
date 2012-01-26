@@ -41,8 +41,11 @@ void str_toupper( char string[] )
  */
 void my_strcpy( char destination[], char source[], int destination_length )
 {
-    if ( (int) strlen(source) <= destination_length ) {
+    int source_length = (int) strlen(source);
+
+    if ( source_length <= destination_length ) {
         strcpy( destination, source );
+        //strncpy( destination, source, source_length );
     }
     else {
         fprintf( stderr, "Cannot copy destination string into source string\n");

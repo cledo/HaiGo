@@ -246,7 +246,7 @@ void init_known_commands(void)
           , "Commands implemented: %d\nCOUNT_KNOWN_COMMANDS: %d\n"
           , i, COUNT_KNOWN_COMMANDS
         );
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return;
@@ -608,6 +608,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  */
 void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
+
     char board_output[MAX_OUTPUT_LENGTH];
 
     get_board_as_string(board_output);

@@ -9,6 +9,7 @@ my @splint_args = qw(
     -weak
     -sizeofformalarray
     -warnposix
+    -boolcompare
 );
 
 my $src_dir     = './src/';
