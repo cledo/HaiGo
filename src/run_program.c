@@ -12,13 +12,13 @@
 
 
 //! The default help message shown with -h
-const char help_message[] =
+static const char help_message[] =
 "This is a placeholder for the help message.\n\
 This message is shown when the program is called\n\
 with the command line argument -h.\n";
 
 //! If set to 1 the main control loop exits.
-int quit_program = 0;
+static int quit_program = 0;
 
 //! @brief Connects one given command name with proper function pointer.
 //! @todo Check if function declaration needs parameters!
@@ -28,39 +28,39 @@ struct command_func {
 };
 
 //! Array of known (implemented) commands
-struct command_func known_commands[COUNT_KNOWN_COMMANDS];
+static struct command_func known_commands[COUNT_KNOWN_COMMANDS];
 
 //! The current komi value
-float komi = 0.0;
+static float komi = 0.0;
 
-void init_known_commands(void);
-void read_opts( int argc, char ** argv );
-void select_command( struct command *command_data );
-void print_help_message(void);
-void print_version(void);
-void set_quit_program(void);
+static void init_known_commands(void);
+static void read_opts( int argc, char ** argv );
+static void select_command( struct command *command_data );
+static void print_help_message(void);
+static void print_version(void);
+static void set_quit_program(void);
 
 /* Administrative commands */
-void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_name( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_known_command( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_list_commands( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_quit( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_name( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_known_command( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_list_commands( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_quit( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Setup commands */
-void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Core play commands */
-void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 /// @todo These functions have to be implemmted: gtp_genmove, gtp_undo.
 /// - void gtp_genmove( int argc, char argv[][MAX_TOKEN_LENGTH] );
 /// - void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
 
 /* Debug commands */
-void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
 /**
