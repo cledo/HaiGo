@@ -224,8 +224,8 @@ void get_label_x( int i, char x[] )
  * Creates the vertical coordinate on the left side of the board. The
  * coordinate on the left hand side are aligned to the right hand side.
  *
- * @param[in]   i   The number of the vertical coordinate.
- * @param[out]  x   The string representing the vertical coordinate
+ * @param[in]   j   The number of the vertical coordinate.
+ * @param[out]  y   The string representing the vertical coordinate
  * @return      nothing
  * @note        The coordinates on the left side are right aligned.
  * @sa          get_label_y_right(), get_label_x()
@@ -250,8 +250,8 @@ void get_label_y_left( int j, char y[] )
  * Creates the vertical coordinate on the right side of the board. The
  * coordinate on the right hand side are aligned to the left hand side.
  *
- * @param[in]   i   The number of the vertical coordinate.
- * @param[out]  x   The string representing the vertical coordinate
+ * @param[in]   j   The number of the vertical coordinate.
+ * @param[out]  y   The string representing the vertical coordinate
  * @return      nothing
  * @note        The coordinates on the right side are left aligned.
  * @sa          get_label_y_left(), get_label_x()

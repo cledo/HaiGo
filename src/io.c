@@ -14,28 +14,16 @@ bool output_error   = false;
 char output[MAX_OUTPUT_LENGTH];
 
 
-/*******************************************************************/
-/*  Usage     : read_gtp_input()                                   */
-/*  Purpose   : Reads a GTP command from STDIN.                    */
-/*  Parameter : Pointer to command struct                          */
-/*  Returns   : Nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   : Compare with "gnugo --mode gtp"                    */
-/*            : Input larger than SIZE_INPUT_BUFFER is simply      */
-/*            : ignored.                                           */
-/*  See also  : http://www.lysator.liu.se/~gunnar/gtp/             */
-/*******************************************************************/
-
 /**
- *  @brief Read GTP command from STDIN.
+ * @brief  Read GTP command from STDIN.
  *
- *  Reads a GTP command from STDIN. Input which is larger than
- *  SIZE_INPUT_BUFFER is simply ignored. The behaviour \e should be the same as
- *  with "gnugo --mode gtp".
+ * Reads a GTP command from STDIN. Input which is larger than
+ * SIZE_INPUT_BUFFER is simply ignored. The behaviour \e should be the same as
+ * with "gnugo --mode gtp".
  *
- *  @param[in]  *command_data  Pointer to struct command
- *  @return     nothing
- *  @sa         <a href=@link3>GTP version 2.0</a>
+ * @param[in]  *command_data  Pointer to struct command
+ * @return     nothing
+ * @sa         <a href=@link3>GTP version 2.0</a>
  */
 void read_gtp_input( struct command *command_data )
 {
@@ -71,49 +59,53 @@ void read_gtp_input( struct command *command_data )
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : set_output_error()                                 */
-/*  Purpose   : Sets the variable output_error to true             */
-/*  Parameter : None                                               */
-/*  Returns   : Nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   : This function should be called if the output is    */
-/*            : considered an error.                               */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void set_output_error(void) {
-
+/**
+ * @brief       Sets flag that indicates an GTP error.
+ *
+ * This function sets a flag that indicates that an error according to the Go
+ * Text Protocol has happened.
+ *
+ * @return      nothing
+ * @sa          <a href=@link4>GTP version 2.0, 2.7 Error Messages</a>
+ * @note        This function must be called if the output is considered an
+ *              error.
+ */
+void set_output_error(void)
+{
     output_error = true;
 
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : get_output_error()                                 */
-/*  Purpose   : Rteurns the state of output_error (true|false)     */
-/*  Parameter : None                                               */
-/*  Returns   : true|false                                         */
-/*  Throws    : Nothing                                            */
-/*  Comment   :                                                    */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-bool get_output_error(void) {
-
+/**
+ * @brief       Checks if the output is considered an GTP error.
+ *
+ * Returns the value of a flag, that indicates if an output is considered an
+ * error according to the Go Text Protocol.
+ *
+ * @return      true|false
+ * @sa          <a href=@link4>GTP version 2.0, 2.7 Error Messages</a>
+ */
+bool get_output_error(void)
+{
     return output_error;
 }
 
-/*******************************************************************/
-/*  Usage     : add_output()                                       */
-/*  Purpose   : Adds the given string to the output variable       */
-/*  Parameter : String                                             */
-/*  Returns   : Nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   : Only complete lines must be given to this          */
-/*            : function. A new line is appended automatically.    */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void add_output( const char to_output[] ) {
-
+/**
+ * @brief       Adds a given string to the output string.
+ *
+ * A given string is added (appended) to the output variable, which will be
+ * printed to STDOUT later.
+ *
+ * @param[in]   to_output   string
+ * @return      nothing
+ * @note        Only complete lines must be given to this function. A new line
+ *              character is appended automatically.
+ * @warning     If the resulting string exceeds MAX_OUTPUT_LENGTH, the program
+ *              exits with an error.
+ */
+void add_output( const char to_output[] )
+{
     int new_output_length
         = (int)( strlen(output) + strlen(to_output) + 1 );
     if ( new_output_length > MAX_OUTPUT_LENGTH ) {
@@ -128,17 +120,21 @@ void add_output( const char to_output[] ) {
 }
 
 
-/*******************************************************************/
-/*  Usage     : print_output()                                     */
-/*  Purpose   : Prints the content of output to STDOUT.            */
-/*  Parameter : Command ID                                         */
-/*  Returns   : Nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   :                                                    */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void print_output( int command_id ) {
-
+/**
+ * @brief       Prints a GTP answer to STDOUT.
+ *
+ * This function takes the output string and prints it to STDOUT. Depending on
+ * the value of the output_error flag a leading '=' or '?' is printed. An
+ * optional command id may be printed too.
+ *
+ * @param[in]   command_id  ID of the last given command; may be zero
+ * @return      nothing
+ * @sa          <a href=@link3>GTP version 2.0</a>
+ * @note        A command_id must be given always, but it will only be printed
+ *              to STDOUT if it is larger than zero.
+ */
+void print_output( int command_id )
+{
     /*
     if ( input_empty == true ) {
         input_empty = false;
@@ -173,18 +169,19 @@ void print_output( int command_id ) {
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : trim()                                             */
-/*  Purpose   : Trims string.                                      */
-/*  Parameter : Input string                                       */
-/*  Returns   : Trimmed string                                     */
-/*  Throws    : Nothing                                            */
-/*  Comment   : Whitespace at the beginning and end are dropped.   */
-/*            : Two or more whitespaces are substituted by one     */
-/*            : whitespace.                                        */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void trim( char * input ) {
+/**
+ * @brief       Trims whitespaces in given string.
+ *
+ * Whitespaces at the beginning and at the end of a given string are dropped.
+ * Two or more adjacent whitespaces are trimmed down to one whitespace
+ * anywhere within the string. The changes are done inplace.
+ *
+ * @param[in]   input   string
+ * @return      nothing
+ * @note        The changes are done inplace. The given string is changed.
+ */
+void trim( char * input )
+{
     char temp_input[SIZE_INPUT_BUFFER];
     char current_char = '\0';
     char last_char    = '\0';
@@ -221,16 +218,18 @@ void trim( char * input ) {
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : drop_comment()                                     */
-/*  Purpose   : Drop trailing comment from input string.           */
-/*  Parameter : Input string                                       */
-/*  Returns   : String without trailing comment.                   */
-/*  Throws    : Nothing                                            */
-/*  Comment   : The comment character '#' is substituted with '\0' */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void drop_comment( char * input ) {
+/**
+ * @brief       Drops a trailing comment from an GTP input string.
+ *
+ * A comment from an GTP input command is dropped.
+ *
+ * @param[in]   input   GTP input command
+ * @return      nothing
+ * @sa          <a href="@link5">GTP version 2.0, 2.9 Comments</a>
+ * @note        The comment character '#' is simply replaced with '\\0'.
+ */
+void drop_comment( char * input )
+{
     int i = 0;
     char current_char = '\0';
 
@@ -248,31 +247,35 @@ void drop_comment( char * input ) {
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : is_input_empty()                                   */
-/*  Purpose   : Returns true if no input has been given.           */
-/*  Parameter : None                                               */
-/*  Returns   : true|false                                         */
-/*  Throws    : Nothing                                            */
-/*  Comment   :                                                    */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-bool is_input_empty(void) {
-
+/**
+ * @brief       Checks if an GTP input is empty.
+ *
+ * Checks if a GTP command is empty by returning the value of the input_empty
+ * flag.
+ *
+ * @return      nothing
+ * @sa          read_gtp_input() sets the input_empty flag.
+ */
+bool is_input_empty(void)
+{
     return input_empty;
 }
 
-/*******************************************************************/
-/*  Usage     : parse_gtp_input()                                  */
-/*  Purpose   : Parses the GTP input.                              */
-/*  Parameter : Input string, command                              */
-/*  Returns   : GTP command and optional arguments                 */
-/*  Throws    : Nothing                                            */
-/*  Comment   : The input has to go through drop_comment() and     */
-/*            : trim() before being parsed.                        */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void parse_gtp_input( char * command_input_buffer, char tokens[][MAX_TOKEN_LENGTH] ) {
+/**
+ * @brief       Parses GTP input command into list of tokens.
+ *
+ * The string containing a GTP input command is taken and split into a list of
+ * tokens. The input must go through drop_comment() and trim() before this
+ * function is called!
+ *
+ * @param[in]   command_input_buffer    GTP input string
+ * @param[out]  tokens                  Array of strings
+ * @return      nothing
+ * @note        The last token is set to '\\0' to mark the end of the
+ *              arguments later on.
+ */
+void parse_gtp_input( char * command_input_buffer, char tokens[][MAX_TOKEN_LENGTH] )
+{
     char current_char = '\0';
     int i = 0;  // Index of input buffer
     int j = 0;  // Counts number of tokens
@@ -317,16 +320,21 @@ void parse_gtp_input( char * command_input_buffer, char tokens[][MAX_TOKEN_LENGT
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : init_tokens()                                      */
-/*  Purpose   : Sets all token data strings to '\0'                */
-/*  Parameter : None                                               */
-/*  Returns   : Nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   : None                                               */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void init_tokens( char tokens[][MAX_TOKEN_LENGTH] ) {
+/**
+ * @brief       Initializes tokens data structure.
+ *
+ * Initializes the tokens data structure, which is an array of strings, by
+ * setting all elements to '\\0'.
+ *
+ * @param[out]  tokens  Array 
+ * @return      [information about return value]
+ * @sa          [see also section]
+ * @note        [any note about the function you might have]
+ * @warning     [any warning if necessary]
+ * @todo        [whatever...]
+ */
+void init_tokens( char tokens[][MAX_TOKEN_LENGTH] )
+{
     int i;
 
     for ( i = 0; i < MAX_TOKEN_COUNT; i++ ) {
@@ -336,17 +344,23 @@ void init_tokens( char tokens[][MAX_TOKEN_LENGTH] ) {
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : identify_tokens()                                  */
-/*  Purpose   : Tries to identify the different parts of the       */
-/*            : tokens array: id, command name, arguments          */
-/*  Parameter : Tokens array, Pointer to struct command            */
-/*  Returns   : Nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   : This function moves the data from the tokens array */
-/*            : to the command struct.                             */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
+
+/**
+ * @brief       Identifies the tokens in the tokens data structure.
+ *
+ * Identifies the tokens in the tokens data structure and rebuilds this data
+ * into a command data structure.
+ * The following tokens will be identified:
+ *  - command ID (optional)
+ *  - command name
+ *  - array of arguments (optional)
+ *
+ * @param[in]   tokens          Array of tokens
+ * @param[out]  command_data    Pointer to struct command
+ * @return      nothing
+ * @note        The tokens array must have been filled by parse_gtp_input()
+ *              before.
+ */
 void identify_tokens( char tokens[][MAX_TOKEN_LENGTH], struct command *command_data ) {
     int id;
     int arg_start;  // Index of first argument

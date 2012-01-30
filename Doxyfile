@@ -1632,5 +1632,7 @@ DOT_CLEANUP            = YES
 
 ALIASES += link1="http://www.inspirel.com/articles/Strncpy_And_Safety.html"
 ALIASES += link2="https://www.securecoding.cert.org/confluence/display/cplusplus/ARR01-CPP.+Do+not+apply+the+sizeof+operator+to+a+pointer+when+taking+the+size+of+an+array"
-ALIASES += link3="http://www.lysator.liu.se/~gunnar/gtp/"
+ALIASES += link3="http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html"
+ALIASES += link4="http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#SECTION00037000000000000000"
+ALIASES += link5="http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#SECTION00039000000000000000"
 

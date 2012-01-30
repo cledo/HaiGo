@@ -1,5 +1,5 @@
 /**
- * @brief [brief description]
+ * @brief       [brief description]
  *
  * [detailed description]
  *
