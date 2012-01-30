@@ -283,6 +283,7 @@ void get_label_y_right( int j, char y[] )
  * @sa          init_board()
  * @note        Currently only for the default board sizes (9x9, 13x13, 19x19)
  *              hoshi points are defined in init_board().
+ * @todo        This function may be needed as extern later.
  */
 bool is_hoshi( int i, int j )
 {
