@@ -167,7 +167,7 @@ void read_opts( int argc, char **argv )
 }
 
 /**
- *  @brief Prints help message to STDOT.
+ *  @brief Prints help message to STDOUT.
  *
  *  print_help_message() prints a help message to STDOUT.
  *  The help message itself is defined in help_message.
