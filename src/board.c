@@ -6,15 +6,20 @@
 #include "board.h"
 
 
+/* State variables */
+// As describes in GTP v2.0 chapter 5.1
 int  **board;
 bool **hoshi;
-
-int board_size = 0;
+int board_size     = 0;
+int black_cpatured = 0;
+int white_captured = 0;
 
 static void get_label_x( int i, char x[] );
 static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
 static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
+
+void has_neighbour( int i, int j, int neighbour[][2] );
 
 /**
  *  @brief Allocates memory for all board data structures.
@@ -32,6 +37,9 @@ static bool is_hoshi( int i, int j );   // This will be needed as extern maybe .
 void init_board( int wanted_board_size )
 {
     int i, j;
+
+    black_cpatured = 0;
+    white_captured = 0;
 
     board_size = wanted_board_size;
 
@@ -326,3 +334,95 @@ void set_vertex( int color, int i, int j )
     return;
 }
 
+void create_groups(void)
+{
+    int i, j;
+    int k, l;
+    int field;
+    int neighbour[4][2];
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            field = board[i][j];
+            switch(field) {
+                case BLACK:
+                    printf( "# BLACK on %d,%d\n", i, j );
+                    has_neighbour( i, j, neighbour );
+                    break;
+                case WHITE:
+                    printf( "# WHITE on %d,%d\n", i, j );
+                    has_neighbour( i, j, neighbour );
+                    break;
+                case EMPTY:
+                    break;
+                default:
+                    fprintf( stderr, "Invalid value on %d,%d: %d\n", i, j, field );
+                    exit(EXIT_FAILURE);
+            }
+
+            // TEST: show neighbours
+            for ( k = 0; k < 4; k++ ) {
+                /*
+                if ( neighbour[k][0] == -1 ) {
+                    break;
+                }
+                printf( "# neighbour for %d,%d: %d,%d\n", i, j, neighbour[k][0], neighbour[k][1] );
+                */
+                printf( "S: %d,%d N: %d,%d\n", i, j, neighbour[k][0], neighbour[k][1] );
+            }
+            for ( k = 0; k < 4; k++ ) {
+                for ( l = 0; l < 2; l++ ) {
+                    neighbour[k][l] = -1;
+                }
+            }
+        }
+
+    }
+
+    return;
+}
+
+void has_neighbour( int i, int j, int neighbour[][2] )
+{
+    int k, l;
+    int color = board[i][j];
+
+    if ( color == EMPTY ) {
+        // Maybe should exit with error here ...
+        return;
+    }
+
+    for ( k = 0; k < 4; k++ ) {
+        for ( l = 0; l < 2; l++ ) {
+            neighbour[k][l] = -1;
+        }
+    }
+    k = 0;
+
+    if ( j + 1 < board_size && board[i][j+1] == color ) {
+        //printf( "# Neighbour found on %d,%d\n", i, j+1 );
+        neighbour[k][0] = i;
+        neighbour[k][1] = j+1;
+        k++;
+    }
+    if ( i + 1 < board_size && board[i+1][j] == color ) {
+        //printf( "# Neighbour found on %d,%d\n", i+1, j );
+        neighbour[k][0] = i+1;
+        neighbour[k][1] = j;
+        k++;
+    }
+    if ( j - 1 >= 0 && board[i][j-1] == color ) {
+        //printf( "# Neighbour found on %d,%d\n", i, j-1 );
+        neighbour[k][0] = i;
+        neighbour[k][1] = j-1;
+        k++;
+    }
+    if ( i - 1 >= 0 && board[i-1][j] == color ) {
+        //printf( "# Neighbour found on %d,%d\n", i-1, j );
+        neighbour[k][0] = i-1;
+        neighbour[k][1] = j;
+        k++;
+    }
+
+    return;
+}

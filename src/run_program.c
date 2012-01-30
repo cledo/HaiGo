@@ -584,6 +584,9 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     set_vertex( color, i, j );
 
+    // TEST:
+    create_groups();
+
     /// @todo Remove captured stones here ...
     /// @todo Update move history ...
 
