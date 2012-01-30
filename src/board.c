@@ -11,11 +11,10 @@ bool **hoshi;
 
 int board_size = 0;
 
-void get_label_x( int i, char x[] );
-void get_label_y_left( int i, char x[] );
-void get_label_y_right( int j, char y[] );
-bool is_hoshi( int i, int j );
-//void set_vertex( int color, int i, int j );
+static void get_label_x( int i, char x[] );
+static void get_label_y_left( int i, char x[] );
+static void get_label_y_right( int j, char y[] );
+static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
 
 /**
  *  @brief Allocates memory for all board data structures.
@@ -88,16 +87,19 @@ void init_board( int wanted_board_size )
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : free_board()                                       */
-/*  Purpose   : Frees the memory allocated for board and hoshi     */
-/*  Parameter : none                                               */
-/*  Returns   : nothing                                            */
-/*  Throws    : Nothing                                            */
-/*  Comment   : none                                               */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void free_board(void) {
+/**
+ * @brief Frees the memory allocated for all board data structures.
+ *
+ * Frees the memory which has been allocated for the board and hoshi data
+ * structures.
+ *
+ * @return  nothing
+ * @sa      init_board()
+ * @note    The pointers to board and hoshi are also set to NULL, so a check
+ *          whether the pointers are still valid or not is possible.
+ */
+void free_board(void)
+{
     int i;
 
     for ( i = 0; i < board_size; i++ ) {
@@ -113,20 +115,24 @@ void free_board(void) {
     return;
 }
 
-/*******************************************************************/
-/*  Usage     : get_board_as_string()                              */
-/*  Purpose   : Returns a printable represantation of the board    */
-/*  Parameter : none                                               */
-/*  Returns   : String of complete board                           */
-/*  Throws    : Nothing                                            */
-/*  Comment   : This should look exactly what is shown by GnuGo    */
-/*  See also  : [n/a]                                              */
-/*******************************************************************/
-void get_board_as_string( char board_output[] ) {
-    int i; // Index for x-axis
-    int j; // Index for y-axis
-    char x[3];      // Label for x-axis
-    char y[2];      // Label for y-axis
+/**
+ * @brief   Constructs ASCII board
+ *
+ * Constructs a complete ASCII board with coordinates, depending on the current boardsize, ready for printing.
+ *
+ * @param[out]  board_output    String representation of board
+ * @return      nothing
+ * @note        This function only constructs the board string. It does not
+ *              print it.
+ * @sa          The output should look exactly like the one from GnuGo. See
+ *              'gnugo --mode gtp' and then the command 'showboard'.
+ */
+void get_board_as_string( char board_output[] )
+{
+    int i;      // Index for x-axis
+    int j;      // Index for y-axis
+    char x[3];  // Label for x-axis
+    char y[2];  // Label for y-axis
 
     board_output[0] = '\0';
     strcat( board_output, "\n" );
@@ -188,8 +194,20 @@ void get_board_as_string( char board_output[] ) {
     return;
 }
 
-void get_label_x( int i, char x[] ) {
-
+/**
+ * @brief Creates horizontal board coordinate.
+ *
+ * Creates the horizontal board coordinate for a given number.
+ *
+ * @param[in]   i   The number of the horizontal coordinate
+ * @param[out]  x   The string representing the horizontal coordinate
+ * @return      nothing
+ * @sa          get_label_y_left(), get_label_y_right()
+ * @note        The letter coordinate is returned as string, not as char.
+ *              The character 'I' is not used in Go boards.
+ */
+void get_label_x( int i, char x[] )
+{
     if ( i >= 8 ) {
         i++;
     }
@@ -200,8 +218,20 @@ void get_label_x( int i, char x[] ) {
     return;
 }
 
-void get_label_y_left( int j, char y[] ) {
-
+/**
+ * @brief   Creates left vertical coordinate.
+ *
+ * Creates the vertical coordinate on the left side of the board. The
+ * coordinate on the left hand side are aligned to the right hand side.
+ *
+ * @param[in]   i   The number of the vertical coordinate.
+ * @param[out]  x   The string representing the vertical coordinate
+ * @return      nothing
+ * @note        The coordinates on the left side are right aligned.
+ * @sa          get_label_y_right(), get_label_x()
+ */
+void get_label_y_left( int j, char y[] )
+{
     j++;
 
     y[0] = (char)(int)( j / 10 + 48 );
@@ -214,8 +244,20 @@ void get_label_y_left( int j, char y[] ) {
     return;
 }
 
-void get_label_y_right( int j, char y[] ) {
-
+/**
+ * @brief   Creates right vertical coordinate.
+ *
+ * Creates the vertical coordinate on the right side of the board. The
+ * coordinate on the right hand side are aligned to the left hand side.
+ *
+ * @param[in]   i   The number of the vertical coordinate.
+ * @param[out]  x   The string representing the vertical coordinate
+ * @return      nothing
+ * @note        The coordinates on the right side are left aligned.
+ * @sa          get_label_y_left(), get_label_x()
+ */
+void get_label_y_right( int j, char y[] )
+{
     j++;
 
     y[0] = (char)(int)( j / 10 + 48 );
@@ -229,18 +271,55 @@ void get_label_y_right( int j, char y[] ) {
     return;
 }
 
-bool is_hoshi( int i, int j ) {
-
+/**
+ * @brief   Checks if a given vertex is a star point.
+ *
+ * Checks if a given vertex (with its separate coordinates) is a star point
+ * (hoshi). The hoshi points depend on the board size.
+ *
+ * @param[in]   i   horizontal coordinate
+ * @param[in]   j   vertical coordinate
+ * @return      true | false
+ * @sa          init_board()
+ * @note        Currently only for the default board sizes (9x9, 13x13, 19x19)
+ *              hoshi points are defined in init_board().
+ */
+bool is_hoshi( int i, int j )
+{
     return hoshi[i][j];
 }
 
-int get_board_size(void) {
-
+/**
+ * @brief   Returns current board size.
+ *
+ * Returns the current board size.
+ *
+ * @return      nothing
+ * @sa          init_board() which sets the current board size.
+ * @note        The valid board size is defined by BOARD_SIZE_MIN and
+ *              BOARD_SIZE_MAX. The default board size is defined by
+ *              BOARD_SIZE_DEFAULT.
+ */
+int get_board_size(void)
+{
     return board_size;
 }
 
-void set_vertex( int color, int i, int j ) {
-
+/**
+ * @brief   Sets or unsets a stone on a given vertex.
+ *
+ * A given color, which may be BLACK, WHITE or EMPTY, is stored for a given
+ * vertex in the board data structure. So this function may set a stone or
+ * delete it.
+ *
+ * @param[in]   color   Color of the stone (BLACK, WHITE) or EMPTY
+ * @param[in]   i       horizontal coordinate
+ * @param[in]   j       vertical coordinate
+ * @return      nothing
+ * @note        Remember that this function may set a stone or delete a stone.
+ */
+void set_vertex( int color, int i, int j )
+{
     board[i][j] = color;
 
     return;
