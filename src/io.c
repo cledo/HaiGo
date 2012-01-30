@@ -326,12 +326,8 @@ void parse_gtp_input( char * command_input_buffer, char tokens[][MAX_TOKEN_LENGT
  * Initializes the tokens data structure, which is an array of strings, by
  * setting all elements to '\\0'.
  *
- * @param[out]  tokens  Array 
- * @return      [information about return value]
- * @sa          [see also section]
- * @note        [any note about the function you might have]
- * @warning     [any warning if necessary]
- * @todo        [whatever...]
+ * @param[out]  tokens  Array of strings
+ * @return      nothing
  */
 void init_tokens( char tokens[][MAX_TOKEN_LENGTH] )
 {
