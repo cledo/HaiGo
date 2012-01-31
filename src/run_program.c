@@ -240,9 +240,13 @@ void init_known_commands(void)
     my_strcpy( known_commands[i].command, "showboard", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_showboard);
 
+    //DEBUG:
+    my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*print_groups);
+
     if ( i != COUNT_KNOWN_COMMANDS ) {
         fprintf(
-            stdout
+            stderr
           , "Commands implemented: %d\nCOUNT_KNOWN_COMMANDS: %d\n"
           , i, COUNT_KNOWN_COMMANDS
         );

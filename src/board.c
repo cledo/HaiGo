@@ -9,6 +9,7 @@
 /* State variables */
 // As describes in GTP v2.0 chapter 5.1
 int  **board;
+int  **group;
 bool **hoshi;
 int board_size     = 0;
 int black_cpatured = 0;
@@ -19,13 +20,14 @@ static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
 static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
 
-void has_neighbour( int i, int j, int neighbour[][2] );
+int has_neighbour( int i, int j, int neighbour[][2] );
+int get_free_group( int color );
 
 /**
  *  @brief Allocates memory for all board data structures.
  *
- *  Allocates memory for the data structures board and hoshi. Its sets the
- *  board fields to EMPTY and sets the correct hoshi points depending on board
+ *  Allocates memory for the data structures board, group, and hoshi. Its sets the
+ *  board and group fields to EMPTY, and sets the correct hoshi points depending on board
  *  size.
  *
  *  @param[in]  wanted_board_size  Integer of intended board size
@@ -44,22 +46,26 @@ void init_board( int wanted_board_size )
     board_size = wanted_board_size;
 
     board = malloc( board_size * sizeof(int *) );
+    group = malloc( board_size * sizeof(int *) );
     hoshi = malloc( board_size * sizeof(bool *) );
-    if ( board == NULL || hoshi == NULL ) {
+
+    if ( board == NULL || hoshi == NULL || group == NULL ) {
         fprintf( stderr, "Failed to malloc memory");
         exit(EXIT_FAILURE);
     }
 
     for ( i = 0; i < board_size; i++ ) {
         board[i] = malloc( board_size * sizeof(int) );
+        group[i] = malloc( board_size * sizeof(int) );
         hoshi[i] = malloc( board_size * sizeof(bool) );
-        if ( board[i] == NULL || hoshi[i] == NULL ) {
+        if ( board[i] == NULL || hoshi[i] == NULL || group[i] == NULL ) {
             fprintf( stderr, "Failed to malloc memory");
             exit(EXIT_FAILURE);
         }
 
         for ( j = 0; j < board_size; j++ ) {
             board[i][j] = EMPTY;
+            group[i][j] = EMPTY;
             hoshi[i][j] = false;
         }
     }
@@ -98,12 +104,12 @@ void init_board( int wanted_board_size )
 /**
  * @brief Frees the memory allocated for all board data structures.
  *
- * Frees the memory which has been allocated for the board and hoshi data
+ * Frees the memory which has been allocated for the board, group, and hoshi data
  * structures.
  *
  * @return  nothing
  * @sa      init_board()
- * @note    The pointers to board and hoshi are also set to NULL, so a check
+ * @note    The pointers to board, group, and hoshi are also set to NULL, so a check
  *          whether the pointers are still valid or not is possible.
  */
 void free_board(void)
@@ -111,13 +117,16 @@ void free_board(void)
     int i;
 
     for ( i = 0; i < board_size; i++ ) {
-        free(board[i]);
-        free(hoshi[i]);
+        free( board[i] );
+        free( group[i] );
+        free( hoshi[i] );
     }
     free(board);
+    free(group);
     free(hoshi);
 
     board = NULL;
+    group = NULL;
     hoshi = NULL;
 
     return;
@@ -338,7 +347,8 @@ void create_groups(void)
 {
     int i, j;
     int k, l;
-    int field;
+    int color;
+    int count = 0;
     int neighbour[4][2];
 
     for ( i = 0; i < board_size; i++ ) {
@@ -351,29 +361,54 @@ void create_groups(void)
                 }
             }
 
-            field = board[i][j];
-            switch(field) {
+            color = board[i][j];
+
+            if ( color == EMPTY ) {
+                continue;
+            }
+
+            switch(color) {
                 case BLACK:
                     printf( "# BLACK on %d,%d\n", i, j );
-                    has_neighbour( i, j, neighbour );
+                    count = has_neighbour( i, j, neighbour );
                     break;
                 case WHITE:
                     printf( "# WHITE on %d,%d\n", i, j );
-                    has_neighbour( i, j, neighbour );
+                    count = has_neighbour( i, j, neighbour );
                     break;
                 case EMPTY:
                     break;
                 default:
-                    fprintf( stderr, "Invalid value on %d,%d: %d\n", i, j, field );
+                    fprintf( stderr, "Invalid value on %d,%d: %d\n", i, j, color );
                     exit(EXIT_FAILURE);
             }
 
             // TEST: show neighbours
+            /*
             for ( k = 0; k < 4; k++ ) {
                 if ( neighbour[k][0] == -1 ) {
                     continue;
                 }
                 printf( "S: %d,%d N: %d,%d\n", i, j, neighbour[k][0], neighbour[k][1] );
+            }
+            */
+
+            // TODO:
+            // If stone has no neighbours -> new group must be created
+            // If stone has only one neighbour -> stone must be added to
+            // existing group.
+            // If stone has more than one neighbours -> groups must be merged.
+            switch (count) {
+                case 0:
+                    if ( group[i][j] == 0 ) {
+                        group[i][j] = get_free_group(color);
+                    }
+                    break;
+                case 1:
+                    group[i][j] = group[ neighbour[0][0] ][ neighbour[0][1] ];
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -382,17 +417,15 @@ void create_groups(void)
     return;
 }
 
-void has_neighbour( int i, int j, int neighbour[][2] )
+int has_neighbour( int i, int j, int neighbour[][2] )
 {
-    int k;
+    int k     = 0;
     int color = board[i][j];
 
     if ( color == EMPTY ) {
-        // Maybe should exit with error here ...
-        return;
+        fprintf( stderr, "invalid color found in group\n" );
+        exit(EXIT_FAILURE);
     }
-
-    k = 0;
 
     if ( j + 1 < board_size && board[i][j+1] == color ) {
         neighbour[k][0] = i;
@@ -415,5 +448,56 @@ void has_neighbour( int i, int j, int neighbour[][2] )
         k++;
     }
 
+    return k;
+}
+
+int get_free_group( int color )
+{
+    int i, j;
+    int field          = 0;
+    int group_nr       = 0;
+    int group_nr_black = 0;
+    int group_nr_white = 0;
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            field = group[i][j];
+            if ( field > 0 && field > group_nr_black ) {
+                group_nr_black = field;
+            }
+            else if ( field < 0 && field < group_nr_white ) {
+                group_nr_white = field;
+            }
+        }
+    }
+
+    switch (color) {
+        case BLACK:
+            group_nr = group_nr_black + 1;
+            break;
+        case WHITE:
+            group_nr = group_nr_white - 1;
+            break;
+        default:
+            // Error message should go here ...
+            break;
+    }
+
+    return group_nr;
+}
+
+void print_groups(void)
+{
+    int i, j;
+
+    for ( j = board_size - 1; j >= 0; j-- ) {
+        for ( i = 0; i < board_size; i++ ) {
+            printf( "%4d", group[i][j] );
+        }
+        printf("\n");
+    }
+    printf("\n");
+
     return;
 }
+

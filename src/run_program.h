@@ -2,7 +2,7 @@
 #define RUN_POGRAM_H
 
 /// Defines the number of known GTP commands.
-#define COUNT_KNOWN_COMMANDS 11
+#define COUNT_KNOWN_COMMANDS 12
 
 int run( int argc, char **argv );
 

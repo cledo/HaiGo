@@ -9,4 +9,7 @@ void set_vertex( int color, int i, int j );
 
 void create_groups(void);
 
+//DEBUG:
+void print_groups(void);
+
 #endif
