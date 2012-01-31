@@ -21,6 +21,7 @@ static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
 static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
 
+void set_group( int i, int j );
 int has_neighbour( int i, int j, int neighbour[][2] );
 int get_free_group_nr( int color );
 
@@ -347,13 +348,7 @@ void set_vertex( int color, int i, int j )
 void create_groups(void)
 {
     int i, j;
-    int k, l;
     int color;
-    int group_nr     = 0;
-    int group_nr_min = INT_MAX;
-    int group_nr_max = INT_MIN;
-    int count        = 0;
-    int neighbour[4][2];
 
     // Reset group board:
     for ( i = 0; i < board_size; i++ ) {
@@ -377,68 +372,8 @@ void create_groups(void)
                 continue;
             }
 
-            //
-            // +++ Recursive start here +++
-            //
-            //group_nr_min,max go here ...
+            set_group( i, j );
 
-            //color = board[i][j];
-
-            // Reset data structure for neighbours:
-            for ( k = 0; k < 4; k++ ) {
-                for ( l = 0; l < 2; l++ ) {
-                    neighbour[k][l] = -1;
-                }
-            }
-
-            // How many neighbours does the stone have, and where are they:
-            count = has_neighbour( i, j, neighbour );
-
-            // TODO:
-            // + If stone has no neighbours -> new group must be created
-
-            // Check which group number to give to current stone:
-            switch (count) {
-                case 0:
-                    // Single stone (no neighbours), that has no group number,
-                    // gets next free group number.
-                    if ( group[i][j] == 0 ) {
-                        group[i][j] = get_free_group_nr(color);
-                    }
-                    break;
-                default:
-                    // Get lowest positive (for BLACK) or highest negative
-                    // (for WHITE) group number of all neighbours. This is
-                    // then the group number for the current stone. If this
-                    // number is still zero, get the next free group number
-                    // (like case above).
-                    for ( k = 0; k < count; k++ ) {
-                        group_nr = group[ neighbour[k][0] ][ neighbour[k][1] ];
-                        if ( group_nr_min > group_nr && group_nr > 0 ) {
-                            group_nr_min = group_nr;
-                        }
-                        if ( group_nr_max < group_nr && group_nr < 0 ) {
-                            group_nr_max = group_nr;
-                        }
-                    }
-                    if ( color == BLACK ) {
-                        if ( group_nr_min == 0 ) {
-                            group_nr_min = get_free_group_nr(BLACK);
-                        }
-                        group[i][j] = group_nr_min;
-                    }
-                    if ( color == WHITE ) {
-                        if ( group_nr_max == 0 ) {
-                            group_nr_max = get_free_group_nr(WHITE);
-                        }
-                        group[i][j] = group_nr_max;
-                    }
-
-                    // Call function for all other neighbours which have a
-                    // different group number.
-
-                    break;
-            }
         }
 
     }
@@ -446,62 +381,138 @@ void create_groups(void)
     return;
 }
 
+void set_group( int i, int j )
+{
+    int k, l;
+    int color;
+    int count        = 0;
+    int group_nr     = 0;
+    int group_nr_min = INT_MAX;
+    int group_nr_max = INT_MIN;
+    int neighbour[4][2];
+    int neighbour_group;
+
+    color = board[i][j];
+
+    // Reset data structure for neighbours:
+    for ( k = 0; k < 4; k++ ) {
+        for ( l = 0; l < 2; l++ ) {
+            neighbour[k][l] = -1;
+        }
+    }
+
+    // How many neighbours does the stone have, and where are they:
+    count = has_neighbour( i, j, neighbour );
+
+    // Check which group number to give to current stone:
+    switch (count) {
+        case 0:
+            // Single stone (no neighbours), that has no group number,
+            // gets next free group number.
+            if ( group[i][j] == 0 ) {
+                group[i][j] = get_free_group_nr(color);
+            }
+            break;
+        default:
+            // Get lowest positive (for BLACK) or highest negative
+            // (for WHITE) group number of all neighbours. This is
+            // then the group number for the current stone. If this
+            // number is still zero, get the next free group number
+            // (like case above).
+            for ( k = 0; k < count; k++ ) {
+                group_nr = group[ neighbour[k][0] ][ neighbour[k][1] ];
+                if ( group_nr_min > group_nr && group_nr > 0 ) {
+                    group_nr_min = group_nr;
+                }
+                if ( group_nr_max < group_nr && group_nr < 0 ) {
+                    group_nr_max = group_nr;
+                }
+            }
+            if ( color == BLACK ) {
+                if ( group_nr_min == 0 || group_nr_min == INT_MAX ) {
+                    group_nr_min = get_free_group_nr(BLACK);
+                }
+                group[i][j] = group_nr_min;
+            }
+            if ( color == WHITE ) {
+                if ( group_nr_max == 0 || group_nr_max == INT_MIN ) {
+                    group_nr_max = get_free_group_nr(WHITE);
+                }
+                group[i][j] = group_nr_max;
+            }
+
+            // Call function for all other neighbours which have a
+            // different group number.
+            for ( k = 0; k < count; k++ ) {
+                neighbour_group = group[ neighbour[k][0] ][ neighbour[k][1] ];
+                if ( neighbour_group != group[i][j] ) {
+                    set_group( neighbour[k][0], neighbour[k][1] );
+                }
+            }
+
+            break;
+    }
+
+
+    return;
+}
+
 int has_neighbour( int i, int j, int neighbour[][2] )
 {
-    int k     = 0;
-    int color = board[i][j];
+int k     = 0;
+int color = board[i][j];
 
-    if ( color == EMPTY ) {
-        fprintf( stderr, "invalid color found in group\n" );
-        exit(EXIT_FAILURE);
-    }
+if ( color == EMPTY ) {
+    fprintf( stderr, "invalid color found in group\n" );
+    exit(EXIT_FAILURE);
+}
 
-    if ( j + 1 < board_size && board[i][j+1] == color ) {
-        neighbour[k][0] = i;
-        neighbour[k][1] = j+1;
-        k++;
-    }
-    if ( i + 1 < board_size && board[i+1][j] == color ) {
-        neighbour[k][0] = i+1;
-        neighbour[k][1] = j;
-        k++;
-    }
-    if ( j - 1 >= 0 && board[i][j-1] == color ) {
-        neighbour[k][0] = i;
-        neighbour[k][1] = j-1;
-        k++;
-    }
-    if ( i - 1 >= 0 && board[i-1][j] == color ) {
-        neighbour[k][0] = i-1;
-        neighbour[k][1] = j;
-        k++;
-    }
+if ( j + 1 < board_size && board[i][j+1] == color ) {
+    neighbour[k][0] = i;
+    neighbour[k][1] = j+1;
+    k++;
+}
+if ( i + 1 < board_size && board[i+1][j] == color ) {
+    neighbour[k][0] = i+1;
+    neighbour[k][1] = j;
+    k++;
+}
+if ( j - 1 >= 0 && board[i][j-1] == color ) {
+    neighbour[k][0] = i;
+    neighbour[k][1] = j-1;
+    k++;
+}
+if ( i - 1 >= 0 && board[i-1][j] == color ) {
+    neighbour[k][0] = i-1;
+    neighbour[k][1] = j;
+    k++;
+}
 
-    return k;
+return k;
 }
 
 int get_free_group_nr( int color )
 {
-    int i, j;
-    int field          = 0;
-    int group_nr       = 0;
-    int group_nr_black = 0;
-    int group_nr_white = 0;
+int i, j;
+int field          = 0;
+int group_nr       = 0;
+int group_nr_black = 0;
+int group_nr_white = 0;
 
-    for ( i = 0; i < board_size; i++ ) {
-        for ( j = 0; j < board_size; j++ ) {
-            field = group[i][j];
-            if ( field > 0 && field > group_nr_black ) {
-                group_nr_black = field;
-            }
-            else if ( field < 0 && field < group_nr_white ) {
-                group_nr_white = field;
-            }
+for ( i = 0; i < board_size; i++ ) {
+    for ( j = 0; j < board_size; j++ ) {
+        field = group[i][j];
+        if ( field > 0 && field > group_nr_black ) {
+            group_nr_black = field;
+        }
+        else if ( field < 0 && field < group_nr_white ) {
+            group_nr_white = field;
         }
     }
+}
 
-    switch (color) {
-        case BLACK:
+switch (color) {
+    case BLACK:
             group_nr = group_nr_black + 1;
             break;
         case WHITE:
