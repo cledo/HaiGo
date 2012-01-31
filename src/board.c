@@ -343,6 +343,14 @@ void create_groups(void)
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
+
+            // Reset data structure for neighbours:
+            for ( k = 0; k < 4; k++ ) {
+                for ( l = 0; l < 2; l++ ) {
+                    neighbour[k][l] = -1;
+                }
+            }
+
             field = board[i][j];
             switch(field) {
                 case BLACK:
@@ -362,18 +370,10 @@ void create_groups(void)
 
             // TEST: show neighbours
             for ( k = 0; k < 4; k++ ) {
-                /*
                 if ( neighbour[k][0] == -1 ) {
-                    break;
+                    continue;
                 }
-                printf( "# neighbour for %d,%d: %d,%d\n", i, j, neighbour[k][0], neighbour[k][1] );
-                */
                 printf( "S: %d,%d N: %d,%d\n", i, j, neighbour[k][0], neighbour[k][1] );
-            }
-            for ( k = 0; k < 4; k++ ) {
-                for ( l = 0; l < 2; l++ ) {
-                    neighbour[k][l] = -1;
-                }
             }
         }
 
@@ -384,7 +384,7 @@ void create_groups(void)
 
 void has_neighbour( int i, int j, int neighbour[][2] )
 {
-    int k, l;
+    int k;
     int color = board[i][j];
 
     if ( color == EMPTY ) {
@@ -392,33 +392,24 @@ void has_neighbour( int i, int j, int neighbour[][2] )
         return;
     }
 
-    for ( k = 0; k < 4; k++ ) {
-        for ( l = 0; l < 2; l++ ) {
-            neighbour[k][l] = -1;
-        }
-    }
     k = 0;
 
     if ( j + 1 < board_size && board[i][j+1] == color ) {
-        //printf( "# Neighbour found on %d,%d\n", i, j+1 );
         neighbour[k][0] = i;
         neighbour[k][1] = j+1;
         k++;
     }
     if ( i + 1 < board_size && board[i+1][j] == color ) {
-        //printf( "# Neighbour found on %d,%d\n", i+1, j );
         neighbour[k][0] = i+1;
         neighbour[k][1] = j;
         k++;
     }
     if ( j - 1 >= 0 && board[i][j-1] == color ) {
-        //printf( "# Neighbour found on %d,%d\n", i, j-1 );
         neighbour[k][0] = i;
         neighbour[k][1] = j-1;
         k++;
     }
     if ( i - 1 >= 0 && board[i-1][j] == color ) {
-        //printf( "# Neighbour found on %d,%d\n", i-1, j );
         neighbour[k][0] = i-1;
         neighbour[k][1] = j;
         k++;
