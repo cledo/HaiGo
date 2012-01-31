@@ -18,6 +18,7 @@ my $output;
 
 my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
 
+# showgroups is only for debugging!
 my @known_commands = qw{
     protocol_version
     name
@@ -30,6 +31,7 @@ my @known_commands = qw{
     komi
     play
     showboard
+    showgroups
 };
 
 print {$stdin} "protocol_version\n";

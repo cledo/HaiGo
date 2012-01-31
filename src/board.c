@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <limits.h>
 #include "global_const.h"
 #include "board.h"
 
@@ -21,7 +22,7 @@ static void get_label_y_right( int j, char y[] );
 static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
 
 int has_neighbour( int i, int j, int neighbour[][2] );
-int get_free_group( int color );
+int get_free_group_nr( int color );
 
 /**
  *  @brief Allocates memory for all board data structures.
@@ -348,11 +349,40 @@ void create_groups(void)
     int i, j;
     int k, l;
     int color;
-    int count = 0;
+    int group_nr     = 0;
+    int group_nr_min = INT_MAX;
+    int group_nr_max = INT_MIN;
+    int count        = 0;
     int neighbour[4][2];
+
+    // Reset group board:
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            group[i][j] = 0;
+        }
+    }
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
+
+            color = board[i][j];
+
+            // Skip field if it is empty:
+            if ( color == EMPTY ) {
+                continue;
+            }
+
+            // Skip if group number is set already:
+            if ( group[i][j] ) {
+                continue;
+            }
+
+            //
+            // +++ Recursive start here +++
+            //
+            //group_nr_min,max go here ...
+
+            //color = board[i][j];
 
             // Reset data structure for neighbours:
             for ( k = 0; k < 4; k++ ) {
@@ -361,53 +391,52 @@ void create_groups(void)
                 }
             }
 
-            color = board[i][j];
-
-            if ( color == EMPTY ) {
-                continue;
-            }
-
-            switch(color) {
-                case BLACK:
-                    printf( "# BLACK on %d,%d\n", i, j );
-                    count = has_neighbour( i, j, neighbour );
-                    break;
-                case WHITE:
-                    printf( "# WHITE on %d,%d\n", i, j );
-                    count = has_neighbour( i, j, neighbour );
-                    break;
-                case EMPTY:
-                    break;
-                default:
-                    fprintf( stderr, "Invalid value on %d,%d: %d\n", i, j, color );
-                    exit(EXIT_FAILURE);
-            }
-
-            // TEST: show neighbours
-            /*
-            for ( k = 0; k < 4; k++ ) {
-                if ( neighbour[k][0] == -1 ) {
-                    continue;
-                }
-                printf( "S: %d,%d N: %d,%d\n", i, j, neighbour[k][0], neighbour[k][1] );
-            }
-            */
+            // How many neighbours does the stone have, and where are they:
+            count = has_neighbour( i, j, neighbour );
 
             // TODO:
-            // If stone has no neighbours -> new group must be created
-            // If stone has only one neighbour -> stone must be added to
-            // existing group.
-            // If stone has more than one neighbours -> groups must be merged.
+            // + If stone has no neighbours -> new group must be created
+
+            // Check which group number to give to current stone:
             switch (count) {
                 case 0:
+                    // Single stone (no neighbours), that has no group number,
+                    // gets next free group number.
                     if ( group[i][j] == 0 ) {
-                        group[i][j] = get_free_group(color);
+                        group[i][j] = get_free_group_nr(color);
                     }
                     break;
-                case 1:
-                    group[i][j] = group[ neighbour[0][0] ][ neighbour[0][1] ];
-                    break;
                 default:
+                    // Get lowest positive (for BLACK) or highest negative
+                    // (for WHITE) group number of all neighbours. This is
+                    // then the group number for the current stone. If this
+                    // number is still zero, get the next free group number
+                    // (like case above).
+                    for ( k = 0; k < count; k++ ) {
+                        group_nr = group[ neighbour[k][0] ][ neighbour[k][1] ];
+                        if ( group_nr_min > group_nr && group_nr > 0 ) {
+                            group_nr_min = group_nr;
+                        }
+                        if ( group_nr_max < group_nr && group_nr < 0 ) {
+                            group_nr_max = group_nr;
+                        }
+                    }
+                    if ( color == BLACK ) {
+                        if ( group_nr_min == 0 ) {
+                            group_nr_min = get_free_group_nr(BLACK);
+                        }
+                        group[i][j] = group_nr_min;
+                    }
+                    if ( color == WHITE ) {
+                        if ( group_nr_max == 0 ) {
+                            group_nr_max = get_free_group_nr(WHITE);
+                        }
+                        group[i][j] = group_nr_max;
+                    }
+
+                    // Call function for all other neighbours which have a
+                    // different group number.
+
                     break;
             }
         }
@@ -451,7 +480,7 @@ int has_neighbour( int i, int j, int neighbour[][2] )
     return k;
 }
 
-int get_free_group( int color )
+int get_free_group_nr( int color )
 {
     int i, j;
     int field          = 0;
