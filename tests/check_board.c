@@ -195,6 +195,65 @@ START_TEST (test_groups_1)
 }
 END_TEST
 
+START_TEST (test_groups_2)
+{
+    int i, j;
+    int s = BOARD_SIZE_DEFAULT;
+    int neighbour[4][2];
+
+    for ( i = 0; i < 4; i++ ) {
+        for ( j = 0; j < 2; j++ ) {
+            neighbour[i][j] = -1;
+        }
+    }
+
+    init_board(s);
+
+    // No neighbour
+    set_vertex( BLACK, 0,  0 );
+    fail_if( has_neighbour( 0, 0, neighbour ) != 0, "no neighbours" );
+    fail_if( neighbour[0][0] != -1, "no neighbour found" );
+
+
+    // One neighbour
+    set_vertex( BLACK, 0, 18 );
+    set_vertex( BLACK, 0, 17 );
+    fail_if( has_neighbour( 0, 18, neighbour ) != 1, "one neighbours" );
+    fail_if( neighbour[0][0] != 0 || neighbour[0][1] != 17, "first neighbour found" );
+
+    // Two neighbours
+    set_vertex( BLACK, 18, 18 );
+    set_vertex( BLACK, 18, 17 );
+    set_vertex( BLACK, 17, 18 );
+    fail_if( has_neighbour( 18, 18, neighbour ) != 2, "two neighbours" );
+    fail_if( neighbour[0][0] != 18 || neighbour[0][1] != 17, "first neighbour found" );
+    fail_if( neighbour[1][0] != 17 || neighbour[1][1] != 18, "second neighbour found" );
+
+    // Three neighbours
+    set_vertex( BLACK, 17,  0 );
+    set_vertex( BLACK, 17,  1 );
+    set_vertex( BLACK, 18,  0 );
+    set_vertex( BLACK, 16,  0 );
+    fail_if( has_neighbour( 17, 0, neighbour ) != 3, "three neighbours" );
+    fail_if( neighbour[0][0] != 17 || neighbour[0][1] != 1, "first neighbour found" );
+    fail_if( neighbour[1][0] != 18 || neighbour[1][1] != 0, "second neighbour found" );
+    fail_if( neighbour[2][0] != 16 || neighbour[2][1] != 0, "third neighbour found" );
+
+    // Four neighbours
+    set_vertex( BLACK,  9,  9 );
+    set_vertex( BLACK,  9, 10 );
+    set_vertex( BLACK, 10,  9 );
+    set_vertex( BLACK,  9,  8 );
+    set_vertex( BLACK,  8,  9 );
+    fail_if( has_neighbour( 9, 9, neighbour ) != 4, "four neighbours" );
+    fail_if( neighbour[0][0] != 9  || neighbour[0][1] != 10, "first neighbour found" );
+    fail_if( neighbour[1][0] != 10 || neighbour[1][1] != 9,  "second neighbour found" );
+    fail_if( neighbour[2][0] != 9  || neighbour[2][1] != 8,  "third neighbour found" );
+    fail_if( neighbour[3][0] != 8  || neighbour[3][1] != 9,  "fourth neighbour found" );
+
+}
+END_TEST
+
 START_TEST (test_vertex_1)
 {
     int i, j;
@@ -243,6 +302,7 @@ Suite * board_suite(void) {
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
     tcase_add_test( tc_groups, test_groups_1 );
+    tcase_add_test( tc_groups, test_groups_2 );
     tcase_add_test( tc_vertex, test_vertex_1 );
 
     suite_add_tcase( s, tc_init_board );
