@@ -114,6 +114,8 @@ START_TEST (test_init_board_1)
     fail_if( group == NULL, "group initialised (%dx%d)", s, s );
     fail_if( hoshi == NULL, "hoshi initialised (%dx%d)", s, s );
 
+    fail_if( s != get_board_size(), "correct board size returned (%d,%d)", s, s );
+
     free_board();
 
     fail_if( board != NULL, "board is NULL" );
@@ -144,17 +146,109 @@ START_TEST (test_get_board_as_string_1)
 }
 END_TEST
 
+START_TEST (test_groups_1)
+{
+    int s = BOARD_SIZE_DEFAULT;
+
+    init_board(s);
+
+    fail_if( get_free_group_nr(BLACK) !=  1, "next group for black is 1"  );
+    fail_if( get_free_group_nr(WHITE) != -1, "next group for white is -1" );
+
+    set_vertex( BLACK, 0, 0 );
+    create_groups();
+
+    fail_if( get_free_group_nr(BLACK) !=  2, "next group for black is 2"  );
+    fail_if( get_free_group_nr(WHITE) != -1, "next group for white is -1" );
+
+    set_vertex( WHITE, 0, 1 );
+    create_groups();
+
+    fail_if( get_free_group_nr(BLACK) !=  2, "next group for black is 2"  );
+    fail_if( get_free_group_nr(WHITE) != -2, "next group for white is -2" );
+
+    set_vertex( BLACK, 10, 10 );
+    create_groups();
+
+    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
+    fail_if( get_free_group_nr(WHITE) != -2, "next group for white is -2" );
+
+    set_vertex( WHITE, 15, 15 );
+    create_groups();
+
+    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
+    fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
+
+    set_vertex( BLACK, 10, 11 );
+    create_groups();
+
+    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
+    fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
+
+    set_vertex( WHITE, 15, 16 );
+    create_groups();
+
+    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
+    fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
+
+    free_board();
+}
+END_TEST
+
+START_TEST (test_vertex_1)
+{
+    int i, j;
+    int s = BOARD_SIZE_DEFAULT;
+
+    init_board(s);
+
+    // Set BLACK
+    for ( i = 0; i < s; i++ ) {
+        for ( j = 0; j < s; j++ ) {
+            fail_if( board[i][j] != EMPTY, "%d,%d is empty", i, j );
+            set_vertex( BLACK, i, j );
+            fail_if( board[i][j] != BLACK, "%d,%d is black", i, j );
+        }
+    }
+
+    // Set EMPTY
+    for ( i = 0; i < s; i++ ) {
+        for ( j = 0; j < s; j++ ) {
+            set_vertex( EMPTY, i, j );
+            fail_if( board[i][j] != EMPTY, "%d,%d is empty", i, j );
+        }
+    }
+
+    // Set WHITE
+    for ( i = 0; i < s; i++ ) {
+        for ( j = 0; j < s; j++ ) {
+            fail_if( board[i][j] != EMPTY, "%d,%d is empty", i, j );
+            set_vertex( WHITE, i, j );
+            fail_if( board[i][j] != WHITE, "%d,%d is white", i, j );
+        }
+    }
+
+    free_board();
+}
+END_TEST
+
 
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Run");
     TCase *tc_init_board          = tcase_create("init_board");
     TCase *tc_get_board_as_string = tcase_create("get_board_as_string");
+    TCase *tc_groups              = tcase_create("groups");
+    TCase *tc_vertex              = tcase_create("vertex");
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
+    tcase_add_test( tc_groups, test_groups_1 );
+    tcase_add_test( tc_vertex, test_vertex_1 );
 
     suite_add_tcase( s, tc_init_board );
     suite_add_tcase( s, tc_get_board_as_string );
+    suite_add_tcase( s, tc_groups );
+    suite_add_tcase( s, tc_vertex );
 
     return s;
 }

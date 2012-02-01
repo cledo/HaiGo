@@ -21,9 +21,6 @@ static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
 static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
 
-void set_group( int i, int j );
-int has_neighbour( int i, int j, int neighbour[][2] );
-int get_free_group_nr( int color );
 
 /**
  *  @brief Allocates memory for all board data structures.
