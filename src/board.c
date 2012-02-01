@@ -334,12 +334,31 @@ int get_board_size(void)
  * @param[in]   j       vertical coordinate
  * @return      nothing
  * @note        Remember that this function may set a stone or delete a stone.
+ * @todo        Maybe a coordinate check should be done here ...
  */
 void set_vertex( int color, int i, int j )
 {
     board[i][j] = color;
 
     return;
+}
+
+/**
+ * @brief       Returns the color of the given vertex.
+ *
+ * Returns the color of the stone on a given vertex or EMPTY.
+ *
+ * @param[in]   i   horizontal coordinate
+ * @param[in]   j   vertex coordinate
+ * @return      BLACK|WHITE|EMPTY
+ * @sa          set_vertex()
+ * @todo        Maybe a coordinate check should be done here ...
+ */
+int get_vertex( int i, int j )
+{
+    int color = board[i][j];
+
+    return color;
 }
 
 void create_groups(void)

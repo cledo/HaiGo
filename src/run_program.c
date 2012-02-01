@@ -586,6 +586,13 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
+    // Check if vertex is empty:
+    if ( get_vertex( i, j ) != EMPTY ) {
+        set_output_error();
+        add_output("illegal move");
+        return;
+    }
+
     set_vertex( color, i, j );
 
     // TEST:

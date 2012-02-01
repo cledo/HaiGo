@@ -160,3 +160,4 @@ waitpid( $pid, 0 );
 my $exit_status = $? >> 8;
 
 ok( $exit_status == 0, 'exit status 0' );
+
