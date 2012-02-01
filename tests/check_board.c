@@ -3,25 +3,47 @@
 #include <strings.h>
 #include <stdbool.h>
 #include <check.h>
+#include "../src/global_const.h"
 #include "../src/board.h"
 
 int  **board = NULL;
+int  **group = NULL;
 bool **hoshi = NULL;
 
 START_TEST (test_init_board_1)
 {
+    int i = -1;
+    int s = 0;
+    int board_size[] = { BOARD_SIZE_MIN, 9, 13, 19, BOARD_SIZE_MAX };
 
-    init_board(19);
+    do {
+        i++;
+        s = board_size[i];
 
-    fail_if( board == NULL, "board initialised" );
-    fail_if( hoshi == NULL, "hoshi initialised" );
+        init_board(s);
 
-    free_board();
+        fail_if( board == NULL, "board initialised (%dx%d)", s, s );
+        fail_if( group == NULL, "group initialised (%dx%d)", s, s );
+        fail_if( hoshi == NULL, "hoshi initialised (%dx%d)", s, s );
 
-    fail_if( board != NULL, "board is NULL" );
-    fail_if( hoshi != NULL, "hoshi is NULL" );
+        free_board();
+
+        fail_if( board != NULL, "board is NULL" );
+        fail_if( group != NULL, "group is NULL" );
+        fail_if( hoshi != NULL, "hoshi is NULL" );
+    } while ( board_size[i] != BOARD_SIZE_MAX );
 }
 END_TEST
+
+/*
+START_TEST (test_get_board_as_string_1)
+{
+
+
+
+}
+END_TEST
+*/
 
 Suite * board_suite(void) {
     Suite *s             = suite_create("Run");
