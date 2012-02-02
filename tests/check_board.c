@@ -134,14 +134,8 @@ START_TEST (test_get_board_as_string_1)
     init_board(s);
     get_board_as_string(board_output);
 
-    /*
-    f1 = fopen( "f1.txt", "w" );
-    f2 = fopen( "f2.txt", "w" );
-    fprintf( f1, board_min );
-    fprintf( f2, board_output );
-    fclose(f1);
-    fclose(f2);
-    */
+    //printf( "%s", test_board[_i] );
+    //printf( "%s", board_output );
     fail_if( strcmp( test_board[_i], board_output ) != 0, "board string received (%dx%d)", s, s );
 }
 END_TEST
