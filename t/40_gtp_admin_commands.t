@@ -40,7 +40,7 @@ is( $output, "= 2\n\n", 'protocol_version returned 2' );
 
 print {$stdin} "name\n";
 $output = get_output($stdout);
-is( $output, "= haigo\n\n", 'name returned haigo' );
+is( $output, "= HaiGo\n\n", 'name returned haigo' );
 
 print {$stdin} "version\n";
 $output = get_output($stdout);

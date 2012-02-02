@@ -2,7 +2,7 @@
 #define GLOBAL_CONST_H
 
 /// Defines the name of the program.
-#define PROGRAM_NAME    "haigo"
+#define PROGRAM_NAME    "HaiGo"
 /// Defines the current version of the program.
 #define PROGRAM_VERSION "0.1"
 /// Defines the valid command line options.

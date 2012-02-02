@@ -34,4 +34,5 @@ src/Makefile.in
 tests/Makefile
 tests/Makefile.in
 */.deps/*.Po
+.vimrc
 
