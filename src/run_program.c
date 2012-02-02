@@ -143,6 +143,9 @@ void set_quit_program(void)
  *  @param[in]  argv    Array of arguments (same as for main())
  *  @return     nothing
  *  @sa         man 3 getopt
+ *  @todo       The call to free_board() under the default switch should
+ *              probably be subsituted by a more sophisticated clean_up()
+ *              function.
  */
 void read_opts( int argc, char **argv )
 {
@@ -159,6 +162,7 @@ void read_opts( int argc, char **argv )
                 set_quit_program();
                 break;
             default:
+                free_board();   // See @todo above.
                 exit(EXIT_FAILURE);
         }
     }
