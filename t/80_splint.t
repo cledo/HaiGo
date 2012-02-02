@@ -12,8 +12,8 @@ my @splint_args = qw(
     -boolcompare
 );
 
-my $src_dir     = './src/';
-my @all_c_files = glob $src_dir . '*.c';
+my $src_dir        = './src/';
+my @all_c_files    = glob $src_dir . '*.c';
 my $splint_command = 'splint ' . join q{ }, @splint_args;
 
 plan tests => scalar @all_c_files;
