@@ -497,6 +497,8 @@ void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  *  @sa     Go Text Protokol version 2, 6.3.2 Setup Commands
  * 
  *  @ingroup GTP_Setup_Commands
+ *
+ * @todo    Set number of captured stones to zero; clear move history.
  */
 void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
