@@ -7,7 +7,7 @@ use lib qw( t/lib );
 
 use IPC::Open3;
 
-use Test::More tests => 4;
+use Test::More tests => 7;
 
 use TLib qw( get_output );
 
@@ -25,6 +25,19 @@ is( $output, "= \n\n", 'move played' );
 print {$stdin} "play WHITE A1\n";
 $output = get_output($stdout);
 is( $output, "? illegal move\n\n", 'move is illegal' );
+
+print {$stdin} "play WHITE A2\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play BLACK C1\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play WHITE B1\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
 
 print {$stdin} "quit\n";
 $output = get_output($stdout);
