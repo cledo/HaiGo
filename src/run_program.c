@@ -603,6 +603,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     // TEST:
     create_groups();
+    count_liberties();
 
     /// @todo Remove captured stones here ...
     /// @todo Update move history ...
