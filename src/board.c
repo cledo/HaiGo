@@ -361,6 +361,20 @@ int get_vertex( int i, int j )
     return color;
 }
 
+/**
+ * @brief       Creates groups of stones.
+ *
+ * This function creates groups of stone and assigns numbers to them. Thess
+ * numbers are stored in the group data structure. Black groups have positive
+ * numbers, white groups have negative numbers. Empty fields are marked with
+ * zero.
+ *
+ * @return      nothing
+ * @note        When this function is called, the whole group board is rebuild
+ *              from scratch.
+ * @todo        Maybe a function is needed that updates the group board,
+ *              instead of rebuilding it each time again.
+ */
 void create_groups(void)
 {
     int i, j;
@@ -397,6 +411,19 @@ void create_groups(void)
     return;
 }
 
+/**
+ * @brief       Sets the group number for a given stone.
+ *
+ * Sets the group number for a given vertex and if necessary for all
+ * neighbouring stones. This function works recursively. It writes its data
+ * into the group board data structure.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      nothing
+ * @note        This is where the group board gets its data from.
+ * @note        This is a recursive function
+ */
 void set_group( int i, int j )
 {
     int k, l;
@@ -457,7 +484,7 @@ void set_group( int i, int j )
                 group[i][j] = group_nr_max;
             }
 
-            // Call function for all other neighbours which have a
+            // Call function recursively for all other neighbours which have a
             // different group number.
             for ( k = 0; k < count; k++ ) {
                 neighbour_group = group[ neighbour[k][0] ][ neighbour[k][1] ];
@@ -473,75 +500,115 @@ void set_group( int i, int j )
     return;
 }
 
+/**
+ * @brief       Checks number of neighbours for given stone.
+ *
+ * For a given vertex, the number of neighbours is returned, and there
+ * coordinates are written into the neighbour data structure.
+ *
+ * @param[in]   i           Horizontal coordinate
+ * @param[in]   j           Vertical coordinate
+ * @param[out]  neighbour   List of vertexes
+ * @return      Number of neighbours
+ */
 int has_neighbour( int i, int j, int neighbour[][2] )
 {
-int k     = 0;
-int color = board[i][j];
+    int k     = 0;
+    int color = board[i][j];
 
-if ( color == EMPTY ) {
-    fprintf( stderr, "invalid color found in group\n" );
-    exit(EXIT_FAILURE);
+    if ( color == EMPTY ) {
+        fprintf( stderr, "invalid color found in group\n" );
+        exit(EXIT_FAILURE);
+    }
+
+    if ( j + 1 < board_size && board[i][j+1] == color ) {
+        neighbour[k][0] = i;
+        neighbour[k][1] = j+1;
+        k++;
+    }
+    if ( i + 1 < board_size && board[i+1][j] == color ) {
+        neighbour[k][0] = i+1;
+        neighbour[k][1] = j;
+        k++;
+    }
+    if ( j - 1 >= 0 && board[i][j-1] == color ) {
+        neighbour[k][0] = i;
+        neighbour[k][1] = j-1;
+        k++;
+    }
+    if ( i - 1 >= 0 && board[i-1][j] == color ) {
+        neighbour[k][0] = i-1;
+        neighbour[k][1] = j;
+        k++;
+    }
+
+    return k;
 }
 
-if ( j + 1 < board_size && board[i][j+1] == color ) {
-    neighbour[k][0] = i;
-    neighbour[k][1] = j+1;
-    k++;
-}
-if ( i + 1 < board_size && board[i+1][j] == color ) {
-    neighbour[k][0] = i+1;
-    neighbour[k][1] = j;
-    k++;
-}
-if ( j - 1 >= 0 && board[i][j-1] == color ) {
-    neighbour[k][0] = i;
-    neighbour[k][1] = j-1;
-    k++;
-}
-if ( i - 1 >= 0 && board[i-1][j] == color ) {
-    neighbour[k][0] = i-1;
-    neighbour[k][1] = j;
-    k++;
-}
-
-return k;
-}
-
+/**
+ * @brief       Get the next group number that may be used for new group.
+ *
+ * This function returns the next group number for the given color, that may
+ * be used for a new group. For black this is the highest current group number
+ * plus one. For white this is the lowest current group number minus one.
+ *
+ * @param[in]   color   BLACK|WHITE
+ * @return      int     next free group number
+ */
 int get_free_group_nr( int color )
 {
-int i, j;
-int field          = 0;
-int group_nr       = 0;
-int group_nr_black = 0;
-int group_nr_white = 0;
+    int i, j;
+    int field          = 0;
+    int group_nr       = 0;
+    int group_nr_black = 0;
+    int group_nr_white = 0;
 
-for ( i = 0; i < board_size; i++ ) {
-    for ( j = 0; j < board_size; j++ ) {
-        field = group[i][j];
-        if ( field > 0 && field > group_nr_black ) {
-            group_nr_black = field;
-        }
-        else if ( field < 0 && field < group_nr_white ) {
-            group_nr_white = field;
+    // Check if color is valid:
+    if ( color != BLACK && color != WHITE ) {
+        fprintf( stderr, "invalid color given to get_free_group_nr()" );
+        exit(EXIT_FAILURE);
+    }
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            field = group[i][j];
+            // Get highest number of black group:
+            if ( field > 0 && field > group_nr_black ) {
+                group_nr_black = field;
+            }
+            // Get lowest number of white group:
+            else if ( field < 0 && field < group_nr_white ) {
+                group_nr_white = field;
+            }
         }
     }
-}
 
-switch (color) {
-    case BLACK:
+    switch (color) {
+        case BLACK:
             group_nr = group_nr_black + 1;
             break;
         case WHITE:
             group_nr = group_nr_white - 1;
             break;
         default:
-            // Error message should go here ...
             break;
     }
 
     return group_nr;
 }
 
+
+/**
+ * @brief       Shows group numbers.
+ *
+ * This is a debug function which shows a simple board where empty fields are
+ * marked with zero, black groups are shown with positive integer numbers, and
+ * white groups are shown with negative integer number.
+ *
+ * @return      nothing
+ * @note        This function prints directly to STDOUT.
+ * @todo        Maybe this function can be removed later on.
+ */
 void print_groups(void)
 {
     int i, j;
