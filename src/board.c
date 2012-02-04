@@ -792,3 +792,51 @@ void count_liberties(void)
     return;
 }
 
+/**
+ * @brief       Remove all groups without liberties for given color.
+ *
+ * This function removes all groups with zero liberties of a given color.
+ *
+ * @param[in]   color   BLACK|WHITE
+ * @return      nothing
+ */
+void remove_stones( int color )
+{
+    int i, j;
+    int group_nr;
+    int real_group_nr;
+    int group_nr_max;
+    int *group_liberties;
+    
+    group_nr_max = get_last_group_nr(color);
+
+    if ( color == WHITE ) {
+        group_nr_max *= -1;
+        group_liberties = white_liberties;
+    }
+    else {
+        group_liberties = black_liberties;
+    }
+
+    // Check all groups for current color:
+    for ( group_nr = 1; group_nr <= group_nr_max; group_nr++ ) {
+        if ( group_liberties[group_nr] == 0 ) {
+            // Found group with zero liberties:
+            for ( i = 0; i < board_size; i++ ) {
+                for ( j = 0; j < board_size; j++ ) {
+                    real_group_nr = ( color == WHITE ) ? group_nr * -1 : group_nr;
+                    // Delete this group:
+                    if ( group[i][j] == real_group_nr ) {
+                        board[i][j] = EMPTY;
+                        group[i][j] = EMPTY;
+                        /// @todo count captured stones here!
+                    }
+                }
+            }
+        }
+    }
+
+
+    return;
+}
+

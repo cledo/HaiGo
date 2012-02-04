@@ -606,6 +606,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     count_liberties();
 
     /// @todo Remove captured stones here ...
+    remove_stones( color * -1 );
     /// @todo Update move history ...
 
     return;
