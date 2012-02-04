@@ -605,8 +605,11 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     create_groups();
     count_liberties();
 
-    /// @todo Remove captured stones here ...
     remove_stones( color * -1 );
+    /// @todo Check for illegal move, if there is a group of own color that
+    /// has no liberties.
+
+
     /// @todo Update move history ...
 
     return;
