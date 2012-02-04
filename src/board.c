@@ -104,8 +104,8 @@ void init_board( int wanted_board_size )
 
     // Initialise liberty lists:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
-        black_liberties[i] = 0;
-        white_liberties[i] = 0;
+        black_liberties[i] = -1;
+        white_liberties[i] = -1;
     }
 
     return;
@@ -685,12 +685,15 @@ void count_liberties(void)
     int black_group_nr_max = 0;
     int white_group_nr_min = 0;
 
-    // Steps:
-    // 1. Get highest black group number, get lowest white group number.
+    // Get highest black group number, get lowest white group number.
     black_group_nr_max = get_last_group_nr(BLACK);
     white_group_nr_min = get_last_group_nr(WHITE);
 
-    // Search for all black groups:
+    // Initialise liberty lists:
+    for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
+        black_liberties[i] = -1;
+        white_liberties[i] = -1;
+    }
 
     // Get next black group:
     for ( group_nr = 1; group_nr <= black_group_nr_max; group_nr++ ) {
@@ -771,14 +774,20 @@ void count_liberties(void)
         }
 
         // Save number of liberties for current group in liberties list:
-        white_liberties[group_nr] = count;
+        white_liberties[group_nr * -1] = count;
     }
 
     // DEBUG:
+    /*
     printf("Black groups:\n");
-    for ( i = 0; i <= black_group_nr_max; i++ ) {
+    for ( i = 1; i <= black_group_nr_max; i++ ) {
         printf( "\tGroup %d: %d\n", i, black_liberties[i] );
     }
+    printf("White groups:\n");
+    for ( i = 1; i <= white_group_nr_min * -1; i++ ) {
+        printf( "\tGroup %d: %d\n", i, white_liberties[i] );
+    }
+    */
 
     return;
 }
