@@ -17,12 +17,14 @@ int black_cpatured = 0;
 int white_captured = 0;
 int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
 int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
+int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
 
 static void get_label_x( int i, char x[] );
 static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
 static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
+
 
 
 /**
@@ -102,10 +104,12 @@ void init_board( int wanted_board_size )
             break;
     }
 
-    // Initialise liberty lists:
+    // Initialise liberty lists and captured_now list:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
         black_liberties[i] = -1;
         white_liberties[i] = -1;
+        captured_now[i][0] = -1;
+        captured_now[i][1] = -1;
     }
 
     return;
@@ -795,20 +799,24 @@ void count_liberties(void)
 /**
  * @brief       Remove all groups without liberties for given color.
  *
- * This function removes all groups with zero liberties of a given color.
+ * This function removes all groups with zero liberties of a given color. The
+ * number of removed stones is returned.
  *
  * @param[in]   color   BLACK|WHITE
- * @return      nothing
+ * @return      Number of removed stones
  */
-void remove_stones( int color )
+int remove_stones( int color )
 {
     int i, j;
+    int k = 0;
     int group_nr;
     int real_group_nr;
     int group_nr_max;
     int *group_liberties;
+    int stones_removed;
     
-    group_nr_max = get_last_group_nr(color);
+    group_nr_max   = get_last_group_nr(color);
+    stones_removed = 0;
 
     if ( color == WHITE ) {
         group_nr_max *= -1;
@@ -829,7 +837,10 @@ void remove_stones( int color )
                     if ( group[i][j] == real_group_nr ) {
                         board[i][j] = EMPTY;
                         group[i][j] = EMPTY;
-                        /// @todo count captured stones here!
+                        stones_removed++;
+                        captured_now[k][0] = i;
+                        captured_now[k][1] = j;
+                        k++;
                     }
                 }
             }
@@ -837,6 +848,74 @@ void remove_stones( int color )
     }
 
 
-    return;
+    return stones_removed;
+}
+
+/**
+ * @brief       Returns group number for given vertex.
+ *
+ * Returns the group number for a given vertex. For a black stone this is a
+ * positive integer, for a white stone this is a negative integer, and for an
+ * empty field zero is returned.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      group number
+ */
+int get_group_nr( int i, int j )
+{
+
+    return group[i][j];
+}
+
+/**
+ * @brief       Returns number of liberties for a given group.
+ *
+ * Returns the number of liberties for a given group.
+ *
+ * @param[in]   group_nr     group number
+ * @return      Number of liberties
+ */
+int get_nr_of_liberties( int group_nr )
+{
+    int nr_of_liberties;
+
+    if ( group_nr > 0 ) {
+        nr_of_liberties = black_liberties[group_nr];
+    }
+    else {
+        nr_of_liberties = white_liberties[ group_nr * -1 ];
+    }
+
+    return nr_of_liberties;
+}
+
+/**
+ * @brief       Returns number and vertexes of currently captured stones.
+ *
+ * The number of currently captured stones is returned. The list of vertexes
+ * where stones have been captured now is written into the captured[][2]
+ * parameter.
+ *
+ * @param[out]  captured    List of vertexes
+ * @return      Number of captured stones
+ * @todo        Maybe a pointer to captured_now[][2] would be enough instead
+ *              of performing a copy.
+ */
+int get_captured_now( int captured[][2] )
+{
+    int k = 0;
+    int nr_of_captured_now = 0;
+
+    while ( captured_now[k][0] != -1 ) {
+        captured[k][0] = captured_now[k][0];
+        captured[k][1] = captured_now[k][1];
+        nr_of_captured_now++;
+        k++;
+    }
+    captured[k][0] = -1;
+    captured[k][1] = -1;
+
+    return nr_of_captured_now;
 }
 

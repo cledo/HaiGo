@@ -556,6 +556,12 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     int color;
     int i, j;
+    int nr_of_removed_stones;
+    int group_nr;
+    int nr_of_liberties;
+
+    // Remove later, when move struct is available:
+    //int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
     // Check if first argument is black or white:
     str_toupper( gtp_argv[0] );
@@ -605,10 +611,35 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     create_groups();
     count_liberties();
 
-    remove_stones( color * -1 );
-    /// @todo Check for illegal move, if there is a group of own color that
-    /// has no liberties.
+    nr_of_removed_stones = remove_stones( color * -1 );
 
+    // If board has changed, rebuild groups and liberties:
+    if ( nr_of_removed_stones > 0 ) {
+        create_groups();
+        count_liberties();
+    }
+
+    // Get group number of current stone
+    group_nr = get_group_nr( i, j );
+    // Get number of liberties for this group
+    nr_of_liberties = get_nr_of_liberties(group_nr);
+    // If liberties are zero, move is invalid
+    if ( nr_of_liberties == 0 ) {
+        set_vertex( EMPTY, i, j );
+        set_output_error();
+        add_output("illegal move");
+        // Deleted stones must be returned ( => needs move structure )
+        // This may be only the case with an illegal ko move ....?
+    }
+
+    // DEBUG:
+    /*
+    nr_of_removed_stones = get_captured_now(captured_now);
+    printf( "# Nr.: %d\n", nr_of_removed_stones );
+    for ( i = 0; i < nr_of_removed_stones; i++ ) {
+        printf( "    %d: %d,%d\n", i+1, captured_now[i][0], captured_now[i][1]);
+    }
+    */
 
     /// @todo Update move history ...
 
