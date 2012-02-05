@@ -8,6 +8,7 @@
 #include "run_program.h"
 #include "io.h"
 #include "board.h"
+#include "move.h"
 #include "global_tools.h"
 
 
@@ -559,9 +560,10 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int nr_of_removed_stones;
     int group_nr;
     int nr_of_liberties;
+    int move_nr;
 
     // Remove later, when move struct is available:
-    //int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
     // Check if first argument is black or white:
     str_toupper( gtp_argv[0] );
@@ -640,8 +642,14 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         printf( "    %d: %d,%d\n", i+1, captured_now[i][0], captured_now[i][1]);
     }
     */
+    nr_of_removed_stones = get_captured_now(captured_now);
 
     /// @todo Update move history ...
+    move_nr = create_next_move();
+    set_move_vertex( i, j );
+    set_move_captured_stones(captured_now);
+
+    //print_move();
 
     return;
 }
