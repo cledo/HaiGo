@@ -155,6 +155,17 @@ void set_move_ko( int i, int j )
     return;
 }
 
+int get_move_last_ko_i(void)
+{
+
+    return move_history[move_number].ko[0];
+}
+int get_move_last_ko_j(void)
+{
+
+    return move_history[move_number].ko[1];
+}
+
 /**
  * @brief       Pushes next move onto move history.
  *

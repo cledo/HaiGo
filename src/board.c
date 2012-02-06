@@ -13,10 +13,12 @@ int  **board;
 int  **group;
 bool **hoshi;
 int board_size     = 0;
-int black_cpatured = 0;
+int black_captured = 0;
 int white_captured = 0;
 int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
 int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
+int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
+int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
 int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
 
@@ -44,7 +46,7 @@ void init_board( int wanted_board_size )
 {
     int i, j;
 
-    black_cpatured = 0;
+    black_captured = 0;
     white_captured = 0;
 
     board_size = wanted_board_size;
@@ -106,10 +108,12 @@ void init_board( int wanted_board_size )
 
     // Initialise liberty lists and captured_now list:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
-        black_liberties[i] = -1;
-        white_liberties[i] = -1;
-        captured_now[i][0] = -1;
-        captured_now[i][1] = -1;
+        black_liberties[i]  = -1;
+        white_liberties[i]  = -1;
+        black_group_size[i] = 0;
+        white_group_size[i] = 0;
+        captured_now[i][0]  = -1;
+        captured_now[i][1]  = -1;
     }
 
     return;
@@ -917,5 +921,59 @@ int get_captured_now( int captured[][2] )
     captured[k][1] = -1;
 
     return nr_of_captured_now;
+}
+
+/**
+ * @brief       Determines the size of all groups.
+ *
+ * Determines the size of all black and white groups and stores the results in
+ * black_group_size[] and white_group_size[].
+ *
+ * @return      Nothing
+ */
+void set_groups_size(void)
+{
+    int i, j;
+    int group_nr;
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            group_nr = group[i][j];
+            if ( group_nr == 0 ) {
+                continue;
+            }
+            else if ( group_nr > 0 ) {
+                black_group_size[group_nr]++;
+            }
+            else if ( group_nr < 0 ) {
+                white_group_size[group_nr * -1]++;
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Returns the size of a given group.
+ *
+ * Returns the size, that is the number of stones, for a given group,
+ * determined by group number.
+ *
+ * @param[in]   group_nr    Number of group.
+ * @return      group_size  Size of group.
+ */
+int get_size_of_group( int group_nr )
+{
+    int group_size = 0;
+
+    if ( group_nr > 0 ) {
+        group_size = black_group_size[group_nr];
+    }
+    else if ( group_nr < 0 ) {
+        group_size = white_group_size[group_nr * -1];
+    }
+
+    return group_size;
 }
 

@@ -558,11 +558,12 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     int color;
     int i, j;
-    int move_nr;
     int nr_of_removed_stones;
     int group_nr;
     int nr_of_liberties;
+    int group_size;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int ko_i, ko_j;
 
     // Check if first argument is black or white:
     str_toupper( gtp_argv[0] );
@@ -606,13 +607,23 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
-    // Check for ko repetition here ...
-    move_nr = get_next_move_nr();
+    // Check for ko repetition:
+    ko_i = get_move_last_ko_i();
+    ko_j = get_move_last_ko_j();
+    if ( ko_i != -1 && ko_j != -1 ) {
+        if ( ko_i == i && ko_j == j ) {
+            set_output_error();
+            add_output("illegal move");
+            return;
+        }
+    }
+
 
     set_vertex( color, i, j );
 
     create_groups();
     count_liberties();
+    set_groups_size();
 
     nr_of_removed_stones = remove_stones( color * -1 );
 
@@ -620,16 +631,19 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     if ( nr_of_removed_stones > 0 ) {
         create_groups();
         count_liberties();
+        set_groups_size();
     }
 
-    group_nr = get_group_nr( i, j );
+    group_nr        = get_group_nr( i, j );
     nr_of_liberties = get_nr_of_liberties(group_nr);
+    group_size      = get_size_of_group(group_nr);
 
     // If liberties are zero, move is invalid
     if ( nr_of_liberties == 0 ) {
         set_vertex( EMPTY, i, j );
         set_output_error();
         add_output("illegal move");
+        return;
     }
 
     nr_of_removed_stones = get_captured_now(captured_now);
@@ -640,6 +654,11 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     // Add move to move history:
     push_move();
+
+    // Check if this is a ko:
+    if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
+        set_move_ko( i, j );
+    }
 
     return;
 }

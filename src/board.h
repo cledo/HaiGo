@@ -18,6 +18,8 @@ int  get_last_group_nr( int color );
 int  get_group_nr( int i, int j );
 int  get_nr_of_liberties( int group_nr );
 int  get_captured_now( int captured[][2] );
+void set_groups_size(void);
+int  get_size_of_group( int group_nr );
 
 //DEBUG:
 void print_groups(void);
