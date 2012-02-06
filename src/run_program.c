@@ -654,6 +654,8 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     // Check if this is a ko:
     if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
+        // If only one stone has been captured, it must be the first one in
+        // the captured_now list:
         set_move_ko( captured_now[0][0], captured_now[0][1] );
     }
 
