@@ -7,7 +7,7 @@ use lib qw( t/lib );
 
 use IPC::Open3;
 
-use Test::More tests => 7;
+use Test::More tests => 17;
 
 use TLib qw( get_output );
 
@@ -38,7 +38,59 @@ print {$stdin} "play WHITE B1\n";
 $output = get_output($stdout);
 is( $output, "= \n\n", 'move played' );
 
+#
+# Check ko:
+#
+print {$stdin} "boardsize 5\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'boardsize changed' );
 
+print {$stdin} "play BLACK A2\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play WHITE D2\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play BLACK B1\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play WHITE C1\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play BLACK B3\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play WHITE C3\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play BLACK C2\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play WHITE B2\n";
+$output = get_output($stdout);
+is( $output, "= \n\n", 'move played' );
+
+print {$stdin} "play BLACK C2\n";
+$output = get_output($stdout);
+is( $output, "? illegal move\n\n", 'ko is illegal' );
+
+
+# print {$stdin} "showboard\n";
+# $output = get_output($stdout);
+# is( $output, "= \n\n", 'move played' );
+
+
+
+#
+# Quit:
+#
 print {$stdin} "quit\n";
 $output = get_output($stdout);
 is( $output, "= \n\n", 'quit returned =' );

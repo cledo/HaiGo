@@ -936,6 +936,11 @@ void set_groups_size(void)
     int i, j;
     int group_nr;
 
+    for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
+        black_group_size[i] = 0;
+        white_group_size[i] = 0;
+    }
+
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
             group_nr = group[i][j];
