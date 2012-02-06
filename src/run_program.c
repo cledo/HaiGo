@@ -56,7 +56,7 @@ static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-/// @todo These functions have to be implemmted: gtp_genmove, gtp_undo.
+/// @todo These functions have to be implemented: gtp_genmove, gtp_undo.
 /// - void gtp_genmove( int argc, char argv[][MAX_TOKEN_LENGTH] );
 /// - void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
 

@@ -48,19 +48,6 @@ void init_move_history(void)
 };
 
 /**
- * @brief       Returns next move number.
- *
- * Returns the number of the next move to be made.
- *
- * @return      Number of next move.
- */
-int get_next_move_nr(void)
-{
-
-    return move_number + 1;
-}
-
-/**
  * @brief       Creates a move structure with default values.
  *
  * The variable next_move is filled with default values; the old values are
