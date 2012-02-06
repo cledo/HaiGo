@@ -108,12 +108,12 @@ void init_board( int wanted_board_size )
 
     // Initialise liberty lists and captured_now list:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
-        black_liberties[i]  = -1;
-        white_liberties[i]  = -1;
+        black_liberties[i]  = INVALID;
+        white_liberties[i]  = INVALID;
         black_group_size[i] = 0;
         white_group_size[i] = 0;
-        captured_now[i][0]  = -1;
-        captured_now[i][1]  = -1;
+        captured_now[i][0]  = INVALID;
+        captured_now[i][1]  = INVALID;
     }
 
     return;
@@ -459,7 +459,7 @@ void set_group( int i, int j )
     // Reset data structure for neighbours:
     for ( k = 0; k < 4; k++ ) {
         for ( l = 0; l < 2; l++ ) {
-            neighbour[k][l] = -1;
+            neighbour[k][l] = INVALID;
         }
     }
 
@@ -699,8 +699,8 @@ void count_liberties(void)
 
     // Initialise liberty lists:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
-        black_liberties[i] = -1;
-        white_liberties[i] = -1;
+        black_liberties[i] = INVALID;
+        white_liberties[i] = INVALID;
     }
 
     // Get next black group:
@@ -911,14 +911,14 @@ int get_captured_now( int captured[][2] )
     int k = 0;
     int nr_of_captured_now = 0;
 
-    while ( captured_now[k][0] != -1 ) {
+    while ( captured_now[k][0] != INVALID ) {
         captured[k][0] = captured_now[k][0];
         captured[k][1] = captured_now[k][1];
         nr_of_captured_now++;
         k++;
     }
-    captured[k][0] = -1;
-    captured[k][1] = -1;
+    captured[k][0] = INVALID;
+    captured[k][1] = INVALID;
 
     return nr_of_captured_now;
 }

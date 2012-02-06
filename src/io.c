@@ -371,12 +371,12 @@ void identify_tokens( char tokens[][MAX_TOKEN_LENGTH], struct command *command_d
         arg_start = 2;
     }
     else if ( id < 0 ) {
-        command_data->id = -1;
+        command_data->id = INVALID;
         my_strcpy( command_data->name, tokens[1], MAX_TOKEN_LENGTH );
         arg_start = 2;
     }
     else {
-        command_data->id = -1;
+        command_data->id = INVALID;
         my_strcpy( command_data->name, tokens[0], MAX_TOKEN_LENGTH );
         arg_start = 1;
     }

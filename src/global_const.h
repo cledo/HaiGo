@@ -8,6 +8,9 @@
 //! Defines the valid command line options.
 #define VALID_OPTIONS   "hv"
 
+//! Defines invalid entry.
+#define INVALID -1
+
 //! Defines the implemented version of the Go Text Protocol.
 #define GTP_VERSION     "2"
 

@@ -153,7 +153,7 @@ void read_opts( int argc, char **argv )
 {
     int opt;
 
-    while ( ( opt = getopt( argc, argv, VALID_OPTIONS ) ) != -1 ) {
+    while ( ( opt = getopt( argc, argv, VALID_OPTIONS ) ) != INVALID ) {
         switch (opt) {
             case 'h':
                 print_help_message();
@@ -610,7 +610,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     // Check for ko repetition:
     ko_i = get_move_last_ko_i();
     ko_j = get_move_last_ko_j();
-    if ( ko_i != -1 && ko_j != -1 ) {
+    if ( ko_i != INVALID && ko_j != INVALID ) {
         if ( ko_i == i && ko_j == j ) {
             set_output_error();
             add_output("illegal move");

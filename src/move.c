@@ -30,7 +30,7 @@ struct move move_history[MOVE_HISTORY_MAX];
  * @brief       Initialises the move_history data structure.
  *
  * This function initialises the move_history data structure by setting all
- * move numbers to -1.
+ * move numbers to INVALID.
  *
  * @return      Nothing
  */
@@ -39,9 +39,9 @@ void init_move_history(void)
     int k;
 
     for ( k = 0; k < MOVE_HISTORY_MAX; k++ ) {
-        move_history[k].number = -1;
-        move_history[k].ko[0]  = -1;
-        move_history[k].ko[1]  = -1;
+        move_history[k].number = INVALID;
+        move_history[k].ko[0]  = INVALID;
+        move_history[k].ko[1]  = INVALID;
     }
 
     return;
@@ -76,14 +76,14 @@ void create_next_move(void)
     next_move.number = ++move_number;
     next_move.color  = EMPTY;
     next_move.pass   = true;
-    next_move.i      = -1;
-    next_move.j      = -1;
+    next_move.i      = INVALID;
+    next_move.j      = INVALID;
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        next_move.stones[k][0] = -1;
-        next_move.stones[k][1] = -1;
+        next_move.stones[k][0] = INVALID;
+        next_move.stones[k][1] = INVALID;
     }
-    next_move.ko[0] = -1;
-    next_move.ko[1] = -1;
+    next_move.ko[0] = INVALID;
+    next_move.ko[1] = INVALID;
 
     return;
 }
@@ -126,13 +126,13 @@ void set_move_captured_stones( int captured_stones[][2] )
 {
     int k = 0;
 
-    while ( captured_stones[k][0] != -1 ) {
+    while ( captured_stones[k][0] != INVALID ) {
         next_move.stones[k][0] = captured_stones[k][0];
         next_move.stones[k][1] = captured_stones[k][1];
         k++;
     }
-    next_move.stones[k][0] = -1;
-    next_move.stones[k][1] = -1;
+    next_move.stones[k][0] = INVALID;
+    next_move.stones[k][1] = INVALID;
 
     return;
 }
