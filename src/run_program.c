@@ -85,6 +85,7 @@ int run( int argc, char **argv )
     // Initialization
     init_board(BOARD_SIZE_DEFAULT);
     init_known_commands();
+    init_move_history();
 
     // STDOUT must be unbuffered:
     setbuf( stdout, NULL );
@@ -557,12 +558,10 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     int color;
     int i, j;
+    int move_nr;
     int nr_of_removed_stones;
     int group_nr;
     int nr_of_liberties;
-    int move_nr;
-
-    // Remove later, when move struct is available:
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
     // Check if first argument is black or white:
@@ -607,9 +606,11 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
+    // Check for ko repetition here ...
+    move_nr = get_next_move_nr();
+
     set_vertex( color, i, j );
 
-    // TEST:
     create_groups();
     count_liberties();
 
@@ -621,35 +622,24 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         count_liberties();
     }
 
-    // Get group number of current stone
     group_nr = get_group_nr( i, j );
-    // Get number of liberties for this group
     nr_of_liberties = get_nr_of_liberties(group_nr);
+
     // If liberties are zero, move is invalid
     if ( nr_of_liberties == 0 ) {
         set_vertex( EMPTY, i, j );
         set_output_error();
         add_output("illegal move");
-        // Deleted stones must be returned ( => needs move structure )
-        // This may be only the case with an illegal ko move ....?
     }
 
-    // DEBUG:
-    /*
-    nr_of_removed_stones = get_captured_now(captured_now);
-    printf( "# Nr.: %d\n", nr_of_removed_stones );
-    for ( i = 0; i < nr_of_removed_stones; i++ ) {
-        printf( "    %d: %d,%d\n", i+1, captured_now[i][0], captured_now[i][1]);
-    }
-    */
     nr_of_removed_stones = get_captured_now(captured_now);
 
-    /// @todo Update move history ...
-    move_nr = create_next_move();
-    set_move_vertex( i, j );
+    create_next_move();
+    set_move_vertex( color, i, j );
     set_move_captured_stones(captured_now);
 
-    //print_move();
+    // Add move to move history:
+    push_move();
 
     return;
 }
