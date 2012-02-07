@@ -12,4 +12,7 @@ int  get_move_last_ko_i(void);
 int  get_move_last_ko_j(void);
 int  get_move_last_ko_color(void);
 
+bool is_move_ko( int color, int i, int j );
+void get_valid_move_list( int color, int valid_moves[][2] );
+
 #endif

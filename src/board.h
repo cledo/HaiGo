@@ -22,12 +22,10 @@ void set_groups_size(void);
 int  get_size_of_group( int group_nr );
 int  get_black_captured(void);
 int  get_white_captured(void);
-void get_valid_move_list( int color, int valid_moves[][2] );
 
 //DEBUG:
 void print_groups(void);
 
-bool is_move_ko( int color, int i, int j );
 
 
 #endif
