@@ -822,7 +822,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     // Get list of valid moves:
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
-    srand( time(NULL) );
+    srand( (unsigned) time(NULL) );
     rand_index = rand() % nr_of_valid_moves;
     i = valid_moves[rand_index][0];
     j = valid_moves[rand_index][1];
