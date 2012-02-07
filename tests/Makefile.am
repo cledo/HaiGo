@@ -10,7 +10,7 @@ check_io_SOURCES = check_io.c $(top_builddir)/src/io.c $(top_builddir)/src/globa
 check_io_CFLAGS = $(AM_CFLAGS) @CHECK_CFLAGS@
 check_io_LDADD = @CHECK_LIBS@
 
-check_board_SOURCES = check_board.c $(top_builddir)/src/board.c
+check_board_SOURCES = check_board.c $(top_builddir)/src/board.c $(top_builddir)/src/move.c
 check_board_CFLAGS = $(AM_CFLAGS) @CHECK_CFLAGS@
 check_board_LDADD = @CHECK_LIBS@
 

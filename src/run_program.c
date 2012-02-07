@@ -59,8 +59,8 @@ static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 /// @todo These functions have to be implemented: gtp_genmove, gtp_undo.
-/// - void gtp_genmove( int argc, char argv[][MAX_TOKEN_LENGTH] );
 /// - void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
 
 /* Debug commands */
@@ -248,6 +248,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_play);
     my_strcpy( known_commands[i].command, "showboard", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_showboard);
+    my_strcpy( known_commands[i].command, "genmove", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_genmove);
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
@@ -566,12 +568,12 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int nr_of_liberties;
     int group_size;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
-    int ko_i, ko_j;
 
     // Check if first argument is black or white:
     if ( ! is_color_valid( gtp_argv[0], &color ) ) {
         set_output_error();
         add_output("invalid color");
+
         return;
     }
 
@@ -588,6 +590,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     if ( ! is_vertex_valid( gtp_argv[1], &i, &j ) ) {
         set_output_error();
         add_output("invalid coordinate");
+
         return;
     }
 
@@ -595,18 +598,16 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     if ( get_vertex( i, j ) != EMPTY ) {
         set_output_error();
         add_output("illegal move");
+
         return;
     }
 
     // Check for ko repetition:
-    ko_i = get_move_last_ko_i();
-    ko_j = get_move_last_ko_j();
-    if ( ko_i != INVALID && ko_j != INVALID ) {
-        if ( ko_i == i && ko_j == j ) {
-            set_output_error();
-            add_output("illegal move");
-            return;
-        }
+    if ( is_move_ko( color, i, j ) ) {
+        set_output_error();
+        add_output("illegal move");
+
+        return;
     }
 
 
@@ -749,6 +750,7 @@ bool is_vertex_pass( char vertex_str[] )
     return is_pass;
 }
 
+
 /// @defgroup GTP_Debug_Commands Go Text Protocol Debug Commands
 /// @ingroup GTP_Commands
 
@@ -775,3 +777,44 @@ void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     return;
 }
+
+/**
+ * @brief       Generates a move for the given color.
+ *
+ * Generates and performs a move for the given color.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ * @sa          Go Text Protokol version 2, 6.3.3 Core Play Commands
+ * @todo        Must also update captured stones.
+ * @todo        Move must be added to move history.
+ * @todo        Must be able to output "pass" or "resign"!
+ *
+ * @ingroup GTP_Core_Play_Commands
+ */
+void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    int k;
+    int color;
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    // Initialise valid_moves:
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        valid_moves[k][0] = INVALID;
+        valid_moves[k][1] = INVALID;
+    }
+
+    // Check if color is valid:
+    if ( ! is_color_valid( gtp_argv[0], &color ) ) {
+        set_output_error();
+        add_output("invalid color");
+        return;
+    }
+
+    // Get list of valid moves:
+    get_valid_move_list( color, valid_moves );
+
+    return;
+}
+

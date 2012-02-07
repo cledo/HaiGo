@@ -5,6 +5,7 @@
 #include <limits.h>
 #include "global_const.h"
 #include "board.h"
+#include "move.h"
 
 
 /* State variables */
@@ -1039,5 +1040,62 @@ int get_white_captured(void)
 {
 
     return white_captured;
+}
+
+/**
+ * @brief       Creates a list of all valid moves for a given color.
+ *
+ * [detailed description]
+ *
+ * @param[in]   color       Current color to move
+ * @param[out]  valid_moves List of valid moves is written into this
+ * @return      Nothing
+ */
+void get_valid_move_list( int color, int valid_moves[][2] )
+{
+    int k;
+    int i, j;
+
+    k = 0;
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            if ( board[i][j] == EMPTY && ! is_move_ko( color, i, j ) ) {
+                valid_moves[k][0] = i;
+                valid_moves[k][1] = j;
+                k++;
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Checks if a given vertex is a ko.
+ *
+ * Checks if a given vertex for a given color is a ko.
+ *
+ * @param[in]   color   Color of the moving opponent
+ * @param[in]   i       Horizontal coordinate
+ * @param[in]   j       Vertical coordinate
+ * @return      true|false
+ */
+bool is_move_ko( int color, int i, int j )
+{
+    bool is_ko = false;
+    int  ko_i, ko_j;
+    int  ko_color;
+
+    ko_i     = get_move_last_ko_i();
+    ko_j     = get_move_last_ko_j();
+    ko_color = get_move_last_ko_color();
+
+    if ( ko_i != INVALID && ko_j != INVALID ) {
+        if ( ko_i == i && ko_j == j && ko_color == color * -1 ) {
+            is_ko = true;
+        }
+    }
+
+    return is_ko;
 }
 

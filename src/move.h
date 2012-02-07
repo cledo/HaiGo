@@ -10,5 +10,6 @@ void set_move_ko( int i, int j );
 void set_move_pass( int color );
 int  get_move_last_ko_i(void);
 int  get_move_last_ko_j(void);
+int  get_move_last_ko_color(void);
 
 #endif

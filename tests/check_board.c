@@ -5,6 +5,7 @@
 #include <check.h>
 #include "../src/global_const.h"
 #include "../src/board.h"
+#include "../src/move.h"
 
 int  **board = NULL;
 int  **group = NULL;

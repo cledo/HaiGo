@@ -31,6 +31,7 @@ my @known_commands = qw{
     komi
     play
     showboard
+    genmove
     showgroups
 };
 
