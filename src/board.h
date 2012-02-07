@@ -20,6 +20,8 @@ int  get_nr_of_liberties( int group_nr );
 int  get_captured_now( int captured[][2] );
 void set_groups_size(void);
 int  get_size_of_group( int group_nr );
+int  get_black_captured(void);
+int  get_white_captured(void);
 
 //DEBUG:
 void print_groups(void);

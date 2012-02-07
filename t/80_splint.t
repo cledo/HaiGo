@@ -9,8 +9,8 @@ my @splint_args = qw(
     -weak
     -sizeofformalarray
     -warnposix
-    -boolcompare
 );
+#-boolcompare
 
 my $src_dir        = './src/';
 my @all_c_files    = glob $src_dir . '*.c';

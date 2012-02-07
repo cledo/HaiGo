@@ -106,7 +106,7 @@ void init_board( int wanted_board_size )
             break;
     }
 
-    // Initialise liberty lists and captured_now list:
+    // Initialise liberty lists, group size lists, and captured_now list:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
         black_liberties[i]  = INVALID;
         white_liberties[i]  = INVALID;
@@ -169,6 +169,17 @@ void get_board_as_string( char board_output[] )
     char x[3];  // Label for x-axis
     char y[2];  // Label for y-axis
 
+    char buffer[128];
+
+    // Line number where captured stones are shown:
+    int line_show_white = 1;
+    int line_show_black = 0;
+    if ( board_size > 10 ) {
+        line_show_white = board_size - 9;
+        line_show_black = board_size - 10;
+    }
+
+
     board_output[0] = '\0';
     strcat( board_output, "\n" );
 
@@ -215,6 +226,17 @@ void get_board_as_string( char board_output[] )
         get_label_y_right( j, y );
         strcat( board_output,  " " );
         strcat( board_output,    y );
+
+        /* Show number of captured stones */
+        if ( j == line_show_white ) {
+            snprintf( buffer, 128, "\t    WHITE (%s) has captured %d stones", WHITE_STONE, get_white_captured() );
+            strcat( board_output, buffer );
+        }
+        if ( j == line_show_black ) {
+            snprintf( buffer, 128, "\t    BLACK (%s) has captured %d stones", BLACK_STONE, get_black_captured() );
+            strcat( board_output, buffer );
+        }
+
         strcat( board_output, "\n" );
     }
 
@@ -851,6 +873,13 @@ int remove_stones( int color )
         }
     }
 
+    if ( color == BLACK ) {
+        white_captured += stones_removed;
+    }
+    else if ( color == WHITE ) {
+        black_captured += stones_removed;
+    }
+
 
     return stones_removed;
 }
@@ -980,5 +1009,35 @@ int get_size_of_group( int group_nr )
     }
 
     return group_size;
+}
+
+/**
+ * @brief       Returns the number of white stones black has captured.
+ *
+ * Returns the number of white stones black has captured in total.
+ *
+ * @return      Number of captured stones by black
+ * @sa          get_white_captured()
+ * @warning     This does not return the number of captured black stones!
+ */
+int get_black_captured(void)
+{
+
+    return black_captured;
+}
+
+/**
+ * @brief       Returns the number of black stones captured by white.
+ *
+ * Returns the number of black stones that white has captured in total.
+ *
+ * @return      Number of black stones white has captured.
+ * @sa          get_black_captured()
+ * @warning     This does not return the number of captured white stones!
+ */
+int get_white_captured(void)
+{
+
+    return white_captured;
 }
 

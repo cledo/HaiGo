@@ -40,6 +40,7 @@ static void select_command( struct command *command_data );
 static void print_help_message(void);
 static void print_version(void);
 static void set_quit_program(void);
+static bool is_color_valid( char color_str[], int *color );
 
 /* Administrative commands */
 static void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -566,6 +567,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int ko_i, ko_j;
 
     // Check if first argument is black or white:
+    /*
     str_toupper( gtp_argv[0] );
     if ( strcmp( gtp_argv[0], "B" ) == 0 || strcmp( gtp_argv[0], "BLACK" ) == 0 ) {
         color = BLACK;
@@ -576,6 +578,10 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     else {
         set_output_error();
         add_output("invalid color");
+        return;
+    }
+    */
+    if ( ! is_color_valid( gtp_argv[0], &color ) ) {
         return;
     }
 
@@ -663,6 +669,28 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     push_move();
 
     return;
+}
+
+bool is_color_valid( char color_str[], int *color )
+{
+    bool is_valid = false;
+
+    str_toupper(color_str);
+    if ( strcmp( color_str, "B" ) == 0 || strcmp( color_str, "BLACK" ) == 0 ) {
+        *color = BLACK;
+        is_valid = true;
+    }
+    else if ( strcmp( color_str, "W" ) == 0 || strcmp( color_str, "WHITE" ) == 0 ) {
+        *color = WHITE;
+        is_valid = true;
+    }
+    else {
+        color = NULL;
+        set_output_error();
+        add_output("invalid color");
+    }
+
+    return is_valid;
 }
 
 /// @defgroup GTP_Debug_Commands Go Text Protocol Debug Commands
