@@ -234,26 +234,28 @@ bool is_move_ko( int color, int i, int j )
  * [detailed description]
  *
  * @param[in]   color       Current color to move
- * @param[out]  valid_moves List of valid moves is written into this
- * @return      Nothing
+ * @param[out]  valid_moves List of valid moves is written into this variable
+ * @return      Number of valid moves
  */
-void get_valid_move_list( int color, int valid_moves[][2] )
+int get_valid_move_list( int color, int valid_moves[][2] )
 {
-    int k;
+    int count;
     int i, j;
     int board_size = get_board_size();
 
-    k = 0;
+    count = 0;
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
             if ( get_vertex( i, j ) == EMPTY && ! is_move_ko( color, i, j ) ) {
-                valid_moves[k][0] = i;
-                valid_moves[k][1] = j;
-                k++;
+                valid_moves[count][0] = i;
+                valid_moves[count][1] = j;
+                count++;
             }
         }
     }
+    valid_moves[count][0] = INVALID;
+    valid_moves[count][1] = INVALID;
 
-    return;
+    return count;
 }
 

@@ -4,13 +4,15 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <time.h>
 #include "global_const.h"
 #include "run_program.h"
 #include "io.h"
 #include "board.h"
 #include "move.h"
 #include "global_tools.h"
-
+//TEST
+#include <unistd.h>
 
 //! The default help message shown with -h
 static const char help_message[] =
@@ -797,7 +799,12 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     int k;
     int color;
+    int nr_of_valid_moves;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int rand_index;
+    int i, j;
+    int nr_of_removed_stones;
+    int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
     // Initialise valid_moves:
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
@@ -813,7 +820,30 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     // Get list of valid moves:
-    get_valid_move_list( color, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
+
+    srand( time(NULL) );
+    rand_index = rand() % nr_of_valid_moves;
+    i = valid_moves[rand_index][0];
+    j = valid_moves[rand_index][1];
+
+    set_vertex( color, i, j );
+    create_groups();
+    count_liberties();
+    set_groups_size();
+    nr_of_removed_stones = remove_stones( color * -1 );
+    if ( nr_of_removed_stones > 0 ) {
+        create_groups();
+        count_liberties();
+        set_groups_size();
+    }
+    // Check if stone has liberties ...
+
+    create_next_move();
+    set_move_vertex( color, i, j );
+    set_move_captured_stones(captured_now);
+    // Check if ko, like in gtp_play ...
+    push_move();
 
     return;
 }
