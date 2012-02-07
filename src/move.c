@@ -142,6 +142,24 @@ void set_move_ko( int i, int j )
     return;
 }
 
+/**
+ * @brief       Turns the current move into a PASS.
+ *
+ * The current move data structure is turned into a PASS move.
+ *
+ * @param[in]   color   Color that performs the PASS.
+ * @return      Nothing
+ */
+void set_move_pass( int color )
+{
+    next_move.color = color;
+    next_move.pass  = true;
+    next_move.i     = INVALID;
+    next_move.j     = INVALID;
+
+    return;
+}
+
 int get_move_last_ko_i(void)
 {
 

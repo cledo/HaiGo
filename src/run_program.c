@@ -41,6 +41,8 @@ static void print_help_message(void);
 static void print_version(void);
 static void set_quit_program(void);
 static bool is_color_valid( char color_str[], int *color );
+static bool is_vertex_valid( char vertex_str[], int *i, int *j );
+static bool is_vertex_pass( char vertex_str[] );
 
 /* Administrative commands */
 static void gtp_protocol_version( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -567,40 +569,23 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int ko_i, ko_j;
 
     // Check if first argument is black or white:
-    /*
-    str_toupper( gtp_argv[0] );
-    if ( strcmp( gtp_argv[0], "B" ) == 0 || strcmp( gtp_argv[0], "BLACK" ) == 0 ) {
-        color = BLACK;
-    }
-    else if ( strcmp( gtp_argv[0], "W" ) == 0 || strcmp( gtp_argv[0], "WHITE" ) == 0 ) {
-        color = WHITE;
-    }
-    else {
+    if ( ! is_color_valid( gtp_argv[0], &color ) ) {
         set_output_error();
         add_output("invalid color");
         return;
     }
-    */
-    if ( ! is_color_valid( gtp_argv[0], &color ) ) {
+
+    // Check if vertex is PASS:
+    if ( is_vertex_pass( gtp_argv[1] ) ) {
+        create_next_move();
+        set_move_pass(color);
+        push_move();
+
         return;
     }
 
-    // Check vertex if first coordinate is valid:
-    i = (int) toupper( gtp_argv[1][0] ) - 65;
-    if ( i > 8 ) {
-        i--;
-    }
-    if ( i < 0 || i >= get_board_size() ) {
-        set_output_error();
-        add_output("invalid coordinate");
-        return;
-    }
-
-    // Check if second coordinate is valid:
-    gtp_argv[1][0] = ' ';
-    j = (int) atoi( gtp_argv[1] );
-    j--;
-    if ( j < 0 || j >= get_board_size() ) {
+    // Check if vertex is valid:
+    if ( ! is_vertex_valid( gtp_argv[1], &i, &j ) ) {
         set_output_error();
         add_output("invalid coordinate");
         return;
@@ -671,6 +656,18 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     return;
 }
 
+/**
+ * @brief       Checks if given color string is valid.
+ *
+ * Takes a given color string (as taken from the play command) and checks if
+ * its a valid color. The internal color (BLACK|WHITE) is written into color.
+ * A true|false value is returned.
+ *
+ * @param[in]   color_str   The string representation of the color.
+ * @param[out]  *color      When the color is valid gets BLACK or WHITE, NULL
+ *                          otherwise.   
+ * @return      true|false
+ */
 bool is_color_valid( char color_str[], int *color )
 {
     bool is_valid = false;
@@ -686,11 +683,70 @@ bool is_color_valid( char color_str[], int *color )
     }
     else {
         color = NULL;
-        set_output_error();
-        add_output("invalid color");
     }
 
     return is_valid;
+}
+
+/**
+ * @brief       Checks if a given vertex is valid.
+ *
+ * Takes a given vertex string, checks if its valid and returns true or false.
+ * If the vertex is valid the coordinates are written into the pointers *i and
+ * *j.
+ *
+ * @param[in]   vertex_str  The given vertex as string.
+ * @param[out]  *i          Pointer where the horizontal coordinate is written to.
+ * @param[out]  *j          Pointer where the vertical coordinate is written to.
+ * @return      true|false
+ */
+bool is_vertex_valid( char vertex_str[], int *i, int *j )
+{
+    int x, y;
+    bool is_valid = false;
+
+    // Check vertex if first coordinate is valid:
+    x = (int) toupper( vertex_str[0] ) - 65;
+    if ( x > 8 ) {
+        x--;
+    }
+    if ( x < 0 || x >= get_board_size() ) {
+        return false;;
+    }
+
+    // Check if second coordinate is valid:
+    vertex_str[0] = ' ';
+    y = (int) atoi( vertex_str );
+    y--;
+    if ( y < 0 || y >= get_board_size() ) {
+        return false;
+    }
+
+    is_valid = true;
+    *i = x;
+    *j = y;
+
+    return is_valid;
+}
+
+/**
+ * @brief       Checks if a given vertex is a PASS move.
+ *
+ * Checks if a given vertex string represents a PASS move.
+ *
+ * @param[in]   vertex_str  The given vertex string.
+ * @return      true|false
+ */
+bool is_vertex_pass( char vertex_str[] )
+{
+    bool is_pass = false;
+
+    str_toupper(vertex_str);
+    if ( strcmp( vertex_str, "PASS" ) == 0 ) {
+        is_pass = true;
+    }
+
+    return is_pass;
 }
 
 /// @defgroup GTP_Debug_Commands Go Text Protocol Debug Commands
