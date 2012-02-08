@@ -806,6 +806,11 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        captured_now[k][0] = INVALID;
+        captured_now[k][1] = INVALID;
+    }
+
     // Initialise valid_moves:
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         valid_moves[k][0] = INVALID;
@@ -823,6 +828,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     srand( (unsigned) time(NULL) );
+    // If number of valid moves is zero, this leads to division by zero!
     rand_index = rand() % nr_of_valid_moves;
     i = valid_moves[rand_index][0];
     j = valid_moves[rand_index][1];
@@ -838,6 +844,8 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         set_groups_size();
     }
     // Check if stone has liberties ...
+
+    nr_of_removed_stones = get_captured_now(captured_now);
 
     create_next_move();
     set_move_vertex( color, i, j );

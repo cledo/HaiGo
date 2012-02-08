@@ -17,10 +17,10 @@ struct move {
     int  number;    //!< The number of the move in the move history.
     int  color;     //!< Color of the current stone.
     bool pass;      //!< Indicates whether this move is a pass or not.
+    int  ko[2];     //!< Saves the vertex of the last ko field.
     int  i;         //!< The horizontal coordinate of the vertex.
     int  j;         //!< The vertical coordinate of the vertex.
     int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];    //!< List of captured stones; In move zero: List of handicap stones.
-    int  ko[2];     //!< Saves the vertex of the last ko field.
 } next_move;
 
 //! Move history: contains all moves performed.
@@ -37,12 +37,20 @@ struct move move_history[MOVE_HISTORY_MAX];
  */
 void init_move_history(void)
 {
-    int k;
+    int k, l;
 
     for ( k = 0; k < MOVE_HISTORY_MAX; k++ ) {
         move_history[k].number = INVALID;
+        move_history[k].color  = EMPTY;
+        move_history[k].pass   = true;
         move_history[k].ko[0]  = INVALID;
         move_history[k].ko[1]  = INVALID;
+        move_history[k].i      = INVALID;
+        move_history[k].j      = INVALID;
+        for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
+            move_history[k].stones[l][0] = INVALID;
+            move_history[k].stones[l][1] = INVALID;
+        }
     }
 
     return;
