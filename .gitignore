@@ -10,6 +10,7 @@ tests/*.o
 tests/check_board
 tests/check_io
 tests/check_run_program
+tests/check_move
 cover/*
 doc/html/
 doc/latex/
