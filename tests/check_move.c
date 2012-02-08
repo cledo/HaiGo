@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <check.h>
+#include <stdio.h>
 #include "../src/global_const.h"
 #include "../src/move.h"
 #include "../src/board.h"
@@ -312,19 +313,108 @@ END_TEST
 
 START_TEST (test_get_valid_move_list)
 {
-    int k;
+    int k, l;
+    int i, j;
     int color      = BLACK;
-    int board_size = 2;
-    int valid_moves[board_size][2];
+    int board_size;
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int nr_of_valid_moves;
+    char board_output[MAX_OUTPUT_LENGTH];
 
-    for ( k = 0; k < board_size; k++ ) {
-        valid_moves[k][0] = INVALID;
-        valid_moves[k][1] = INVALID;
+
+    // Empty board:
+    for ( k = BOARD_SIZE_MIN; k < BOARD_SIZE_MAX; k++ ) {
+        for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
+            valid_moves[l][0] = INVALID;
+            valid_moves[l][1] = INVALID;
+        }
+        board_size = k;
+
+        init_board(board_size);
+
+        nr_of_valid_moves = get_valid_move_list( color, valid_moves );
+
+        fail_if( nr_of_valid_moves != board_size * board_size
+            , "valid moves %d (%d)", board_size * board_size, nr_of_valid_moves );
+        
+        free_board();
     }
 
-    init_board(board_size);
+    // One black stone on 0,0:
+    for ( k = BOARD_SIZE_MIN; k < BOARD_SIZE_MAX; k++ ) {
+        for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
+            valid_moves[l][0] = INVALID;
+            valid_moves[l][1] = INVALID;
+        }
+        board_size = k;
 
-    fail_if( true, "test for get_valid_move_list() still missing" );
+        init_board(board_size);
+        init_move_history();
+
+        set_vertex( color, 0, 0 );
+        nr_of_valid_moves = get_valid_move_list( color * -1, valid_moves );
+
+        fail_if( nr_of_valid_moves != board_size * board_size - 1
+            , "valid moves %d (%d)", board_size * board_size - 1, nr_of_valid_moves );
+
+        free_board();
+    }
+
+    // Only two fields empty:
+    for ( k = BOARD_SIZE_MIN; k < BOARD_SIZE_MAX; k++ ) {
+        for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
+            valid_moves[l][0] = INVALID;
+            valid_moves[l][1] = INVALID;
+        }
+        board_size = k;
+
+        init_board(board_size);
+        init_move_history();
+
+        for ( i = 0; i < board_size; i++ ) {
+            for ( j = 0; j < board_size; j++ ) {
+                if ( i == 0 && ( j == 0 || j == 1 ) ) {
+                    continue;
+                }
+                set_vertex( color, i, j );
+            }
+        }
+
+        nr_of_valid_moves = get_valid_move_list( color * -1, valid_moves );
+
+        fail_if( nr_of_valid_moves != 2
+            , "valid moves %d (%d)", 2, nr_of_valid_moves );
+
+        free_board();
+    }
+
+    // Only one field empty:
+    for ( k = BOARD_SIZE_MIN; k < BOARD_SIZE_MAX; k++ ) {
+        for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
+            valid_moves[l][0] = INVALID;
+            valid_moves[l][1] = INVALID;
+        }
+        board_size = k;
+
+        init_board(board_size);
+        init_move_history();
+
+        for ( i = 0; i < board_size; i++ ) {
+            for ( j = 0; j < board_size; j++ ) {
+                if ( i == 0 && j == 0 ) {
+                    continue;
+                }
+                set_vertex( color, i, j );
+            }
+        }
+
+        nr_of_valid_moves = get_valid_move_list( color * -1, valid_moves );
+
+        fail_if( nr_of_valid_moves != 1
+            , "valid moves %d (%d)", 1, nr_of_valid_moves );
+
+        free_board();
+    }
 
 }
 END_TEST
