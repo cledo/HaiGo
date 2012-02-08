@@ -312,7 +312,19 @@ END_TEST
 
 START_TEST (test_get_valid_move_list)
 {
-    fail_if( false, "test for get_valid_move_list() still missing" );
+    int k;
+    int color      = BLACK;
+    int board_size = 2;
+    int valid_moves[board_size][2];
+
+    for ( k = 0; k < board_size; k++ ) {
+        valid_moves[k][0] = INVALID;
+        valid_moves[k][1] = INVALID;
+    }
+
+    init_board(board_size);
+
+    fail_if( true, "test for get_valid_move_list() still missing" );
 
 }
 END_TEST
