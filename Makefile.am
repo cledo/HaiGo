@@ -4,7 +4,7 @@ cover: FORCE
 	@mkdir -p cover
 	@./configure CFLAGS="--coverage -g -O0"
 	@prove
-	@lcov -d src -c -o cover/haigo.info
+	@lcov -d src -d tests -c -o cover/haigo.info
 	@genhtml -o cover cover/haigo.info
 	@make cover-clean
 

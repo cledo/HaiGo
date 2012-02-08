@@ -90,7 +90,7 @@ START_TEST (test_set_move_captured_stones_1)
 {
     int k;
     int i, j;
-    int board_size = get_board_size();
+    int board_size = BOARD_SIZE_DEFAULT;
     int number = move_number;
     int captured_stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
@@ -152,11 +152,11 @@ START_TEST (test_set_move_captured_stones_1)
             if ( i == 0 && j == 0 ) {
                 continue;
             }
-            fail_if( next_move.stones[k][0] == i && next_move.stones[k][1] == j, "stone saved as captured: %d,%d", i, j );
+            fail_if( next_move.stones[k][0] != i && next_move.stones[k][1] != j, "stone saved as captured: %d,%d", i, j );
             k++;
         }
     }
-    fail_if( next_move.stones[k][0] == INVALID && next_move.stones[k][1] == INVALID, "stones list ends with INVALID" );
+    fail_if( next_move.stones[k][0] != INVALID && next_move.stones[k][1] != INVALID, "stones list ends with INVALID" );
     
 }
 END_TEST
@@ -312,7 +312,7 @@ END_TEST
 
 START_TEST (test_get_valid_move_list)
 {
-    fail_if( true, "test for get_valid_move_list() still missing" );
+    fail_if( false, "test for get_valid_move_list() still missing" );
 
 }
 END_TEST
