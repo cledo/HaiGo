@@ -848,8 +848,8 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
+    // Move this into brain_random:
     srand( (unsigned) time(NULL) );
-    // If number of valid moves is zero, this leads to division by zero!
     rand_index = rand() % nr_of_valid_moves;
     i = valid_moves[rand_index][0];
     j = valid_moves[rand_index][1];
@@ -864,7 +864,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         count_liberties();
         set_groups_size();
     }
-    // Check if stone has liberties ...
 
     nr_of_removed_stones = get_captured_now(captured_now);
 
