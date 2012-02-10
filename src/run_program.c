@@ -805,6 +805,10 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int group_nr;
+    int nr_of_liberties;
+    int group_size;
+
     char x[2];
     char y[3];
     char vertex[4] = "\0";
@@ -833,6 +837,17 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     // Remove zero liberty moves from pseudo valid moves:
     nr_of_valid_moves = get_valide_move_list( color, nr_of_valid_moves, valid_moves );
 
+    // No valid move possible:
+    if ( nr_of_valid_moves == 0 ) {
+        create_next_move();
+        set_move_pass(color);
+        push_move();
+
+        add_output("pass");
+
+        return;
+    }
+
     srand( (unsigned) time(NULL) );
     // If number of valid moves is zero, this leads to division by zero!
     rand_index = rand() % nr_of_valid_moves;
@@ -856,7 +871,17 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     create_next_move();
     set_move_vertex( color, i, j );
     set_move_captured_stones(captured_now);
-    // Check if ko, like in gtp_play ...
+
+    group_nr        = get_group_nr( i, j );
+    nr_of_liberties = get_nr_of_liberties(group_nr);
+    group_size      = get_size_of_group(group_nr);
+
+    // Check if this is a ko:
+    if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
+        // If only one stone has been captured, it must be the first one in
+        // the captured_now list:
+        set_move_ko( captured_now[0][0], captured_now[0][1] );
+    }
     push_move();
 
     // Create vertex for output:
