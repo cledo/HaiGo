@@ -22,6 +22,8 @@ void set_groups_size(void);
 int  get_size_of_group( int group_nr );
 int  get_black_captured(void);
 int  get_white_captured(void);
+void set_black_captured( int captured );
+void set_white_captured( int captured );
 
 //DEBUG:
 void print_groups(void);

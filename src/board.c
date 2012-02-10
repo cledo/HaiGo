@@ -873,6 +873,8 @@ int remove_stones( int color )
             }
         }
     }
+    captured_now[k][0] = INVALID;
+    captured_now[k][1] = INVALID;
 
     if ( color == BLACK ) {
         white_captured += stones_removed;
@@ -1040,5 +1042,37 @@ int get_white_captured(void)
 {
 
     return white_captured;
+}
+
+/**
+ * @brief       Sets the number of stones captured by black.
+ *
+ * Sets the number of total stones captured by black.
+ *
+ * @param[in]   captured    Number of captured stones.
+ * @return      Nothing
+ * @sa          set_white_captured()
+ */
+void set_black_captured( int captured )
+{
+    black_captured = captured;
+
+    return;
+}
+
+/**
+ * @brief       Sets the number of stones captured by white.
+ *
+ * Sets the number of total stones captured by white.
+ *
+ * @param[in]   captured    Number of captured stones.
+ * @return      Nothing
+ * @sa          set_black_captured()
+ */
+void set_white_captured( int captured )
+{
+    white_captured = captured;
+
+    return;
 }
 

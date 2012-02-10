@@ -806,6 +806,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
+    // Initialise captured stones list:
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         captured_now[k][0] = INVALID;
         captured_now[k][1] = INVALID;
@@ -824,8 +825,10 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
-    // Get list of valid moves:
-    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
+    // Get list of pseudo valid moves:
+    nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
+    // Remove zero liberty moves from pseudo valid moves:
+    nr_of_valid_moves = get_valide_move_list( color, nr_of_valid_moves, valid_moves );
 
     srand( (unsigned) time(NULL) );
     // If number of valid moves is zero, this leads to division by zero!

@@ -237,15 +237,21 @@ bool is_move_ko( int color, int i, int j )
 }
 
 /**
- * @brief       Creates a list of all valid moves for a given color.
+ * @brief       Creates a list of pseudo valid moves for a given color.
  *
- * [detailed description]
+ * Returns a list of pseudo valid moves for a given color. Pseudo valid moves
+ * include those moves which leave the setting stone without liberties. Ko
+ * moves are not included in this list.
  *
  * @param[in]   color       Current color to move
- * @param[out]  valid_moves List of valid moves is written into this variable
- * @return      Number of valid moves
+ * @param[out]  valid_moves List of pseudo valid moves (Ko moves excluded)
+ * @return      Number of pseudo valid moves
+ * @note        This list does not contain invalid ko moves, those are dropped
+ *              from this list. But moves that leave the stone or group
+ *              without a liberty are still contained in this list. Therefore
+ *              the term "pseudo valid".
  */
-int get_valid_move_list( int color, int valid_moves[][2] )
+int get_pseudo_valid_move_list( int color, int valid_moves[][2] )
 {
     int count;
     int i, j;
@@ -260,6 +266,93 @@ int get_valid_move_list( int color, int valid_moves[][2] )
                 count++;
             }
         }
+    }
+    valid_moves[count][0] = INVALID;
+    valid_moves[count][1] = INVALID;
+
+    return count;
+}
+
+/**
+ * @brief       Returnes list of valid moves for given color.
+ *
+ * This function takes a list of pseudo valid moves (as created by
+ * get_pseudo_valid_move_list()) and droppes the zero liberty moves. The
+ * number of valid moves is returned.
+ *
+ * @param[in]   color   Color of moving side (BLACK|WHITE)
+ * @param[in]   valid_moves_count   Number of moves in valid_moves array
+ * @param[out]  valid_moves List of valid moves (zero liberty moves excluded)
+ * @return      Number of valid moves
+ * @sa          get_pseudo_valid_move_list()
+ * @warning     The function get_pseudo_valid_move_list() must be called
+ *              before get_valide_move_list().
+ */
+int get_valide_move_list( int color, int valid_moves_count, int valid_moves[][2] )
+{
+    int  count = 0;
+    int  i, j;
+    int  k, l;
+    int  nr_of_removed_stones;
+    int  captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int  group_nr;
+    int  nr_of_liberties;
+    bool is_valid;
+    int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        temp_moves[k][0] = INVALID;
+        temp_moves[k][1] = INVALID;
+    }
+
+    for ( k = 0; k < valid_moves_count; k++ ) {
+        is_valid = false;
+        i = valid_moves[k][0];
+        j = valid_moves[k][1];
+
+        // Make move
+        set_vertex( color, i, j );
+        create_groups();
+        count_liberties();
+        //set_groups_size();
+        nr_of_removed_stones = remove_stones( color * -1 );
+
+        if ( nr_of_removed_stones > 0 ) {
+            is_valid = true;
+        }
+        else {
+            group_nr        = get_group_nr( i, j );
+            nr_of_liberties = get_nr_of_liberties(group_nr);
+            if ( nr_of_liberties > 0 ) {
+                is_valid = true;
+            }
+        }
+
+        // Undo move:
+        nr_of_removed_stones = get_captured_now(captured_now);
+        set_vertex( EMPTY, i, j );
+        for ( l = 0; l < nr_of_removed_stones; l++ ) {
+            set_vertex( color * -1, captured_now[l][0], captured_now[l][1] );
+        }
+        if ( color == BLACK ) {
+            set_black_captured( get_black_captured() - nr_of_removed_stones );
+        }
+        else {
+            set_white_captured( get_white_captured() - nr_of_removed_stones );
+        }
+
+        // Save only valid moves in temporary list:
+        if ( is_valid ) {
+            temp_moves[count][0] = valid_moves[k][0];
+            temp_moves[count][1] = valid_moves[k][1];
+            count++;
+        }
+    }
+
+    // Copy only valid moves into valid_moves list:
+    for ( k = 0; k < count; k++ ) {
+        valid_moves[k][0] = temp_moves[k][0];
+        valid_moves[k][1] = temp_moves[k][1];
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;

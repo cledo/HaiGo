@@ -311,7 +311,7 @@ START_TEST (test_push_move_fail)
 }
 END_TEST
 
-START_TEST (test_get_valid_move_list)
+START_TEST (test_get_pseudo_valid_move_list)
 {
     int k, l;
     int i, j;
@@ -332,7 +332,7 @@ START_TEST (test_get_valid_move_list)
 
         init_board(board_size);
 
-        nr_of_valid_moves = get_valid_move_list( color, valid_moves );
+        nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
 
         fail_if( nr_of_valid_moves != board_size * board_size
             , "valid moves %d (%d)", board_size * board_size, nr_of_valid_moves );
@@ -352,7 +352,7 @@ START_TEST (test_get_valid_move_list)
         init_move_history();
 
         set_vertex( color, 0, 0 );
-        nr_of_valid_moves = get_valid_move_list( color * -1, valid_moves );
+        nr_of_valid_moves = get_pseudo_valid_move_list( color * -1, valid_moves );
 
         fail_if( nr_of_valid_moves != board_size * board_size - 1
             , "valid moves %d (%d)", board_size * board_size - 1, nr_of_valid_moves );
@@ -380,7 +380,7 @@ START_TEST (test_get_valid_move_list)
             }
         }
 
-        nr_of_valid_moves = get_valid_move_list( color * -1, valid_moves );
+        nr_of_valid_moves = get_pseudo_valid_move_list( color * -1, valid_moves );
 
         fail_if( nr_of_valid_moves != 2
             , "valid moves %d (%d)", 2, nr_of_valid_moves );
@@ -408,7 +408,7 @@ START_TEST (test_get_valid_move_list)
             }
         }
 
-        nr_of_valid_moves = get_valid_move_list( color * -1, valid_moves );
+        nr_of_valid_moves = get_pseudo_valid_move_list( color * -1, valid_moves );
 
         fail_if( nr_of_valid_moves != 1
             , "valid moves %d (%d)", 1, nr_of_valid_moves );
@@ -441,7 +441,7 @@ Suite * move_suite(void) {
     tcase_add_test( tc_set_move_pass,            test_set_move_pass_1            );
     tcase_add_test( tc_get_last_ko,              test_get_move_last_ko           );
     tcase_add_test( tc_push_move,                test_push_move                  );
-    tcase_add_test( tc_valid_move_list,          test_get_valid_move_list        );
+    tcase_add_test( tc_valid_move_list,          test_get_pseudo_valid_move_list );
 
     tcase_add_exit_test( tc_push_move, test_push_move_fail, EXIT_FAILURE );
 
