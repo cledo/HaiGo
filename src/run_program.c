@@ -805,6 +805,9 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    char x[2];
+    char y[3];
+    char vertex[4] = "\0";
 
     // Initialise captured stones list:
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
@@ -855,6 +858,27 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     set_move_captured_stones(captured_now);
     // Check if ko, like in gtp_play ...
     push_move();
+
+    // Create vertex for output:
+    if ( i >= 8 ) {
+        i++;
+    }
+    i += 65;
+    x[0] = (char) i;
+    x[1] = '\0';
+
+    j++;
+    y[0] = (char)(int)( j / 10 + 48 );
+    y[1] = (char)( j % 10 + 48 );
+    y[2] = '\0';
+    if ( y[0] == '0' ) {
+        y[0] = y[1];
+        y[1] = '\0';
+    }
+
+    strcat( vertex, x );
+    strcat( vertex, y );
+    add_output(vertex);
 
     return;
 }
