@@ -7,70 +7,41 @@ use lib qw( t/lib );
 
 use IPC::Open3;
 
-use Test::More tests => 9;
+use Test::More tests => 12;
 
-use TLib qw( get_output );
+use TLib qw( get_output ok_command get_pid );
 
-$|++;
-
-my ( $stdin, $stdout, $stderr );
-my $output;
-
-my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
+my $pid = get_pid();
 
 my $board_size = 3;
 
 my $board_3 = <<"END_BOARD_3";
-= 
+
     A B C
   3 . . . 3
   2 . . . 2\t    WHITE (0) has captured 0 stones
   1 . . . 1\t    BLACK (X) has captured 0 stones
     A B C
-
 END_BOARD_3
+chomp $board_3;
 
-print {$stdin} "komi 6.5\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'komi set' );
-
-print {$stdin} "boardsize 0\n";
-$output = get_output($stdout);
-is( $output, "? unacceptable size\n\n", 'unacceptable size 0' );
-
-print {$stdin} "boardsize 99\n";
-$output = get_output($stdout);
-is( $output, "? unacceptable size\n\n", 'unacceptable size 99' );
-
-print {$stdin} "boardsize $board_size\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", "board size set to $board_size" );
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_3, 'board size correct' );
-
-print {$stdin} "play b a2\n";
-get_output($stdout);
-print {$stdin} "play w a1\n";
-get_output($stdout);
+ok_command( 'komi 6.5' );
+ok_command( 'boardsize 0', 'unacceptable size', 1 );
+ok_command( 'boardsize 99', 'unacceptable size', 1 );
+ok_command( "boardsize $board_size" );
+ok_command( 'showboard', $board_3 );
+ok_command( 'play b a2' );
+ok_command( 'play w a1' );
 # White stone gets captured:
-print {$stdin} "play b b1\n";
-get_output($stdout);
+ok_command( 'play b b1' );
 
-print {$stdin} "clear_board\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'board cleared' );
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_3, 'board size correct' );
-
+ok_command( 'clear_board' );
+ok_command( 'showboard', $board_3 );
 
 #
 # Quit:
 #
-print {$stdin} "quit\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'quit returned =' );
+ok_command( 'quit' );
 
 waitpid( $pid, 0 );
 my $exit_status = $? >> 8;

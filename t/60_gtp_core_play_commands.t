@@ -9,7 +9,7 @@ use IPC::Open3;
 
 use Test::More tests => 54;
 
-use TLib qw( get_output ok_command get_pid );
+use TLib qw( ok_command get_pid );
 
 my $pid = get_pid();
 

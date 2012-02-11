@@ -3,23 +3,18 @@ use strict;
 use warnings;
 use Carp;
 
-use lib qw(t/lib);
+use lib qw( t/lib );
 
 use IPC::Open3;
 
-use Test::More tests => 7;
+use Test::More tests => 11;
 
-use TLib qw(get_output);
+use TLib qw( ok_command get_pid );
 
-$|++;
-
-my ( $stdin, $stdout, $stderr );
-my $output;
-
-my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
+my $pid = get_pid();
 
 my $board_19 = <<"END_BOARD_19";
-= 
+
     A B C D E F G H J K L M N O P Q R S T
  19 . . . . . . . . . . . . . . . . . . . 19
  18 . . . . . . . . . . . . . . . . . . . 18
@@ -41,11 +36,10 @@ my $board_19 = <<"END_BOARD_19";
   2 . . . . . . . . . . . . . . . . . . . 2
   1 . . . . . . . . . . . . . . . . . . . 1
     A B C D E F G H J K L M N O P Q R S T
-
 END_BOARD_19
 
 my $board_13 = <<"END_BOARD_13";
-= 
+
     A B C D E F G H J K L M N
  13 . . . . . . . . . . . . . 13
  12 . . . . . . . . . . . . . 12
@@ -61,11 +55,10 @@ my $board_13 = <<"END_BOARD_13";
   2 . . . . . . . . . . . . . 2
   1 . . . . . . . . . . . . . 1
     A B C D E F G H J K L M N
-
 END_BOARD_13
 
 my $board_9 = <<"END_BOARD_9";
-= 
+
     A B C D E F G H J
   9 . . . . . . . . . 9
   8 . . . . . . . . . 8
@@ -77,20 +70,18 @@ my $board_9 = <<"END_BOARD_9";
   2 . . . . . . . . . 2\t    WHITE (0) has captured 0 stones
   1 . . . . . . . . . 1\t    BLACK (X) has captured 0 stones
     A B C D E F G H J
-
 END_BOARD_9
 
 my $board_min = <<"END_BOARD_MIN";
-= 
+
     A B
   2 . . 2\t    WHITE (0) has captured 0 stones
   1 . . 1\t    BLACK (X) has captured 0 stones
     A B
-
 END_BOARD_MIN
 
 my $board_max = <<"END_BOARD_MAX";
-= 
+
     A B C D E F G H J K L M N O P Q R S T U V W X Y Z
  25 . . . . . . . . . . . . . . . . . . . . . . . . . 25
  24 . . . . . . . . . . . . . . . . . . . . . . . . . 24
@@ -118,43 +109,26 @@ my $board_max = <<"END_BOARD_MAX";
   2 . . . . . . . . . . . . . . . . . . . . . . . . . 2
   1 . . . . . . . . . . . . . . . . . . . . . . . . . 1
     A B C D E F G H J K L M N O P Q R S T U V W X Y Z
-
 END_BOARD_MAX
 
 
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_19, 'correct ASCII board shown (19x19)' );
-
-print {$stdin} "boardsize 13\n";
-get_output($stdout);
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_13, 'correct ASCII board shown (13x13)' );
-
-print {$stdin} "boardsize 9\n";
-get_output($stdout);
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_9, 'correct ASCII board shown (9x9)' );
-
-print {$stdin} "boardsize 2\n";
-get_output($stdout);
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_min, 'correct ASCII board shown (2x2)' );
-
-print {$stdin} "boardsize 25\n";
-get_output($stdout);
-print {$stdin} "showboard\n";
-$output = get_output($stdout);
-is( $output, $board_max, 'correct ASCII board shown (25x25)' );
+chomp $board_19;
+ok_command( 'showboard', $board_19 );
+ok_command( 'boardsize 13' );
+chomp $board_13;
+ok_command( 'showboard', $board_13 );
+ok_command( 'boardsize 9' );
+chomp $board_9;
+ok_command( 'showboard', $board_9 );
+ok_command( 'boardsize 2' );
+chomp $board_min;
+ok_command( 'showboard', $board_min );
+ok_command( 'boardsize 25' );
+chomp $board_max;
+ok_command( 'showboard', $board_max );
 
 
-
-print {$stdin} "quit\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'quit returned =' );
+ok_command( 'quit' );
 
 waitpid( $pid, 0 );
 my $exit_status = $? >> 8;

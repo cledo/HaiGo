@@ -31,7 +31,13 @@ sub ok_command {
         $return = q{};
     }
 
-    my $name = $command . ': ' . $ok;
+    my $name;
+    if ( length $command > 25 ) {
+        $name = substr( $command, 0, 20 ) . '... : ' . $ok;
+    }
+    else {
+        $name = $command . ': ' . $ok;
+    }
 
     print {$stdin} $command . "\n";
     $output = get_output($stdout);

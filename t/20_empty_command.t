@@ -3,13 +3,13 @@ use strict;
 use warnings;
 use Carp;
 
-use lib qw(t/lib);
+use lib qw( t/lib );
 
 use IPC::Open3;
 
 use Test::More tests => 3;
 
-use TLib qw(get_output);
+use TLib qw( get_output );
 
 $|++;
 

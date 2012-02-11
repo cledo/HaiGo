@@ -3,24 +3,19 @@ use strict;
 use warnings;
 use Carp;
 
+use lib qw( t/lib );
+
 use IPC::Open3;
 
 use Test::More tests => 3;
 
-$|++;
+use TLib qw( ok_command get_pid );
 
-my ( $stdin, $stdout, $stderr );
-my $output;
 
-my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
+my $pid = get_pid();
 
-print {$stdin} "hello\n";
-$output = <$stdout> . <$stdout>;
-is( $output, "? unknown command\n\n", 'hello returned ? unknown command' );
-
-print {$stdin} "quit\n";
-$output = <$stdout> . <$stdout>;
-is( $output, "= \n\n", 'quit returned =' );
+ok_command( 'hello', 'unknown command', 1 );
+ok_command( 'quit' );
 
 waitpid( $pid, 0 );
 my $exit_status = $? >> 8;

@@ -3,20 +3,15 @@ use strict;
 use warnings;
 use Carp;
 
-use lib qw(t/lib);
+use lib qw( t/lib );
 
 use IPC::Open3;
 
 use Test::More tests => 10;
 
-use TLib qw(get_output);
+use TLib qw( get_output ok_command get_pid );
 
-$|++;
-
-my ( $stdin, $stdout, $stderr );
-my $output;
-
-my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
+my $pid = get_pid();
 
 # showgroups is only for debugging!
 my @known_commands = qw{
@@ -35,51 +30,24 @@ my @known_commands = qw{
     showgroups
 };
 
-print {$stdin} "protocol_version\n";
-$output = get_output($stdout);
-is( $output, "= 2\n\n", 'protocol_version returned 2' );
+ok_command( 'protocol_version', '2' );
+ok_command( 'name', 'HaiGo' );
+ok_command( 'version', '0.1' );
+ok_command( 'known_command', 'missing argument: command_name', 1 );
+ok_command( 'known_command name name'
+    , 'only one argument required: command_name', 1 );
 
-print {$stdin} "name\n";
-$output = get_output($stdout);
-is( $output, "= HaiGo\n\n", 'name returned haigo' );
+ok_command( 'known_command xyz', 'false' );
+ok_command( 'known_command name', 'true' );
 
-print {$stdin} "version\n";
-$output = get_output($stdout);
-is( $output, "= 0.1\n\n", 'version returned 0.1' );
-
-print {$stdin} "known_command\n";
-$output = get_output($stdout);
-is( $output, "? missing argument: command_name\n\n"
-    , 'known_command: missing argument' );
-
-print {$stdin} "known_command name name\n";
-$output = get_output($stdout);
-is( $output, "? only one argument required: command_name\n\n"
-    , 'known_command: only one argument' );
-
-print {$stdin} "known_command xyz\n";
-$output = get_output($stdout);
-is( $output, "= false\n\n", 'known_command: xyz unknown' );
-
-print {$stdin} "known_command name\n";
-$output = get_output($stdout);
-is( $output, "= true\n\n", 'known_command: name known' );
-
-print {$stdin} "list_commands\n";
-$output = q{};
-my $expected = '= ';
+my $expected = q{};
 foreach (@known_commands) {
     $expected .= $_ . "\n";
 }
-$expected .= "\n";
-$output = get_output($stdout);
-is( $output, $expected, 'list_commands: correct list' );
+chomp $expected;
+ok_command( 'list_commands', $expected );
 
-
-
-print {$stdin} "quit\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'quit returned =' );
+ok_command( 'quit' );
 
 waitpid( $pid, 0 );
 my $exit_status = $? >> 8;
