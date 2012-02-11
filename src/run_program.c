@@ -515,8 +515,7 @@ void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     free_board();
     init_board(board_size);
-
-    // move history must be emptied
+    init_move_history();
 
     return;
 }
@@ -701,6 +700,7 @@ bool is_color_valid( char color_str[], int *color )
  * @param[out]  *i          Pointer where the horizontal coordinate is written to.
  * @param[out]  *j          Pointer where the vertical coordinate is written to.
  * @return      true|false
+ * @note        'I' is not a valid coordinate.
  */
 bool is_vertex_valid( char vertex_str[], int *i, int *j )
 {
@@ -709,11 +709,14 @@ bool is_vertex_valid( char vertex_str[], int *i, int *j )
 
     // Check vertex if first coordinate is valid:
     x = (int) toupper( vertex_str[0] ) - 65;
+    if ( x == 8 ) {
+        return false;
+    }
     if ( x > 8 ) {
         x--;
     }
     if ( x < 0 || x >= get_board_size() ) {
-        return false;;
+        return false;
     }
 
     // Check if second coordinate is valid:
