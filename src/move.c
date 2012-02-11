@@ -39,6 +39,8 @@ void init_move_history(void)
 {
     int k, l;
 
+    move_number = 0;
+
     for ( k = 0; k < MOVE_HISTORY_MAX; k++ ) {
         move_history[k].number = INVALID;
         move_history[k].color  = EMPTY;
@@ -198,7 +200,8 @@ void push_move(void)
 {
     // Check move number:
     if ( move_number >= MOVE_HISTORY_MAX ) {
-        fprintf( stderr, "Number of possible moves has exceeded MOVE_HISTORY_MAX" );
+        fprintf( stderr
+            , "Number of possible moves has exceeded MOVE_HISTORY_MAX\n" );
         exit(EXIT_FAILURE);
     }
 

@@ -299,9 +299,10 @@ START_TEST (test_push_move_fail)
     int i      = 14;
     int j      = 16;
 
-    move_number = MOVE_HISTORY_MAX;
 
     init_move_history();
+
+    move_number = MOVE_HISTORY_MAX;
 
     create_next_move();
     set_move_vertex( color, i, j );

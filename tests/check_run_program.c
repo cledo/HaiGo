@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <check.h>
+#include "../src/global_const.h"
 #include "../src/run_program.h"
+
 
 /*
 START_TEST (run_no_param)
@@ -48,12 +50,13 @@ END_TEST
 Suite * run_program_suite(void) {
     Suite *s = suite_create("Run");
 
-    /* Core test case */
-    TCase *tc_core = tcase_create("Core");
+    TCase *tc_core        = tcase_create("Core");
+
     //tcase_add_test( tc_core, run_no_param );
     tcase_add_exit_test( tc_core, run_h_param, EXIT_SUCCESS );
     tcase_add_exit_test( tc_core, run_v_param, EXIT_SUCCESS );
     tcase_add_exit_test( tc_core, run_invalid_param, EXIT_FAILURE );
+
     suite_add_tcase( s, tc_core );
 
     return s;

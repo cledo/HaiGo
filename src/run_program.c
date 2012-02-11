@@ -516,7 +516,6 @@ void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     free_board();
     init_board(board_size);
 
-    // number of captured stones must be set to zero
     // move history must be emptied
 
     return;

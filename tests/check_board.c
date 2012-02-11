@@ -287,6 +287,7 @@ START_TEST (test_vertex_1)
 END_TEST
 
 
+
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Run");
     TCase *tc_init_board          = tcase_create("init_board");
