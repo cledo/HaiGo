@@ -7,205 +7,78 @@ use lib qw( t/lib );
 
 use IPC::Open3;
 
-use Test::More tests => 32;
+use Test::More tests => 54;
 
-use TLib qw( get_output );
+use TLib qw( get_output ok_command get_pid );
 
-$|++;
+my $pid = get_pid();
 
-my ( $stdin, $stdout, $stderr );
-my $output;
-
-my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
-
-print {$stdin} "play XYZ A1\n";
-$output = get_output($stdout);
-is( $output, "? invalid color\n\n", 'invalid color' );
-
-print {$stdin} "play BLACK A99\n";
-$output = get_output($stdout);
-is( $output, "? invalid coordinate\n\n", 'invalid coordinate' );
-
-print {$stdin} "play BLACK ?9\n";
-$output = get_output($stdout);
-is( $output, "? invalid coordinate\n\n", 'invalid coordinate' );
-
-print {$stdin} "play BLACK I9\n";
-$output = get_output($stdout);
-is( $output, "? invalid coordinate\n\n", 'invalid coordinate' );
-
-print {$stdin} "play BLACK i0\n";
-$output = get_output($stdout);
-is( $output, "? invalid coordinate\n\n", 'invalid coordinate' );
-
-print {$stdin} "play BLACK A-1\n";
-$output = get_output($stdout);
-is( $output, "? invalid coordinate\n\n", 'invalid coordinate' );
-
-print {$stdin} "play BLACK A1\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play WHITE A1\n";
-$output = get_output($stdout);
-is( $output, "? illegal move\n\n", 'move is illegal' );
-
-print {$stdin} "play WHITE A2\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play BLACK C1\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play WHITE B1\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
+ok_command( 'play XYZ A1', 'invalid color', 1 );
+ok_command( 'play BLACK A99', 'invalid coordinate', 1 );
+ok_command( 'play BLACK ?9', 'invalid coordinate', 1 );
+ok_command( 'play BLACK I9', 'invalid coordinate', 1 );
+ok_command( 'play BLACK i9', 'invalid coordinate', 1 );
+ok_command( 'play BLACK A-1', 'invalid coordinate', 1 );
+ok_command( 'play BLACK A1' );
+ok_command( 'play WHITE A1', 'illegal move', 1 );
+ok_command( 'play WHITE A2' );
+ok_command( 'play BLACK C1' );
+ok_command( 'play WHITE B1' );
 
 #
 # Check ko:
 #
-print {$stdin} "boardsize 5\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'boardsize changed' );
-
-print {$stdin} "play BLACK A2\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play WHITE D2\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play BLACK B1\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play WHITE C1\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play BLACK B3\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play WHITE C3\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play BLACK C2\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play WHITE B2\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play BLACK C2\n";
-$output = get_output($stdout);
-is( $output, "? illegal move\n\n", 'ko is illegal' );
-
-print {$stdin} "play WHITE PASS\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'white passed' );
-
-print {$stdin} "play WHITE A3\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'move played' );
-
-print {$stdin} "play BLACK A1\n";
-$output = get_output($stdout);
-is( $output, "? illegal move\n\n", 'illegal move' );
+ok_command( 'boardsize 5' );
+ok_command( 'play BLACK A2' );
+ok_command( 'play WHITE D2' );
+ok_command( 'play BLACK B1' );
+ok_command( 'play WHITE C1' );
+ok_command( 'play BLACK B3' );
+ok_command( 'play WHITE C3' );
+ok_command( 'play BLACK C2' );
+ok_command( 'play WHITE B2' );
+ok_command( 'play BLACK C2', 'illegal move', 1 );
+ok_command( 'play WHITE PASS' );
+ok_command( 'play WHITE A3' );
+ok_command( 'play BLACK A1', 'illegal move', 1 );
 
 #
 # Check genmove
 #
-print {$stdin} "boardsize 3\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'board size changed to 3' );
-
-print {$stdin} "genmove\n";
-$output = get_output($stdout);
-is( $output, "? invalid color\n\n", 'invalid color' );
-
-print {$stdin} "genmove XYZ\n";
-$output = get_output($stdout);
-is( $output, "? invalid color\n\n", 'invalid color' );
-
-print {$stdin} "play WHITE b3\n";
-get_output($stdout);
-print {$stdin} "play WHITE b2\n";
-get_output($stdout);
-print {$stdin} "play WHITE c2\n";
-get_output($stdout);
-
-print {$stdin} "play BLACK a3\n";
-get_output($stdout);
-print {$stdin} "play BLACK a2\n";
-get_output($stdout);
-print {$stdin} "play BLACK b1\n";
-get_output($stdout);
-print {$stdin} "play BLACK c1\n";
-get_output($stdout);
-
-print {$stdin} "genmove BLACK\n";
-$output = get_output($stdout);
-is( $output, "= C3\n\n", 'black played C3' );
-
-print {$stdin} "clear_board\n";
-get_output($stdout);
-
-print {$stdin} "play BLACK b3\n";
-get_output($stdout);
-print {$stdin} "play BLACK b2\n";
-get_output($stdout);
-print {$stdin} "play BLACK c2\n";
-get_output($stdout);
-
-print {$stdin} "play WHITE a3\n";
-get_output($stdout);
-print {$stdin} "play WHITE a2\n";
-get_output($stdout);
-print {$stdin} "play WHITE b1\n";
-get_output($stdout);
-print {$stdin} "play WHITE c1\n";
-get_output($stdout);
-
-print {$stdin} "genmove WHITE\n";
-$output = get_output($stdout);
-is( $output, "= C3\n\n", 'white played C3' );
-
-print {$stdin} "clear_board\n";
-get_output($stdout);
-print {$stdin} "play BLACK A3\n";
-get_output($stdout);
-print {$stdin} "play BLACK A2\n";
-get_output($stdout);
-print {$stdin} "play WHITE B3\n";
-get_output($stdout);
-print {$stdin} "play WHITE B2\n";
-get_output($stdout);
-print {$stdin} "play WHITE B1\n";
-get_output($stdout);
-print {$stdin} "play WHITE C2\n";
-get_output($stdout);
-
-print {$stdin} "genmove BLACK\n";
-$output = get_output($stdout);
-is( $output, "= pass\n\n", 'black passed' );
-
-# print {$stdin} "showboard\n";
-# note $output = get_output($stdout);
-# is( $output, "= \n\n", 'move played' );
-
+ok_command( 'boardsize 3' );
+ok_command( 'genmove', 'invalid color', 1 );
+ok_command( 'genmove XYZ', 'invalid color', 1 );
+ok_command( 'play WHITE b3' );
+ok_command( 'play WHITE b2' );
+ok_command( 'play WHITE c2' );
+ok_command( 'play BLACK a3' );
+ok_command( 'play BLACK a2' );
+ok_command( 'play BLACK b1' );
+ok_command( 'play BLACK c1' );
+ok_command( 'genmove BLACK', 'C3' );
+ok_command( 'clear_board' );
+ok_command( 'play BLACK b3' );
+ok_command( 'play BLACK b2' );
+ok_command( 'play BLACK c2' );
+ok_command( 'play WHITE a3' );
+ok_command( 'play WHITE a2' );
+ok_command( 'play WHITE b1' );
+ok_command( 'play WHITE c1' );
+ok_command( 'genmove WHITE', 'C3' );
+ok_command( 'clear_board' );
+ok_command( 'play BLACK A3' );
+ok_command( 'play BLACK A2' );
+ok_command( 'play WHITE B3' );
+ok_command( 'play WHITE B2' );
+ok_command( 'play WHITE B1' );
+ok_command( 'play WHITE C2' );
+ok_command( 'genmove BLACK', 'pass' );
 
 
 #
 # Quit:
 #
-print {$stdin} "quit\n";
-$output = get_output($stdout);
-is( $output, "= \n\n", 'quit returned =' );
+ok_command( 'quit' );
 
 waitpid( $pid, 0 );
 my $exit_status = $? >> 8;
