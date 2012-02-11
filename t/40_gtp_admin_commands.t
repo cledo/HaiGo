@@ -7,7 +7,7 @@ use lib qw(t/lib);
 
 use IPC::Open3;
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 use TLib qw(get_output);
 
@@ -46,6 +46,16 @@ is( $output, "= HaiGo\n\n", 'name returned haigo' );
 print {$stdin} "version\n";
 $output = get_output($stdout);
 is( $output, "= 0.1\n\n", 'version returned 0.1' );
+
+print {$stdin} "known_command\n";
+$output = get_output($stdout);
+is( $output, "? missing argument: command_name\n\n"
+    , 'known_command: missing argument' );
+
+print {$stdin} "known_command name name\n";
+$output = get_output($stdout);
+is( $output, "? only one argument required: command_name\n\n"
+    , 'known_command: only one argument' );
 
 print {$stdin} "known_command xyz\n";
 $output = get_output($stdout);
