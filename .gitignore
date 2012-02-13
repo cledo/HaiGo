@@ -11,6 +11,7 @@ tests/check_board
 tests/check_io
 tests/check_run_program
 tests/check_move
+tests/check_global_tools
 cover/*
 doc/html/
 doc/latex/
