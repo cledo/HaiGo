@@ -466,7 +466,7 @@ int main(void) {
 
     Suite *s = move_suite();
     SRunner *sr = srunner_create(s);
-    srunner_run_all( sr, CK_VERBOSE );
+    srunner_run_all( sr, CK_NORMAL );
     number_failed = srunner_ntests_failed(sr);
     srunner_free(sr);
 
