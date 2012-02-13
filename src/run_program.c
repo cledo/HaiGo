@@ -11,6 +11,8 @@
 #include "board.h"
 #include "move.h"
 #include "global_tools.h"
+#include "./brains/all_brains.h"
+
 //TEST
 #include <unistd.h>
 
@@ -815,6 +817,9 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     char y[3];
     char vertex[4] = "\0";
 
+    // TEST:
+    int move_value;
+
     // Initialise captured stones list:
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         captured_now[k][0] = INVALID;
@@ -855,6 +860,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     rand_index = rand() % nr_of_valid_moves;
     i = valid_moves[rand_index][0];
     j = valid_moves[rand_index][1];
+    move_value = brain_random( &i, &j, valid_moves, nr_of_valid_moves );
 
     set_vertex( color, i, j );
     create_groups();
