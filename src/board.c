@@ -9,7 +9,7 @@
 
 
 /* State variables */
-// As describes in GTP v2.0 chapter 5.1
+// As described in GTP v2.0 chapter 5.1
 int  **board;
 int  **group;
 bool **hoshi;

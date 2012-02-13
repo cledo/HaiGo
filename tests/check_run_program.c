@@ -22,8 +22,8 @@ START_TEST (run_h_param)
     int argc = 2;
     char *argv[] = { "program_name", "-h", NULL };
 
-    fail_unless( run( argc, argv )
-        == EXIT_SUCCESS, "run() with parameter -h returned EXIT_SUCCESS" );
+    fail_unless( run( argc, argv ) == EXIT_SUCCESS
+        , "run() with parameter -h returned EXIT_SUCCESS" );
 }
 END_TEST
 
@@ -32,8 +32,8 @@ START_TEST (run_v_param)
     int argc = 2;
     char *argv[] = { "program_name", "-v", NULL };
 
-    fail_unless( run( argc, argv )
-        == EXIT_SUCCESS, "run() with parameter -v returned EXIT_SUCCESS" );
+    fail_unless( run( argc, argv ) == EXIT_SUCCESS
+        , "run() with parameter -v returned EXIT_SUCCESS" );
 }
 END_TEST
 
@@ -42,8 +42,8 @@ START_TEST (run_invalid_param)
     int argc = 2;
     char *argv[] = { "program_name", "-x", NULL };
 
-    fail_unless( run( argc, argv )
-        == EXIT_FAILURE, "run() with invalid parameter -x returned EXIT_FAILURE" );
+    fail_unless( run( argc, argv ) == EXIT_FAILURE
+        , "run() with invalid parameter -x returned EXIT_FAILURE" );
 }
 END_TEST
 

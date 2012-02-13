@@ -11,7 +11,7 @@ START_TEST (test_str_toupper_1)
 
     str_toupper( test_string2 );
 
-    fail_if( strcmp( test_string1, test_string2 ) != 0, "string converted to upper case" );
+    fail_unless( strcmp( test_string1, test_string2 ) == 0, "string converted to upper case" );
 }
 END_TEST
 
@@ -25,7 +25,7 @@ START_TEST (test_str_toupper_2)
     for ( test_char = test_string1[0]; test_char <= 'z'; test_char++ ) {
         test_string1[0] = test_char;
         str_toupper( test_string1 );
-        fail_if( strcmp( test_string1, test_string2 ) != 0, "letter converted to upper case" );
+        fail_unless( strcmp( test_string1, test_string2 ) == 0, "letter converted to upper case" );
 
         test_string2[0]++;
     }
@@ -50,7 +50,7 @@ START_TEST (test_my_strcpy_2)
     char test_string2[] = "short string";
 
     my_strcpy( test_string1, test_string2, strlen(test_string1) );
-    fail_if( strcmp( test_string1, test_string2 ) != 0, "string copied correctly" );
+    fail_unless( strcmp( test_string1, test_string2 ) == 0, "string copied correctly" );
 
 }
 END_TEST
