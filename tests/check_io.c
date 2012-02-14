@@ -336,6 +336,26 @@ START_TEST (test_add_output_2)
 }
 END_TEST
 
+START_TEST (test_print_output)
+{
+    int command_id = 1;
+
+    print_output(-1);
+
+    add_output("Hello, world!");
+    print_output(command_id);
+
+    mark_point();
+
+    set_output_error();
+    command_id = -1;
+    add_output("Hello, world!");
+    print_output(command_id);
+
+    // Only exit value 0 can be tested here ...
+}
+END_TEST
+
 START_TEST (test_output_error)
 {
     bool is_error;
@@ -442,6 +462,7 @@ Suite * io_suite(void) {
 
     tcase_add_test( tc_output, test_add_output_1 );
     tcase_add_exit_test( tc_output, test_add_output_2, 1 );
+    tcase_add_exit_test( tc_output, test_print_output, 0 );
     tcase_add_test( tc_output, test_output_error );
 
     tcase_add_test( tc_input, test_input );
