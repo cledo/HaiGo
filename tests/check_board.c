@@ -20,6 +20,22 @@ static const int board_size[] = {
     BOARD_SIZE_MAX
 };
 
+static char test_board_black[] = {
+"\n"
+"    A B\n"
+"  2 . . 2\t    WHITE (0) has captured 0 stones\n"
+"  1 X . 1\t    BLACK (X) has captured 0 stones\n"
+"    A B"
+};
+
+static char test_board_white[] = {
+"\n"
+"    A B\n"
+"  2 . . 2\t    WHITE (0) has captured 0 stones\n"
+"  1 0 . 1\t    BLACK (X) has captured 0 stones\n"
+"    A B"
+};
+
 static char *test_board[] = { "\n"
 "    A B\n"
 "  2 . . 2\t    WHITE (0) has captured 0 stones\n"
@@ -138,6 +154,17 @@ START_TEST (test_get_board_as_string_1)
     //printf( "%s", test_board[_i] );
     //printf( "%s", board_output );
     fail_if( strcmp( test_board[_i], board_output ) != 0, "board string received (%dx%d)", s, s );
+
+    init_board(2);
+    set_vertex( BLACK, 0, 0 );
+    get_board_as_string(board_output);
+
+    fail_if( strcmp( test_board_black, board_output ) != 0, "board string received with black" );
+
+    set_vertex( WHITE, 0, 0 );
+    get_board_as_string(board_output);
+
+    fail_if( strcmp( test_board_white, board_output ) != 0, "board string received with white" );
 }
 END_TEST
 
@@ -249,6 +276,86 @@ START_TEST (test_groups_2)
 }
 END_TEST
 
+START_TEST (test_group_size_1)
+{
+    int i, j;
+    int s = BOARD_SIZE_DEFAULT;
+    int group_nr;
+    int group_size;
+
+    init_board(s);
+
+    i = 9;
+    j = 9;
+
+    // Black group:
+    set_vertex( BLACK, i, j );
+    create_groups();
+    set_groups_size();
+
+    group_nr   = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 1, "black group has size 1" );
+
+    set_vertex( BLACK, i+1, j+1 );
+    create_groups();
+    set_groups_size();
+
+    group_nr   = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 1, "black group has size 1" );
+
+    set_vertex( BLACK, i+1, j );
+    set_vertex( BLACK, i, j+1 );
+    create_groups();
+    set_groups_size();
+
+    group_nr   = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 4, "black group has size 4" );
+
+    // Black group:
+    set_vertex( WHITE, i, j );
+    create_groups();
+    set_groups_size();
+
+    group_nr  = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 1, "white group has size 1" );
+
+    set_vertex( WHITE, i+1, j );
+    create_groups();
+    set_groups_size();
+
+    group_nr  = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 2, "white group has size 2" );
+
+    set_vertex( WHITE, i, j+1 );
+    create_groups();
+    set_groups_size();
+
+    group_nr  = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 3, "white group has size 3" );
+
+    set_vertex( WHITE, i+1, j+1 );
+    create_groups();
+    set_groups_size();
+
+    group_nr  = get_group_nr( i, j );
+    group_size = get_size_of_group(group_nr);
+
+    fail_unless( group_size == 4, "white group has size 4" );
+}
+END_TEST
+
 START_TEST (test_vertex_1)
 {
     int i, j;
@@ -286,25 +393,219 @@ START_TEST (test_vertex_1)
 }
 END_TEST
 
+START_TEST (test_count_liberties_1)
+{
+    int i, j;
+    int s = BOARD_SIZE_DEFAULT;
+    int group_nr;
+    int liberties;
 
+
+    init_board(s);
+
+    // Set corner stone
+    i = 0;
+    j = 0;
+    set_vertex( BLACK, i, j );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 2, "%d,%d has 2 liberties", i, j );
+
+    i = 1;
+    j = 0;
+    set_vertex( BLACK, i, j );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 3, "%d,%d has 3 liberties", i, j );
+
+    set_vertex( WHITE, 0, 1 );
+    set_vertex( WHITE, 1, 1 );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 1, "%d,%d has 1 liberty", i, j );
+
+    set_vertex( WHITE, 2, 0 );
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 0, "%d,%d has no liberties", i, j );
+
+    // Set center stone:
+
+    i = 9;
+    j = 9;
+    set_vertex( BLACK, i, j );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 4, "%d,%d has 4 liberties", i, j );
+
+    set_vertex( WHITE, i-1, j );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 3, "%d,%d has 3 liberties", i, j );
+
+    set_vertex( WHITE, i, j-1 );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 2, "%d,%d has 2 liberties", i, j );
+
+    set_vertex( WHITE, i+1, j );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 1, "%d,%d has 1 liberties", i, j );
+
+    set_vertex( WHITE, i, j+1 );
+
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( i, j );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 0, "%d,%d has no liberties", i, j );
+
+    // Set white stone:
+    init_board(2);
+
+    set_vertex( WHITE, 0, 0 );
+    create_groups();
+    count_liberties();
+
+    group_nr  = get_group_nr( 0, 0 );
+    liberties = get_nr_of_liberties(group_nr);
+
+    fail_unless( liberties == 2, "0,0 has 2 liberties" );
+}
+END_TEST
+
+START_TEST (test_remove_stones_1)
+{
+    int i, j;
+    int removed;
+    int s = BOARD_SIZE_DEFAULT;
+    int captured[2][2];
+
+    init_board(s);
+
+    // Capture one black stone:
+    i = 18;
+    j = 18;
+
+    set_vertex( BLACK, i, j );
+    set_vertex( WHITE, i-1, j );
+    set_vertex( WHITE, i, j-1 );
+
+    create_groups();
+    count_liberties();
+    removed = remove_stones(BLACK);
+    removed = get_captured_now(captured);
+
+    fail_unless( removed == 1, "one black stone removed" );
+    fail_unless( captured[0][0] == i, "captured i is %d", i );
+    fail_unless( captured[0][1] == j, "captured j is %d", j );
+
+    removed = remove_stones(WHITE);
+    removed = get_captured_now(captured);
+
+    fail_unless( removed == 0, "no white stones removed" );
+    fail_unless( captured[0][0] == INVALID && captured[0][1] == INVALID
+        , "captured_now list is empty" );
+    fail_unless( get_black_captured() == 0, "black has captured 0 stones" );
+    fail_unless( get_white_captured() == 1, "white has captured 1 stone"  );
+
+
+    // Capture all white stones:
+    for ( i = 0; i < s; i++ ) {
+        for ( j = 0; j < s ; j++ ) {
+            set_vertex( WHITE, i, j );
+        }
+    }
+    i--;
+    j--;
+    set_vertex( EMPTY, i, j );
+    set_vertex( BLACK, i, j );
+
+    create_groups();
+    count_liberties();
+    removed = remove_stones(WHITE);
+
+    fail_unless( removed = s * s - 1, "all white stones removed" );
+
+    fail_unless( get_black_captured() == s * s - 1, "black has captured %d stones", s*s-1 );
+    fail_unless( get_white_captured() == 1, "white has captured 1 stone" );
+
+    set_black_captured(0);
+    set_white_captured(0);
+
+    fail_unless( get_black_captured() == 0, "black_captured set to 0" );
+    fail_unless( get_white_captured() == 0, "white_captured set to 0" );
+}
+END_TEST
 
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Run");
     TCase *tc_init_board          = tcase_create("init_board");
     TCase *tc_get_board_as_string = tcase_create("get_board_as_string");
     TCase *tc_groups              = tcase_create("groups");
+    TCase *tc_group_size          = tcase_create("group_size");
     TCase *tc_vertex              = tcase_create("vertex");
+    TCase *tc_liberties           = tcase_create("liberties");
+    TCase *tc_remove_stones       = tcase_create("remove");
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
-    tcase_add_test( tc_groups, test_groups_1 );
-    tcase_add_test( tc_groups, test_groups_2 );
-    tcase_add_test( tc_vertex, test_vertex_1 );
+    tcase_add_test( tc_groups,        test_groups_1          );
+    tcase_add_test( tc_groups,        test_groups_2          );
+    tcase_add_test( tc_group_size,    test_group_size_1      );
+    tcase_add_test( tc_vertex,        test_vertex_1          );
+    tcase_add_test( tc_liberties,     test_count_liberties_1 );
+    tcase_add_test( tc_remove_stones, test_remove_stones_1   );
 
-    suite_add_tcase( s, tc_init_board );
+    suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
-    suite_add_tcase( s, tc_groups );
-    suite_add_tcase( s, tc_vertex );
+    suite_add_tcase( s, tc_groups              );
+    suite_add_tcase( s, tc_group_size          );
+    suite_add_tcase( s, tc_vertex              );
+    suite_add_tcase( s, tc_liberties           );
+    suite_add_tcase( s, tc_remove_stones       );
 
     return s;
 }

@@ -21,6 +21,7 @@ struct move {
 
 struct move move_history[MOVE_HISTORY_MAX];
 
+
 START_TEST (test_init_move_history_1)
 {
     int k, l;

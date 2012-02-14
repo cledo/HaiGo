@@ -3,8 +3,8 @@ SUBDIRS = src tests
 cover: FORCE
 	@mkdir -p cover
 	@./configure CFLAGS="--coverage -g -O0"
-	@prove
-	@lcov -d src -d tests -c -o cover/haigo.info
+	@prove t/00_make_clean.t t/01_make.t t/02_make_check.t
+	@lcov -d tests -c -o cover/haigo.info
 	@genhtml -o cover cover/haigo.info
 	@make cover-clean
 

@@ -961,6 +961,8 @@ int get_captured_now( int captured[][2] )
  * Determines the size of all black and white groups and stores the results in
  * black_group_size[] and white_group_size[].
  *
+ * @sa  get_size_of_group()
+ *
  * @return      Nothing
  */
 void set_groups_size(void)
