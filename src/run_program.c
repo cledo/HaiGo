@@ -13,8 +13,6 @@
 #include "global_tools.h"
 #include "./brains/all_brains.h"
 
-//TEST
-#include <unistd.h>
 
 //! The default help message shown with -h
 static const char help_message[] =
@@ -38,9 +36,7 @@ static struct command_func known_commands[COUNT_KNOWN_COMMANDS];
 //! The current komi value
 static float komi = 0.0;
 
-static void init_known_commands(void);
 static void read_opts( int argc, char ** argv );
-static void select_command( struct command *command_data );
 static void print_help_message(void);
 static void print_version(void);
 static void set_quit_program(void);
@@ -274,7 +270,7 @@ void init_known_commands(void)
 /**
  *  @brief Selects the function that is associated with a certain GTP command.
  *
- *  select_command() receives a comman data structure and calls the function
+ *  select_command() receives a command data structure and calls the function
  *  which is associated with this GTP command.
  *
  *  @param[in]  *command_data   struct command
