@@ -805,7 +805,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int color;
     int nr_of_valid_moves;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
-    int rand_index;
+    //int rand_index;
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
@@ -855,11 +855,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
-    // Move this into brain_random:
-    srand( (unsigned) time(NULL) );
-    rand_index = rand() % nr_of_valid_moves;
-    i = valid_moves[rand_index][0];
-    j = valid_moves[rand_index][1];
+    // Use brain_random as placeholder for now:
     move_value = brain_random( &i, &j, valid_moves, nr_of_valid_moves );
 
     set_vertex( color, i, j );
