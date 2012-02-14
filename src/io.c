@@ -135,12 +135,6 @@ void add_output( const char to_output[] )
  */
 void print_output( int command_id )
 {
-    /*
-    if ( input_empty == true ) {
-        input_empty = false;
-        return;
-    }
-    */
 
     if ( output_error == false ) {
         printf("=");
@@ -164,7 +158,6 @@ void print_output( int command_id )
     printf( "%s\n", output );
 
     my_strcpy( output, "", MAX_OUTPUT_LENGTH );
-    //output_error = false;
 
     return;
 }

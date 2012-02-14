@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <stdbool.h>
 #include <check.h>
 #include "../src/io.h"
+
 
 START_TEST (test_drop_comment_1)
 {
@@ -253,13 +255,61 @@ START_TEST (test_identify_tokens_6)
 }
 END_TEST
 
+START_TEST (test_add_output_1)
+{
+    char to_output[] = "to_output";
+
+    add_output(to_output);
+
+}
+END_TEST
+
+START_TEST (test_add_output_2)
+{
+    int k;
+    char to_output[MAX_OUTPUT_LENGTH];
+
+    for ( k = 0; k < MAX_OUTPUT_LENGTH; k++ ) {
+        to_output[k] = 'X';
+    }
+    to_output[k] = '\0';
+
+    // This should fail:
+    add_output(to_output);
+
+}
+END_TEST
+
+START_TEST (test_output_error)
+{
+    bool is_error;
+
+    is_error = get_output_error();
+    fail_unless( is_error == false, "output error set to false" );
+
+    set_output_error();
+    is_error = get_output_error();
+    fail_unless( is_error == true, "output error set to true" );
+
+}
+END_TEST
+
+START_TEST (test_input)
+{
+
+    fail_unless( is_input_empty() == false, "input empty flag is false" );
+}
+END_TEST
+
 Suite * io_suite(void) {
     Suite *s = suite_create("Run");
 
-    TCase *tc_drop_comment = tcase_create("drop_comment");
-    TCase *tc_trim         = tcase_create("trim");
-    TCase *tc_init_tokens  = tcase_create("init_tokens");
+    TCase *tc_drop_comment    = tcase_create("drop_comment");
+    TCase *tc_trim            = tcase_create("trim");
+    TCase *tc_init_tokens     = tcase_create("init_tokens");
     TCase *tc_identify_tokens = tcase_create("identify_tokens");
+    TCase *tc_output          = tcase_create("output");
+    TCase *tc_input           = tcase_create("input");
 
     tcase_add_test( tc_drop_comment, test_drop_comment_1 );
     tcase_add_test( tc_drop_comment, test_drop_comment_2 );
@@ -283,10 +333,19 @@ Suite * io_suite(void) {
     tcase_add_test( tc_identify_tokens, test_identify_tokens_5 );
     tcase_add_test( tc_identify_tokens, test_identify_tokens_6 );
 
-    suite_add_tcase( s, tc_drop_comment );
-    suite_add_tcase( s, tc_trim );
-    suite_add_tcase( s, tc_init_tokens );
+    tcase_add_test( tc_output, test_add_output_1 );
+    tcase_add_exit_test( tc_output, test_add_output_2, 1 );
+    tcase_add_test( tc_output, test_output_error );
+
+    tcase_add_test( tc_input, test_input );
+
+    suite_add_tcase( s, tc_drop_comment    );
+    suite_add_tcase( s, tc_trim            );
+    suite_add_tcase( s, tc_init_tokens     );
     suite_add_tcase( s, tc_identify_tokens );
+    suite_add_tcase( s, tc_output          );
+    suite_add_tcase( s, tc_input           );
+
 
     return s;
 }
