@@ -321,7 +321,6 @@ START_TEST (test_get_pseudo_valid_move_list)
     int board_size;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int nr_of_valid_moves;
-    char board_output[MAX_OUTPUT_LENGTH];
 
 
     // Empty board:
@@ -421,6 +420,40 @@ START_TEST (test_get_pseudo_valid_move_list)
 }
 END_TEST
 
+START_TEST (test_get_valid_move_list)
+{
+    int s = 2;
+    int color;
+    int valid_moves_count = 0;
+
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int nr_of_valid_moves;
+
+    init_board(s);
+
+    nr_of_valid_moves = get_valid_move_list( BLACK, valid_moves_count, valid_moves );
+    fail_unless( nr_of_valid_moves == 0, "no valid moves (%d)", nr_of_valid_moves );
+
+    nr_of_valid_moves = get_valid_move_list( WHITE, valid_moves_count, valid_moves );
+    fail_unless( nr_of_valid_moves == 0, "no valid moves (%d)", nr_of_valid_moves );
+
+
+    // Check for black moves:
+    color = BLACK;
+    valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves_count, valid_moves );
+
+    fail_unless( nr_of_valid_moves == 4, "4 valid moves (%d)", nr_of_valid_moves );
+
+    // Check for white moves:
+    color = WHITE;
+    valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves_count, valid_moves );
+
+    fail_unless( nr_of_valid_moves == 4, "4 valid moves (%d)", nr_of_valid_moves );
+}
+END_TEST
+
 
 Suite * move_suite(void) {
     Suite *s                    = suite_create("Run");
@@ -444,6 +477,7 @@ Suite * move_suite(void) {
     tcase_add_test( tc_get_last_ko,              test_get_move_last_ko           );
     tcase_add_test( tc_push_move,                test_push_move                  );
     tcase_add_test( tc_valid_move_list,          test_get_pseudo_valid_move_list );
+    tcase_add_test( tc_valid_move_list,          test_get_valid_move_list        );
 
     tcase_add_exit_test( tc_push_move, test_push_move_fail, EXIT_FAILURE );
 

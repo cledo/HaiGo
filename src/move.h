@@ -14,6 +14,6 @@ int  get_move_last_ko_color(void);
 
 bool is_move_ko( int color, int i, int j );
 int  get_pseudo_valid_move_list( int color, int valid_moves[][2] );
-int  get_valide_move_list( int color, int valid_moves_count, int valid_moves[][2] );
+int  get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] );
 
 #endif

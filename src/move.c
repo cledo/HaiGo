@@ -289,9 +289,9 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][2] )
  * @return      Number of valid moves
  * @sa          get_pseudo_valid_move_list()
  * @warning     The function get_pseudo_valid_move_list() must be called
- *              before get_valide_move_list().
+ *              before get_valid_move_list().
  */
-int get_valide_move_list( int color, int valid_moves_count, int valid_moves[][2] )
+int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] )
 {
     int  count = 0;
     int  i, j;
