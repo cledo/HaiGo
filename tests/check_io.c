@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <check.h>
 #include "../src/io.h"
+#include "../src/global_tools.h"
 
 
 START_TEST (test_drop_comment_1)
@@ -255,6 +256,60 @@ START_TEST (test_identify_tokens_6)
 }
 END_TEST
 
+START_TEST (test_identify_tokens_7)
+{
+    char tokens[MAX_TOKEN_COUNT][MAX_TOKEN_LENGTH];
+    struct command command_data;
+
+    init_tokens(tokens);
+    strcpy( tokens[0], "-1" );
+    strcpy( tokens[1], "version" );
+    strcpy( tokens[2], "arg1" );
+    strcpy( tokens[3], "arg2" );
+    strcpy( tokens[4], "arg3" );
+
+    identify_tokens( tokens, &command_data );
+
+    fail_unless( command_data.id == INVALID, "id is INVALID (%d)", command_data.id );
+    fail_unless( strcmp( command_data.name, "version" ) == 0
+        , "name is version (%s)", command_data.name );
+    fail_unless( command_data.gtp_argc == 3, "three arguments" );
+    fail_unless( strcmp( command_data.gtp_argv[0], "arg1" ) == 0
+        , "arg1 is arg1 (%s)", command_data.gtp_argv[0] );
+    fail_unless( strcmp( command_data.gtp_argv[1], "arg2" ) == 0
+        , "arg2 is arg2 (%s)", command_data.gtp_argv[1] );
+    fail_unless( strcmp( command_data.gtp_argv[2], "arg3" ) == 0
+        , "arg3 is arg3 (%s)", command_data.gtp_argv[2] );
+}
+END_TEST
+
+START_TEST (test_identify_tokens_8)
+{
+    char tokens[MAX_TOKEN_COUNT][MAX_TOKEN_LENGTH];
+    struct command command_data;
+
+    init_tokens(tokens);
+    strcpy( tokens[0], "0" );
+    strcpy( tokens[1], "version" );
+    strcpy( tokens[2], "arg1" );
+    strcpy( tokens[3], "arg2" );
+    strcpy( tokens[4], "arg3" );
+
+    identify_tokens( tokens, &command_data );
+
+    fail_unless( command_data.id == 0, "id is 0 (%d)", command_data.id );
+    fail_unless( strcmp( command_data.name, "version" ) == 0
+        , "name is version (%s)", command_data.name );
+    fail_unless( command_data.gtp_argc == 3, "three arguments" );
+    fail_unless( strcmp( command_data.gtp_argv[0], "arg1" ) == 0
+        , "arg1 is arg1 (%s)", command_data.gtp_argv[0] );
+    fail_unless( strcmp( command_data.gtp_argv[1], "arg2" ) == 0
+        , "arg2 is arg2 (%s)", command_data.gtp_argv[1] );
+    fail_unless( strcmp( command_data.gtp_argv[2], "arg3" ) == 0
+        , "arg3 is arg3 (%s)", command_data.gtp_argv[2] );
+}
+END_TEST
+
 START_TEST (test_add_output_1)
 {
     char to_output[] = "to_output";
@@ -266,12 +321,13 @@ END_TEST
 
 START_TEST (test_add_output_2)
 {
-    int k;
-    char to_output[MAX_OUTPUT_LENGTH];
+    int  k;
+    char to_output[MAX_OUTPUT_LENGTH+1];
 
-    for ( k = 0; k < MAX_OUTPUT_LENGTH; k++ ) {
+    for ( k = 0; k < MAX_OUTPUT_LENGTH+1; k++ ) {
         to_output[k] = 'X';
     }
+    k--;
     to_output[k] = '\0';
 
     // This should fail:
@@ -301,6 +357,54 @@ START_TEST (test_input)
 }
 END_TEST
 
+START_TEST (test_parse_gtp_input_1)
+{
+    char command_input_buffer[SIZE_INPUT_BUFFER];
+    char tokens[MAX_TOKEN_COUNT][MAX_TOKEN_LENGTH];
+
+    command_input_buffer[0] = '\0';
+
+    parse_gtp_input( command_input_buffer, tokens );
+    fail_unless( strlen( tokens[0] ) == 0, "tokens list empty" );
+
+    my_strcpy( command_input_buffer, "token1 token2 token3 token4", SIZE_INPUT_BUFFER );
+    parse_gtp_input( command_input_buffer, tokens );
+    fail_unless( strcmp( tokens[0], "token1" ) == 0, "first token correct"  );
+    fail_unless( strcmp( tokens[1], "token2" ) == 0, "second token correct" );
+    fail_unless( strcmp( tokens[2], "token3" ) == 0, "third token correct"  );
+    fail_unless( strcmp( tokens[3], "token4" ) == 0, "fourth token correct" );
+}
+END_TEST
+
+START_TEST (test_parse_gtp_input_2)
+{
+    char command_input_buffer[SIZE_INPUT_BUFFER];
+    char tokens[MAX_TOKEN_COUNT][MAX_TOKEN_LENGTH];
+
+    my_strcpy( command_input_buffer, "abcdefghijklmnopqrstuvwxyz", SIZE_INPUT_BUFFER );
+    parse_gtp_input( command_input_buffer, tokens );
+
+    parse_gtp_input( command_input_buffer, tokens );
+    fail_unless( strlen( tokens[0] ) == 0, "tokens list empty" );
+    fail_unless( get_output_error() == true, "output is error" );
+}
+END_TEST
+
+START_TEST (test_parse_gtp_input_3)
+{
+    char command_input_buffer[SIZE_INPUT_BUFFER];
+    char tokens[MAX_TOKEN_COUNT][MAX_TOKEN_LENGTH];
+
+    my_strcpy( command_input_buffer, "a b c d e f g h i j k l m n o p q r s t u v w x y z", SIZE_INPUT_BUFFER );
+    parse_gtp_input( command_input_buffer, tokens );
+
+    parse_gtp_input( command_input_buffer, tokens );
+    fail_unless( strlen( tokens[0] ) == 0, "tokens list empty" );
+    fail_unless( get_output_error() == true, "output is error" );
+}
+END_TEST
+
+
 Suite * io_suite(void) {
     Suite *s = suite_create("Run");
 
@@ -310,6 +414,7 @@ Suite * io_suite(void) {
     TCase *tc_identify_tokens = tcase_create("identify_tokens");
     TCase *tc_output          = tcase_create("output");
     TCase *tc_input           = tcase_create("input");
+    TCase *tc_parse           = tcase_create("parse_gtp");
 
     tcase_add_test( tc_drop_comment, test_drop_comment_1 );
     tcase_add_test( tc_drop_comment, test_drop_comment_2 );
@@ -332,6 +437,8 @@ Suite * io_suite(void) {
     tcase_add_test( tc_identify_tokens, test_identify_tokens_4 );
     tcase_add_test( tc_identify_tokens, test_identify_tokens_5 );
     tcase_add_test( tc_identify_tokens, test_identify_tokens_6 );
+    tcase_add_test( tc_identify_tokens, test_identify_tokens_7 );
+    tcase_add_test( tc_identify_tokens, test_identify_tokens_8 );
 
     tcase_add_test( tc_output, test_add_output_1 );
     tcase_add_exit_test( tc_output, test_add_output_2, 1 );
@@ -339,12 +446,17 @@ Suite * io_suite(void) {
 
     tcase_add_test( tc_input, test_input );
 
+    tcase_add_test( tc_parse, test_parse_gtp_input_1 );
+    tcase_add_test( tc_parse, test_parse_gtp_input_2 );
+    tcase_add_test( tc_parse, test_parse_gtp_input_3 );
+
     suite_add_tcase( s, tc_drop_comment    );
     suite_add_tcase( s, tc_trim            );
     suite_add_tcase( s, tc_init_tokens     );
     suite_add_tcase( s, tc_identify_tokens );
     suite_add_tcase( s, tc_output          );
     suite_add_tcase( s, tc_input           );
+    suite_add_tcase( s, tc_parse           );
 
 
     return s;
