@@ -109,6 +109,21 @@ START_TEST (test_select_command_5)
     struct command command_data;
 
     command_data.id = 0;
+    my_strcpy( command_data.name, "boardsize", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "0", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == true, "boardsize with invalid size" );
+}
+END_TEST
+
+START_TEST (test_select_command_6)
+{
+    struct command command_data;
+
+    command_data.id = 0;
     my_strcpy( command_data.name, "komi", MAX_TOKEN_LENGTH );
     my_strcpy( command_data.gtp_argv[0], "6.5", MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 1;
@@ -119,23 +134,210 @@ START_TEST (test_select_command_5)
 }
 END_TEST
 
+START_TEST (test_select_command_7)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "clear_board", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "clear_board command identified" );
+}
+END_TEST
+
+START_TEST (test_select_command_8)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "list_commands", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "list_commands command identified" );
+}
+END_TEST
+
+START_TEST (test_select_command_9)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "genmove", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "BLACK", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_board(BOARD_SIZE_DEFAULT);
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "clear_board command identified" );
+}
+END_TEST
+
+START_TEST (test_select_command_10)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "known_command", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "name", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "known_command command identified" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_11)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "known_command", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == true, "known_command without arg is error" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_12)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "known_command", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "name", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "name", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "name", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 3;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == true, "known_command with too many args is error" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_13)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "known_command", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "not_implemented", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "known_command with unknown command" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_14)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "protocol_version", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "protocol_version command identified" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_15)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "play", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "black", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[1], "d4", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 2;
+
+    init_board(BOARD_SIZE_DEFAULT);
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "play command identified" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_16)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "showboard", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_board(BOARD_SIZE_DEFAULT);
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "showboard command identified" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_17)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "quit", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "quit command identified" );
+
+}
+END_TEST
+
 Suite * run_program_suite(void) {
     Suite *s = suite_create("Run");
 
-    TCase *tc_core        = tcase_create("Core");
+    TCase *tc_core = tcase_create("Core");
+    TCase *tc_gtp  = tcase_create("GTP");
 
     //tcase_add_test( tc_core, run_no_param );
     tcase_add_exit_test( tc_core, run_h_param, EXIT_SUCCESS );
     tcase_add_exit_test( tc_core, run_v_param, EXIT_SUCCESS );
     tcase_add_exit_test( tc_core, run_invalid_param, EXIT_FAILURE );
 
-    tcase_add_test( tc_core, test_select_command_1 );
-    tcase_add_test( tc_core, test_select_command_2 );
-    tcase_add_test( tc_core, test_select_command_3 );
-    tcase_add_test( tc_core, test_select_command_4 );
-    tcase_add_test( tc_core, test_select_command_5 );
+    tcase_add_test( tc_gtp, test_select_command_1  );
+    tcase_add_test( tc_gtp, test_select_command_2  );
+    tcase_add_test( tc_gtp, test_select_command_3  );
+    tcase_add_test( tc_gtp, test_select_command_4  );
+    tcase_add_test( tc_gtp, test_select_command_5  );
+    tcase_add_test( tc_gtp, test_select_command_6  );
+    tcase_add_test( tc_gtp, test_select_command_7  );
+    tcase_add_test( tc_gtp, test_select_command_8  );
+    tcase_add_test( tc_gtp, test_select_command_9  );
+    tcase_add_test( tc_gtp, test_select_command_10 );
+    tcase_add_test( tc_gtp, test_select_command_11 );
+    tcase_add_test( tc_gtp, test_select_command_12 );
+    tcase_add_test( tc_gtp, test_select_command_13 );
+    tcase_add_test( tc_gtp, test_select_command_14 );
+    tcase_add_test( tc_gtp, test_select_command_15 );
+    tcase_add_test( tc_gtp, test_select_command_16 );
+    tcase_add_test( tc_gtp, test_select_command_17 );
 
     suite_add_tcase( s, tc_core );
+    suite_add_tcase( s, tc_gtp  );
 
     return s;
 }
