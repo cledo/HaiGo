@@ -60,8 +60,11 @@ static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-/// @todo These functions have to be implemented: gtp_genmove, gtp_undo.
+/// @todo These functions have to be implemented: gtp_undo.
 /// - void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
+
+/* Regression commands */
+static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Debug commands */
 static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -250,6 +253,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_showboard);
     my_strcpy( known_commands[i].command, "genmove", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_genmove);
+    my_strcpy( known_commands[i].command, "loadsgf", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_loadsgf);
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
@@ -801,7 +806,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int color;
     int nr_of_valid_moves;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
-    //int rand_index;
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
@@ -903,6 +907,56 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     strcat( vertex, x );
     strcat( vertex, y );
     add_output(vertex);
+
+    return;
+}
+
+/**
+ * @brief       Loads an SGF file
+ *
+ * Loads a given SGF file
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ * @sa          Go Text Protokol version 2, 6.3.5 Regression Commands
+ */
+void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    FILE *sgf_file;
+    char filename[MAX_FILENAME_LENGTH];
+    int  move_number = INVALID;
+
+    // Check for missing arguments:
+    if ( gtp_argc < 1 ) {
+        set_output_error();
+        add_output("missing argument: filename");
+
+        return;
+    }
+
+    my_strcpy( filename, gtp_argv[0], MAX_FILENAME_LENGTH );
+
+    // Check for optional argument move_number:
+    if ( gtp_argc >= 2 ) {
+        move_number = atoi( gtp_argv[1] );
+        if ( move_number <= 0 ) {
+            move_number = INVALID;
+        }
+    }
+
+    // Open SGF file:
+    sgf_file = fopen( filename, "r" );
+    if ( sgf_file == NULL ) {
+        set_output_error();
+        add_output("cannot load file");
+
+        return;
+    }
+
+    // Close SGF file:
+    fclose(sgf_file);
+
 
     return;
 }

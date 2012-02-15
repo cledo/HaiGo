@@ -27,6 +27,7 @@ my @known_commands = qw{
     play
     showboard
     genmove
+    loadsgf
     showgroups
 };
 

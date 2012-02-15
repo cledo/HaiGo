@@ -37,4 +37,5 @@ tests/Makefile
 tests/Makefile.in
 */.deps/*.Po
 .vimrc
+tests/testfile.sgf
 

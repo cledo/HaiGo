@@ -307,6 +307,105 @@ START_TEST (test_select_command_17)
 }
 END_TEST
 
+START_TEST (test_select_command_18)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == true, "loadsgf without arg filename" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_19)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "not_a_file", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == true, "loadsgf with invalid filename" );
+
+}
+END_TEST
+
+START_TEST (test_select_command_20)
+{
+    struct command command_data;
+    char filename[] = "testfile.sgf";
+    FILE *sgf_file;
+
+    sgf_file = fopen( filename, "w" );
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], filename, MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "loadsgf with valid filename" );
+
+    fclose(sgf_file);
+    remove(filename);
+}
+END_TEST
+
+START_TEST (test_select_command_21)
+{
+    struct command command_data;
+    char filename[] = "testfile.sgf";
+    FILE *sgf_file;
+
+    sgf_file = fopen( filename, "w" );
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], filename, MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[1], "0", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 2;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "loadsgf with valid filename, invalid move_number" );
+
+    fclose(sgf_file);
+    remove(filename);
+}
+END_TEST
+
+START_TEST (test_select_command_22)
+{
+    struct command command_data;
+    char filename[] = "testfile.sgf";
+    FILE *sgf_file;
+
+    sgf_file = fopen( filename, "w" );
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], filename, MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[1], "10", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 2;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "loadsgf with valid filename, valid move_number" );
+
+    fclose(sgf_file);
+    remove(filename);
+}
+END_TEST
+
 Suite * run_program_suite(void) {
     Suite *s = suite_create("Run");
 
@@ -335,6 +434,11 @@ Suite * run_program_suite(void) {
     tcase_add_test( tc_gtp, test_select_command_15 );
     tcase_add_test( tc_gtp, test_select_command_16 );
     tcase_add_test( tc_gtp, test_select_command_17 );
+    tcase_add_test( tc_gtp, test_select_command_18 );
+    tcase_add_test( tc_gtp, test_select_command_19 );
+    tcase_add_test( tc_gtp, test_select_command_20 );
+    tcase_add_test( tc_gtp, test_select_command_21 );
+    tcase_add_test( tc_gtp, test_select_command_22 );
 
     suite_add_tcase( s, tc_core );
     suite_add_tcase( s, tc_gtp  );

@@ -48,5 +48,8 @@
 //! Defines the maximum number of moves.
 #define MOVE_HISTORY_MAX    1024
 
+//! Defines the maximum length of a file name.
+#define MAX_FILENAME_LENGTH 256
+
 #endif
 
