@@ -21,7 +21,7 @@ void parse_sgf( char *file_content )
     int  k = 0;
     int  l = 0;
     char current_char;
-    char last_char;
+    char last_char = '\0';
     int  game_tree_level = INVALID;
     int  node_nr         = INVALID;
     bool in_PropValue    = false;
