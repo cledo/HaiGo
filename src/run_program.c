@@ -5,12 +5,15 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "global_const.h"
 #include "run_program.h"
 #include "io.h"
 #include "board.h"
 #include "move.h"
 #include "global_tools.h"
+#include "sgf.h"
 #include "./brains/all_brains.h"
 
 
@@ -923,9 +926,16 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  */
 void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
-    FILE *sgf_file;
     char filename[MAX_FILENAME_LENGTH];
     int  move_number = INVALID;
+
+    FILE   *sgf_file;
+    struct stat file_attr;
+    int    file_size;
+
+    int  c;
+    char *file_content;
+    int  k = 0;
 
     // Check for missing arguments:
     if ( gtp_argc < 1 ) {
@@ -945,7 +955,13 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         }
     }
 
-    // Open SGF file:
+    // Get file size:
+    stat( filename, &file_attr );
+    file_size = file_attr.st_size;
+
+    file_content = malloc( ( sizeof(char) * file_size ) + 1 );
+
+    // Read SGF file:
     sgf_file = fopen( filename, "r" );
     if ( sgf_file == NULL ) {
         set_output_error();
@@ -953,10 +969,17 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
         return;
     }
-
-    // Close SGF file:
+    while ( ( c = fgetc(sgf_file) ) != EOF ) {
+        file_content[k] = c;
+        k++;
+    }
     fclose(sgf_file);
+    file_content[k] = '\0';
+    //add_output(file_content);
 
+    parse_sgf(file_content);
+
+    free(file_content);
 
     return;
 }
