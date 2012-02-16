@@ -91,7 +91,7 @@ void parse_sgf( char *file_content )
             last_char = current_char;
             continue;
         }
-        if ( current_char == ']' ) {
+        if ( current_char == ']' && last_char != '\\' ) {
             in_PropValue = false;
             PropValue[l] = '\0';
             l = 0;
