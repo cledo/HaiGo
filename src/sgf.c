@@ -21,6 +21,7 @@ struct property_st {
     int  number;
     char *name;
     char **value;
+    int  value_count;
 };
 
 void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
@@ -40,6 +41,7 @@ void parse_sgf( char *file_content )
 {
     int  k = 0;
     int  l = 0;
+    int  m = 0;
     int  content_size = 0;
     char current_char;
     char last_char = '\0';
@@ -50,8 +52,8 @@ void parse_sgf( char *file_content )
     char *property_value;
     bool in_property_name  = false;
     bool in_property_value = false;
-    int property_count = 0;
-    //int value_count    = 0;
+    int  property_count = 0;
+    int  value_count    = 0;
 
     int    node_count = 0;
     struct node *sgf_tree;
@@ -99,6 +101,7 @@ void parse_sgf( char *file_content )
         if ( isupper(current_char) && ( isspace(last_char) || (last_char == ']') || (last_char == ';') ) ) {
             in_property_name = true;
             //printf( "    ## New Property - " );
+            value_count = 0;
         }
         if ( in_property_name && ! isupper(current_char) ) {
             in_property_name = false;
@@ -120,6 +123,17 @@ void parse_sgf( char *file_content )
             property_value[l] = '\0';
             l = 0;
             //printf( "%s\n", property_value );
+            value_count++;
+            //printf( "    ValNr.: %d\n", value_count );
+            (sgf_tree->property + property_count - 1)->value_count = value_count;
+            if ( value_count == 1 ) {
+                (sgf_tree->property + property_count - 1)->value = malloc( sizeof(char **) );
+            }
+            else if ( value_count > 1 ) {
+                (sgf_tree->property + property_count - 1)->value = realloc( (sgf_tree->property + property_count - 1)->value, sizeof(char **) * value_count );
+            }
+            *((sgf_tree->property + property_count - 1)->value + value_count - 1) = malloc( strlen(property_value) );
+            strcpy( *((sgf_tree->property + property_count - 1)->value + value_count - 1), property_value );
 
             last_char = current_char;
             continue;
@@ -137,7 +151,7 @@ void parse_sgf( char *file_content )
     }
 
     // DEBUG:
-    /*
+    // /*
     for ( k = 0; k <= node_nr; k++ ) {
         printf( "# Node Nr.: %d\n", (sgf_tree_start + k)->number );
         printf( "#        Main : %d\n", (sgf_tree_start + k)->is_main );
@@ -152,11 +166,15 @@ void parse_sgf( char *file_content )
         printf( "#        Prop : %d\n", (sgf_tree_start + k)->property_count );
 
         for ( l = 0; l < (sgf_tree_start + k)->property_count; l++ ) {
-            printf( "##       PName: %s\n", ((sgf_tree_start + k)->property + l)->name );
-            printf( "##       PNr. : %d\n", ((sgf_tree_start + k)->property + l)->number );
+            printf( "##           PName: %s\n", ((sgf_tree_start + k)->property + l)->name );
+            printf( "##           PNr. : %d\n", ((sgf_tree_start + k)->property + l)->number );
+            printf( "##           ValNr: %d\n", ((sgf_tree_start + k)->property + l)->value_count );
+            for ( m = 0; m < ((sgf_tree_start + k)->property + l)->value_count; m++ ) {
+                printf( "####            Val: %s\n", *(((sgf_tree_start + k)->property + l)->value + m) );
+            }
         }
     }
-    */
+    // */
 
     sgf_tree = sgf_tree_start;
     free(sgf_tree);
@@ -216,17 +234,14 @@ void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int g
 }
 
 /**
- * @brief       [brief description]
+ * @brief       Adds property to node
  *
- * [detailed description]
+ * Adds a property to the current node of the SGF tree
  *
- * @param[in]   [name of input parameter] [its description]
- * @param[out]  [name of output parameter] [its description]
- * @return      [information about return value]
- * @sa          [see also section]
- * @note        [any note about the function you might have]
- * @warning     [any warning if necessary]
- * @todo        [whatever...]
+ * @param[in]   sgf_tree        Pointer to SGF tree
+ * @param[out]  property_name   Name of property to add
+ * @return      Nothing
+ * @todo        malloc needs free ...
  */
 void add_property( struct node *sgf_tree, char property_name[] )
 {
@@ -261,7 +276,7 @@ void add_property( struct node *sgf_tree, char property_name[] )
     }
     *(sgf_tree->property + property_count - 1 ) = *property;
 
-    free(property->name);
+    //free(property->name);
     free(property);
 
     return;
