@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "global_const.h"
 #include "sgf.h"
+#include "global_tools.h"
 
 struct node {
     int  number;
@@ -23,6 +24,7 @@ struct property_st {
 };
 
 void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
+void add_property( struct node *sgf_tree, char property_name[] );
 
 /**
  * @brief       Parses an SGF string
@@ -55,8 +57,6 @@ void parse_sgf( char *file_content )
     struct node *sgf_tree;
     struct node *sgf_tree_start;
     bool   is_main_line = true;
-
-    struct property_st *property;
 
 
     // Count number of ';' characters to get maximum number of possible nodes.
@@ -105,31 +105,8 @@ void parse_sgf( char *file_content )
             property_name[l] = '\0';
             l = 0;
             //printf( "%s\n", property_name );
-            // ... where to free() this stuff ... ??
-            property_count++;
-            property = malloc( sizeof( struct property_st ) );
-            if ( property == NULL ) {
-                fprintf( stderr, "malloc for property failed\n" );
-                exit(1);
-            }
-            printf("Prop: %p\n", property );
-            property->name = malloc( strlen(property_name) + 1 );
-            if ( property->name == NULL ) {
-                fprintf( stderr, "malloc for property->name failed\n" );
-                exit(1);
-            }
-            printf("PropName: %p\n", property->name );
-            property->number = property_count;
-
-            strcpy( property->name, property_name );
-            sgf_tree->property_count = property_count;
-            if ( property_count == 1 ) {
-                sgf_tree->property = malloc( sizeof( struct property_st ) );
-            }
-            else if ( property_count > 1 ) {
-                sgf_tree->property = realloc( sgf_tree->property, sizeof( struct property_st ) * property_count );
-            }
-            *(sgf_tree->property + property_count) = *property;
+            sgf_tree->property_count = ++property_count;
+            add_property( sgf_tree, property_name );
         }
         if ( current_char == '[' ) {
             //printf( "      # New property_value start - " );
@@ -160,6 +137,7 @@ void parse_sgf( char *file_content )
     }
 
     // DEBUG:
+    /*
     for ( k = 0; k <= node_nr; k++ ) {
         printf( "# Node Nr.: %d\n", (sgf_tree_start + k)->number );
         printf( "#        Main : %d\n", (sgf_tree_start + k)->is_main );
@@ -178,6 +156,7 @@ void parse_sgf( char *file_content )
             printf( "##       PNr. : %d\n", ((sgf_tree_start + k)->property + l)->number );
         }
     }
+    */
 
     sgf_tree = sgf_tree_start;
     free(sgf_tree);
@@ -232,6 +211,58 @@ void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int g
             }
         }
     }
+
+    return;
+}
+
+/**
+ * @brief       [brief description]
+ *
+ * [detailed description]
+ *
+ * @param[in]   [name of input parameter] [its description]
+ * @param[out]  [name of output parameter] [its description]
+ * @return      [information about return value]
+ * @sa          [see also section]
+ * @note        [any note about the function you might have]
+ * @warning     [any warning if necessary]
+ * @todo        [whatever...]
+ */
+void add_property( struct node *sgf_tree, char property_name[] )
+{
+    struct property_st *property;
+
+    int property_count = sgf_tree->property_count;
+
+    // ... where to free() this stuff ... ??
+    property = malloc( sizeof( struct property_st ) );
+    if ( property == NULL ) {
+        fprintf( stderr, "malloc for property failed\n" );
+        exit(1);
+    }
+    //printf("Prop: %p\n", property );
+
+    property->name = malloc( strlen(property_name) + 1 );
+    if ( property->name == NULL ) {
+        fprintf( stderr, "malloc for property->name failed\n" );
+        exit(1);
+    }
+    //printf("PropName: %p\n", property->name );
+
+    my_strcpy( property->name, property_name, (int) strlen(property_name) + 1 );
+
+    property->number = property_count;
+
+    if ( property_count == 1 ) {
+        sgf_tree->property = malloc( sizeof( struct property_st ) );
+    }
+    else if ( property_count > 1 ) {
+        sgf_tree->property = realloc( sgf_tree->property, sizeof( struct property_st ) * property_count );
+    }
+    *(sgf_tree->property + property_count - 1 ) = *property;
+
+    free(property->name);
+    free(property);
 
     return;
 }
