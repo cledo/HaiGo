@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>  // remove when printf is not needed anymore
+#include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include "global_const.h"
@@ -10,7 +11,14 @@ struct node {
     bool is_main;
     int  tree_nr;
     int  tree_level;
-    struct node *parent;
+    struct node        *parent;
+    struct property_st *property;
+    int  property_count;
+};
+
+struct property_st {
+    char *name;
+    char **value;
 };
 
 void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
@@ -29,30 +37,42 @@ void parse_sgf( char *file_content )
 {
     int  k = 0;
     int  l = 0;
+    int  content_size = 0;
     char current_char;
     char last_char = '\0';
     int  game_tree_nr    = INVALID;
     int  game_tree_level = INVALID;
     int  node_nr         = INVALID;
-    bool in_PropValue    = false;
-    char PropValue[128];
-    bool in_PropIdent    = false;
-    char PropIdent[128];
+    char *property_name;
+    char *property_value;
+    bool in_property_name  = false;
+    bool in_property_value = false;
+    int property_count = 0;
+    //int value_count    = 0;
 
     int    node_count = 0;
     struct node *sgf_tree;
     struct node *sgf_tree_start;
     bool   is_main_line = true;
 
-    // Count number of ';' characters to get maximum number of possible nodes:
+    struct property_st *property;
+
+
+    // Count number of ';' characters to get maximum number of possible nodes.
+    // Count number of characters also.
     while ( ( current_char = file_content[k++] ) != '\0' ) {
         if ( current_char == ';' ) {
             node_count++;
         }
+        content_size++;
     }
     k = 0;
 
-    sgf_tree       = malloc( sizeof( struct node ) * ( node_count ) );
+    property_name  = malloc( sizeof(char) * content_size );
+    property_value = malloc( sizeof(char) * content_size );
+
+    sgf_tree = malloc( sizeof( struct node ) * ( node_count ) );
+
     sgf_tree_start = sgf_tree;
 
     while ( ( current_char = file_content[k++] ) != '\0' ) {
@@ -73,40 +93,63 @@ void parse_sgf( char *file_content )
             }
             //printf( "#### New Node %d\n", node_nr );
             add_node( sgf_tree_start, node_nr, game_tree_nr, game_tree_level, is_main_line );
+            property_count = 0;
         }
         if ( isupper(current_char) && ( isspace(last_char) || (last_char == ']') || (last_char == ';') ) ) {
-            in_PropIdent = true;
+            in_property_name = true;
             //printf( "    ## New Property - " );
         }
-        if ( in_PropIdent && ! isupper(current_char) ) {
-            in_PropIdent = false;
-            PropIdent[l] = '\0';
+        if ( in_property_name && ! isupper(current_char) ) {
+            in_property_name = false;
+            property_name[l] = '\0';
             l = 0;
-            //printf( "%s\n", PropIdent );
+            //printf( "%s\n", property_name );
+            // ... where to free() this stuff ... ??
+            property = malloc( sizeof( struct property_st ) );
+            if ( property == NULL ) {
+                fprintf( stderr, "malloc for property failed\n" );
+                exit(1);
+            }
+            //printf("XXXXXXXX %p\n", property );
+            property->name = malloc( strlen(property_name) + 1 );
+            if ( property->name == NULL ) {
+                fprintf( stderr, "malloc for property->name failed\n" );
+                exit(1);
+            }
+
+            strcpy( property->name, property_name );
+            sgf_tree->property_count = ++property_count;
+            if ( property_count == 1 ) {
+                sgf_tree->property = malloc( sizeof( struct property_st ) );
+            }
+            else if ( property_count > 1 ) {
+                sgf_tree->property = realloc( sgf_tree->property, sizeof( struct property_st ) * property_count );
+            }
+            *(sgf_tree->property) = *property;
         }
         if ( current_char == '[' ) {
-            //printf( "      # New PropValue start - " );
-            in_PropValue = true;
+            //printf( "      # New property_value start - " );
+            in_property_value = true;
 
             last_char = current_char;
             continue;
         }
         if ( current_char == ']' && last_char != '\\' ) {
-            in_PropValue = false;
-            PropValue[l] = '\0';
+            in_property_value = false;
+            property_value[l] = '\0';
             l = 0;
-            //printf( "%s\n", PropValue );
+            //printf( "%s\n", property_value );
 
             last_char = current_char;
             continue;
         }
 
 
-        if ( in_PropValue ) {
-            PropValue[l++] = current_char;
+        if ( in_property_value ) {
+            property_value[l++] = current_char;
         }
-        if ( in_PropIdent ) {
-            PropIdent[l++] = current_char;
+        if ( in_property_name ) {
+            property_name[l++] = current_char;
         }
 
         last_char = current_char;
@@ -116,7 +159,7 @@ void parse_sgf( char *file_content )
     /*
     for ( k = 0; k <= node_nr; k++ ) {
         printf( "# Node Nr.: %d\n", (sgf_tree_start + k)->number );
-        printf( "#        Main: %d\n", (sgf_tree_start + k)->is_main );
+        printf( "#        Main : %d\n", (sgf_tree_start + k)->is_main );
         printf( "#        Level: %d\n", (sgf_tree_start + k)->tree_level );
         printf( "#        Tree : %d\n", (sgf_tree_start + k)->tree_nr );
         if ( (sgf_tree_start + k)->parent != NULL ) {
@@ -124,6 +167,11 @@ void parse_sgf( char *file_content )
         }
         else {
             printf( "#        Par  : ??\n" );
+        }
+        printf( "#        Prop : %d\n", (sgf_tree_start + k)->property_count );
+
+        for ( l = 0; l < (sgf_tree_start + k)->property_count; l++ ) {
+            printf( "##       PName: %s\n", ((sgf_tree_start + k)->property + l)->name );
         }
     }
     */
