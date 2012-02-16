@@ -17,6 +17,7 @@ struct node {
 };
 
 struct property_st {
+    int  number;
     char *name;
     char **value;
 };
@@ -105,27 +106,30 @@ void parse_sgf( char *file_content )
             l = 0;
             //printf( "%s\n", property_name );
             // ... where to free() this stuff ... ??
+            property_count++;
             property = malloc( sizeof( struct property_st ) );
             if ( property == NULL ) {
                 fprintf( stderr, "malloc for property failed\n" );
                 exit(1);
             }
-            //printf("XXXXXXXX %p\n", property );
+            printf("Prop: %p\n", property );
             property->name = malloc( strlen(property_name) + 1 );
             if ( property->name == NULL ) {
                 fprintf( stderr, "malloc for property->name failed\n" );
                 exit(1);
             }
+            printf("PropName: %p\n", property->name );
+            property->number = property_count;
 
             strcpy( property->name, property_name );
-            sgf_tree->property_count = ++property_count;
+            sgf_tree->property_count = property_count;
             if ( property_count == 1 ) {
                 sgf_tree->property = malloc( sizeof( struct property_st ) );
             }
             else if ( property_count > 1 ) {
                 sgf_tree->property = realloc( sgf_tree->property, sizeof( struct property_st ) * property_count );
             }
-            *(sgf_tree->property) = *property;
+            *(sgf_tree->property + property_count) = *property;
         }
         if ( current_char == '[' ) {
             //printf( "      # New property_value start - " );
@@ -156,7 +160,6 @@ void parse_sgf( char *file_content )
     }
 
     // DEBUG:
-    /*
     for ( k = 0; k <= node_nr; k++ ) {
         printf( "# Node Nr.: %d\n", (sgf_tree_start + k)->number );
         printf( "#        Main : %d\n", (sgf_tree_start + k)->is_main );
@@ -172,9 +175,9 @@ void parse_sgf( char *file_content )
 
         for ( l = 0; l < (sgf_tree_start + k)->property_count; l++ ) {
             printf( "##       PName: %s\n", ((sgf_tree_start + k)->property + l)->name );
+            printf( "##       PNr. : %d\n", ((sgf_tree_start + k)->property + l)->number );
         }
     }
-    */
 
     sgf_tree = sgf_tree_start;
     free(sgf_tree);
