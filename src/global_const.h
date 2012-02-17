@@ -15,7 +15,7 @@
 #define GTP_VERSION     "2"
 
 //! Defines the maximum length of any given GTP token, either command or argument.
-#define MAX_TOKEN_LENGTH 256
+#define MAX_TOKEN_LENGTH 20
 //! Defines the maximum number of given GTP tokens for any command plus arguments.
 #define MAX_TOKEN_COUNT  10
 

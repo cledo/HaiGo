@@ -350,10 +350,9 @@ START_TEST (test_select_command_20)
     my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
     my_strcpy( command_data.gtp_argv[0], filename, MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 1;
-
     init_known_commands();
     select_command(&command_data);
-    fail_unless( get_output_error() == false, "loadsgf with valid filename" );
+    fail_unless( get_output_error() == true, "loadsgf with zero size file" );
 
     fclose(sgf_file);
     remove(filename);
@@ -363,10 +362,11 @@ END_TEST
 START_TEST (test_select_command_21)
 {
     struct command command_data;
-    char filename[] = "testfile.sgf";
+    //char filename[] = "testfile.sgf";
+    char filename[] = "game1.sgf";
     FILE *sgf_file;
 
-    sgf_file = fopen( filename, "w" );
+    //sgf_file = fopen( filename, "w" );
 
     command_data.id = 0;
     my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
@@ -378,18 +378,19 @@ START_TEST (test_select_command_21)
     select_command(&command_data);
     fail_unless( get_output_error() == false, "loadsgf with valid filename, invalid move_number" );
 
-    fclose(sgf_file);
-    remove(filename);
+    //fclose(sgf_file);
+    //remove(filename);
 }
 END_TEST
 
 START_TEST (test_select_command_22)
 {
     struct command command_data;
-    char filename[] = "testfile.sgf";
+    //char filename[] = "testfile.sgf";
+    char filename[] = "game1.sgf";
     FILE *sgf_file;
 
-    sgf_file = fopen( filename, "w" );
+    //sgf_file = fopen( filename, "w" );
 
     command_data.id = 0;
     my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
@@ -401,8 +402,8 @@ START_TEST (test_select_command_22)
     select_command(&command_data);
     fail_unless( get_output_error() == false, "loadsgf with valid filename, valid move_number" );
 
-    fclose(sgf_file);
-    remove(filename);
+    //fclose(sgf_file);
+    //remove(filename);
 }
 END_TEST
 

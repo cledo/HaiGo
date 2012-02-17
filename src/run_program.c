@@ -975,6 +975,13 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     stat( filename, &file_attr );
     file_size = file_attr.st_size;
 
+    if ( file_size == 0 ) {
+        set_output_error();
+        add_output("cannot load file");
+
+        return;
+    }
+
     file_content = malloc( ( sizeof(char) * file_size ) + 1 );
 
     // Read SGF file:
