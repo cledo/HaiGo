@@ -937,6 +937,10 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     char *file_content;
     int  k = 0;
 
+    struct node_st *sgf_tree;
+
+    //int l;    // DEBUG
+
     // Check for missing arguments:
     if ( gtp_argc < 1 ) {
         set_output_error();
@@ -975,9 +979,30 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
     fclose(sgf_file);
     file_content[k] = '\0';
-    //add_output(file_content);
 
-    parse_sgf(file_content);
+    sgf_tree = parse_sgf(file_content);
+
+    // DEBUG:
+    /*
+    while ( sgf_tree->number != -1 ) {
+        printf( "# Node Nr.: %d\n", sgf_tree->number );
+        printf( "#    Main:    %d\n", sgf_tree->is_main );
+        printf( "#    TLevel:  %d\n", sgf_tree->tree_level );
+        printf( "#    TNr:     %d\n", sgf_tree->tree_nr );
+        printf( "#    Par.:    %d\n", sgf_tree->parent->number );
+        printf( "#    Prop.:   %d\n", sgf_tree->property_count );
+        for ( k = 0; k < sgf_tree->property_count; k++ ) {
+            printf( "####    PName:  %s\n", (sgf_tree->property + k)->name );
+            printf( "####    PNr.:   %d\n", (sgf_tree->property + k)->number );
+            printf( "####    ValNr.: %d\n", (sgf_tree->property + k)->value_count );
+            for ( l = 0; l < (sgf_tree->property + k)->value_count; l++ ) {
+                printf( "########    Val:    %s\n", *((sgf_tree->property + k)->value + l) );
+            }
+        }
+
+        sgf_tree++;
+    }
+    */
 
     free(file_content);
 

@@ -7,25 +7,10 @@
 #include "sgf.h"
 #include "global_tools.h"
 
-struct node {
-    int  number;
-    bool is_main;
-    int  tree_nr;
-    int  tree_level;
-    struct node        *parent;
-    struct property_st *property;
-    int  property_count;
-};
 
-struct property_st {
-    int  number;
-    char *name;
-    char **value;
-    int  value_count;
-};
-
-void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
-void add_property( struct node *sgf_tree, char property_name[] );
+static void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
+static void add_property( struct node_st *sgf_tree, char property_name[] );
+static void add_value( struct property_st *property_st, char *property_value );
 
 /**
  * @brief       Parses an SGF string
@@ -33,15 +18,14 @@ void add_property( struct node *sgf_tree, char property_name[] );
  * Parses a complete SGF string as it is read from an SGF file.
  *
  * @param[in]   file_content    SGF string as read from file
- * @return      Nothing
+ * @return      Pointer to SGF tree
  * @todo        Should this function write into the move_history or build an
  *              SGF tree?
  */
-void parse_sgf( char *file_content )
+struct node_st * parse_sgf( char *file_content )
 {
     int  k = 0;
     int  l = 0;
-    int  m = 0;
     int  content_size = 0;
     char current_char;
     char last_char = '\0';
@@ -56,8 +40,8 @@ void parse_sgf( char *file_content )
     int  value_count    = 0;
 
     int    node_count = 0;
-    struct node *sgf_tree;
-    struct node *sgf_tree_start;
+    struct node_st *sgf_tree;
+    struct node_st *sgf_tree_start;
     bool   is_main_line = true;
 
 
@@ -74,7 +58,7 @@ void parse_sgf( char *file_content )
     property_name  = malloc( sizeof(char) * content_size );
     property_value = malloc( sizeof(char) * content_size );
 
-    sgf_tree = malloc( sizeof( struct node ) * ( node_count ) );
+    sgf_tree = malloc( sizeof( struct node_st ) * ( node_count + 1 ) );
 
     sgf_tree_start = sgf_tree;
 
@@ -123,17 +107,9 @@ void parse_sgf( char *file_content )
             property_value[l] = '\0';
             l = 0;
             //printf( "%s\n", property_value );
-            value_count++;
             //printf( "    ValNr.: %d\n", value_count );
-            (sgf_tree->property + property_count - 1)->value_count = value_count;
-            if ( value_count == 1 ) {
-                (sgf_tree->property + property_count - 1)->value = malloc( sizeof(char **) );
-            }
-            else if ( value_count > 1 ) {
-                (sgf_tree->property + property_count - 1)->value = realloc( (sgf_tree->property + property_count - 1)->value, sizeof(char **) * value_count );
-            }
-            *((sgf_tree->property + property_count - 1)->value + value_count - 1) = malloc( strlen(property_value) );
-            strcpy( *((sgf_tree->property + property_count - 1)->value + value_count - 1), property_value );
+            (sgf_tree->property + property_count - 1)->value_count = ++value_count;
+            add_value( sgf_tree->property + property_count - 1, property_value );
 
             last_char = current_char;
             continue;
@@ -151,7 +127,7 @@ void parse_sgf( char *file_content )
     }
 
     // DEBUG:
-    // /*
+    /*
     for ( k = 0; k <= node_nr; k++ ) {
         printf( "# Node Nr.: %d\n", (sgf_tree_start + k)->number );
         printf( "#        Main : %d\n", (sgf_tree_start + k)->is_main );
@@ -174,14 +150,18 @@ void parse_sgf( char *file_content )
             }
         }
     }
-    // */
+    */
 
+    sgf_tree++;
+    sgf_tree->number = -1;
+    /*
     sgf_tree = sgf_tree_start;
     free(sgf_tree);
     sgf_tree       = NULL;
     sgf_tree_start = NULL;
+    */
 
-    return;
+    return sgf_tree_start;
 }
 
 /**
@@ -199,10 +179,10 @@ void parse_sgf( char *file_content )
  * @note        game_tree_nr and game_tree_level are important to determine
  *              the node's parent.
  */
-void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line )
+void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line )
 {
     int m;
-    struct node *new_node;
+    struct node_st *new_node;
 
     new_node = sgf_tree_start + node_nr;
 
@@ -243,7 +223,7 @@ void add_node( struct node *sgf_tree_start, int node_nr, int game_tree_nr, int g
  * @return      Nothing
  * @todo        malloc needs free ...
  */
-void add_property( struct node *sgf_tree, char property_name[] )
+void add_property( struct node_st *sgf_tree, char property_name[] )
 {
     struct property_st *property;
 
@@ -278,6 +258,31 @@ void add_property( struct node *sgf_tree, char property_name[] )
 
     //free(property->name);
     free(property);
+
+    return;
+}
+
+/**
+ * @brief       Adds a value to the current property
+ *
+ * Adds a value to the list of value of the current property
+ *
+ * @param[in]   property    Pointer to the current property
+ * @param[in]   value       String of value to add
+ * @return      Nothing
+ */
+void add_value( struct property_st *property, char *value )
+{
+    int value_count = property->value_count;
+
+    if ( value_count == 1 ) {
+        property->value = malloc( sizeof(char **) );
+    }
+    else if ( value_count > 1 ) {
+        property->value = realloc( property->value, sizeof(char **) * value_count );
+    }
+    *(property->value + value_count - 1) = malloc( strlen(value) );
+    strcpy( *(property->value + value_count - 1), value );
 
     return;
 }
