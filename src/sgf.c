@@ -63,17 +63,17 @@ struct node_st * parse_sgf( char *file_content )
     sgf_tree_start = sgf_tree;
 
     while ( ( current_char = file_content[k++] ) != '\0' ) {
-        if ( current_char == '(' ) {
+        if ( current_char == '(' && ! in_property_value ) {
             game_tree_nr++;
             game_tree_level++;
             //printf( "# New GameTree %d\n", game_tree_level );
         }
-        if ( current_char == ')' ) {
+        if ( current_char == ')' && ! in_property_value ) {
             //printf( "# End GameTree %d\n", game_tree_level );
             game_tree_level--;
             is_main_line = false;
         }
-        if ( current_char == ';' ) {
+        if ( current_char == ';' && ! in_property_value ) {
             node_nr++;
             if ( node_nr > 0 ) {
                 sgf_tree++;
@@ -82,12 +82,12 @@ struct node_st * parse_sgf( char *file_content )
             add_node( sgf_tree_start, node_nr, game_tree_nr, game_tree_level, is_main_line );
             property_count = 0;
         }
-        if ( isupper(current_char) && ( isspace(last_char) || (last_char == ']') || (last_char == ';') ) ) {
+        if ( isupper(current_char) && ( isspace(last_char) || (last_char == ']') || (last_char == ';') ) && ! in_property_value ) {
             in_property_name = true;
             //printf( "    ## New Property - " );
             value_count = 0;
         }
-        if ( in_property_name && ! isupper(current_char) ) {
+        if ( in_property_name && ! isupper(current_char) && !  in_property_value ) {
             in_property_name = false;
             property_name[l] = '\0';
             l = 0;
@@ -95,7 +95,7 @@ struct node_st * parse_sgf( char *file_content )
             sgf_tree->property_count = ++property_count;
             add_property( sgf_tree, property_name );
         }
-        if ( current_char == '[' ) {
+        if ( current_char == '[' && ! in_property_value ) {
             //printf( "      # New property_value start - " );
             in_property_value = true;
 
@@ -152,8 +152,10 @@ struct node_st * parse_sgf( char *file_content )
     }
     */
 
+    // Mark and of node list:
     sgf_tree++;
     sgf_tree->number = -1;
+
     /*
     sgf_tree = sgf_tree_start;
     free(sgf_tree);

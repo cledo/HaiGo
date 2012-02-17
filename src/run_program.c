@@ -73,6 +73,12 @@ static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
+/* SGF parsing commands */
+bool sgf_komi( char *value );
+bool sgf_size( char *value );
+bool sgf_add( int color, char **value, int value_count );
+bool sgf_move( int color, char *value );
+
 /**
  *  @brief Substitute for main() function, because main() itself cannot be unit-tested with check.
  * 
@@ -936,8 +942,14 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int  c;
     char *file_content;
     int  k = 0;
+    //int  m = 0;
 
-    struct node_st *sgf_tree;
+    struct node_st     *sgf_tree;
+    struct property_st *property;
+    //char *value;
+    int property_count;
+    int value_count;
+    bool is_sgf_ok = false;
 
     //int l;    // DEBUG
 
@@ -1004,8 +1016,199 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
     */
 
+    while ( sgf_tree->is_main && sgf_tree->number != -1 ) {
+        property_count = sgf_tree->property_count;
+        for ( k = 0; k < property_count; k++ ) {
+            property    = sgf_tree->property + k;
+            value_count = property->value_count;
+
+            // Properties for captured stones missing, ko, handicap, maybe others too ...
+            if ( strcmp( property->name, "FF" ) == 0 ) {
+                if ( strcmp( *(property->value), "4" ) == 0 ) {
+                    is_sgf_ok = true;
+                }
+            }
+            else if ( strcmp( property->name, "SZ" ) == 0 ) {
+                is_sgf_ok = sgf_size( *(property->value) );
+            }
+            else if ( strcmp( property->name, "KO" ) == 0 ) {
+                is_sgf_ok = sgf_komi( *(property->value) );
+            }
+            else if ( strcmp( property->name, "AB" ) == 0 ) {
+                is_sgf_ok = sgf_add( BLACK, property->value, value_count );
+            }
+            else if ( strcmp( property->name, "AW" ) == 0 ) {
+                is_sgf_ok = sgf_add( WHITE, property->value, value_count );
+            }
+            else if ( strcmp( property->name, "B" ) == 0 ) {
+                is_sgf_ok = sgf_move( BLACK, *(property->value) );
+            }
+            else if ( strcmp( property->name, "W" ) == 0 ) {
+                is_sgf_ok = sgf_move( WHITE, *(property->value) );
+            }
+            else {
+                continue;
+            }
+
+
+            if ( ! is_sgf_ok ) {
+                break;
+            }
+
+        }
+        if ( ! is_sgf_ok ) {
+            break;
+        }
+
+        if ( sgf_tree->number == move_number ) {
+            break;
+        }
+
+        sgf_tree++;
+    }
+
     free(file_content);
+
+    if ( ! is_sgf_ok ) {
+        set_output_error();
+        add_output("cannot load file");
+    }
 
     return;
 }
 
+bool sgf_size( char *value )
+{
+    int board_size;
+
+    board_size = atoi(value);
+
+    if ( board_size < BOARD_SIZE_MIN || board_size > BOARD_SIZE_MAX ) {
+        return false;
+    }
+
+    init_board(board_size);
+
+    return true;
+}
+
+bool sgf_add( int color, char **value, int value_count )
+{
+    int k;
+    char *v;
+    int i, j;
+
+    int board_size = get_board_size();
+
+    for ( k = 0; k < value_count; k++ ) {
+        v = *(value + k);
+
+        if ( strlen(v) > 2 ) {
+            return false;
+        }
+
+        i = v[0] - 97;
+        j = board_size - ( v[1] - 97 ) - 1;
+
+        if ( i < 0 || i > board_size ) {
+            return false;
+        }
+        if ( j < 0 || j > board_size ) {
+            return false;
+        }
+        
+        set_vertex( color, i, j );
+
+    }
+
+    return true;
+}
+
+bool sgf_move( int color, char *value )
+{
+    int i, j;
+    int nr_of_removed_stones;
+    int group_nr;
+    int nr_of_liberties;
+    int group_size;
+    int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    int board_size = get_board_size();
+
+    // Check if this is a PASS:
+    if ( strlen(value) == 0 ) {
+        create_next_move();
+        set_move_pass(color);
+        push_move();
+
+        return true;
+    }
+
+    if ( strlen(value) > 2 ) {
+        return false;
+    }
+
+    i = value[0] - 97;
+    j = board_size - ( value[1] - 97 ) - 1;
+
+    if ( i < 0 || i > board_size ) {
+        return false;
+    }
+    if ( j < 0 || j > board_size ) {
+        return false;
+    }
+
+    set_vertex( color, i, j );
+
+    create_groups();
+    count_liberties();
+    set_groups_size();
+
+    nr_of_removed_stones = remove_stones( color * -1 );
+
+    // If board has changed, rebuild groups and liberties:
+    if ( nr_of_removed_stones > 0 ) {
+        create_groups();
+        count_liberties();
+        set_groups_size();
+    }
+
+    group_nr        = get_group_nr( i, j );
+    nr_of_liberties = get_nr_of_liberties(group_nr);
+    group_size      = get_size_of_group(group_nr);
+
+    // If liberties are zero, move is invalid
+    if ( nr_of_liberties == 0 ) {
+        set_vertex( EMPTY, i, j );
+        //set_output_error();
+        //add_output("illegal move");
+        return false;
+    }
+
+    nr_of_removed_stones = get_captured_now(captured_now);
+
+    create_next_move();
+    set_move_vertex( color, i, j );
+    set_move_captured_stones(captured_now);
+
+    // Check if this is a ko:
+    if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
+        // If only one stone has been captured, it must be the first one in
+        // the captured_now list:
+        set_move_ko( captured_now[0][0], captured_now[0][1] );
+    }
+
+    // Add move to move history:
+    push_move();
+
+
+    return true;
+}
+
+bool sgf_komi( char *value )
+{
+
+    komi = atof(value);
+
+    return true;
+}
