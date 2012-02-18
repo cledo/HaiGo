@@ -15,6 +15,7 @@ cover: FORCE
 	## ---- Unit and System Tests ---- ##
 	@prove
 	@lcov -d src -d tests -c -o cover/haigo.info
+
 	@genhtml -o cover cover/haigo.info
 	@make cover-clean
 

@@ -1248,18 +1248,19 @@ static void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] )
     is_pass      = get_last_move_pass();
     count_stones = get_last_move_count_stones();
 
-    printf( "# Nr.:   %d\n", move_number );
-    printf( "# Color: %d\n", color );
-    printf( "# Move:  %d,%d\n", i, j );
-    printf( "# Pass:  %d\n", is_pass );
-    printf( "# Capt:  %d\n", count_stones );
-
     set_vertex( EMPTY, i, j );
 
     if ( count_stones > 0 ) {
         get_last_move_stones(stones);
         for ( k = 0; k < count_stones; k++ ) {
             set_vertex( color * -1, stones[k][0], stones[k][1] );
+        }
+
+        if ( color == BLACK ) {
+            set_black_captured( get_black_captured() - count_stones );
+        }
+        else {
+            set_white_captured( get_white_captured() - count_stones );
         }
     }
 
