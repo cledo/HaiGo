@@ -59,6 +59,7 @@ static void gtp_quit( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -77,6 +78,12 @@ bool sgf_komi( char *value );
 bool sgf_size( char *value );
 bool sgf_add( int color, char **value, int value_count );
 bool sgf_move( int color, char *value );
+
+
+/* Misc functions */
+void i_to_x( int i, char x[] );
+void j_to_y( int j, char y[] );
+void add_handicap( int i, int j, char output[] );
 
 /**
  *  @brief Substitute for main() function, because main() itself cannot be unit-tested with check.
@@ -255,6 +262,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_clear_board);
     my_strcpy( known_commands[i].command, "komi", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_komi);
+    my_strcpy( known_commands[i].command, "fixed_handicap", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_fixed_handicap);
     my_strcpy( known_commands[i].command, "play", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_play);
     my_strcpy( known_commands[i].command, "showboard", MAX_TOKEN_LENGTH );
@@ -542,7 +551,7 @@ void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  *  @param[in]  gtp_argc    Number of arguments of GTP command
  *  @param[in]  gtp_argv    Array of all arguments for GTP command
  *  @return     nothing
- *  @sa     Go Text Protokol version 2, 6.3.2 Setup Commands
+ *  @sa     Go Text Protocol version 2, 6.3.2 Setup Commands
  * 
  *  @ingroup GTP_Setup_Commands
  */
@@ -552,6 +561,184 @@ void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     // Check arg here!
     
     komi = atof( gtp_argv[0] );
+
+    return;
+}
+
+/**
+ * @brief       Sets fixed handicap stones.
+ *
+ * Sets the fixed handicap stones according to the GTP protocol.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ * @sa          Go Text Protocol version 2, 4.1.1 Fixed Handicap Placement
+ * @todo        Description still missing!!
+ */
+void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    int  i, j;
+    int  handicap;
+    char output[40];
+    int  max_handicap;
+    int  edge_distance;
+    int  board_size = get_board_size();
+
+    // Handicap only on empty boards:
+    if ( get_move_number() > 0 ) {
+        set_output_error();
+        add_output("board not empty");
+
+        return;
+    }
+
+    // No handicap on mini boards:
+    if ( board_size <= 6 ) {
+        set_output_error();
+        add_output("invalid handicap");
+
+        return;
+    }
+
+    // Determine proper edge_distance and max_handicap:
+    edge_distance = ( board_size > 12     ) ? 4 : 3;
+    max_handicap  = ( board_size % 2 == 0 ) ? 4 : 9;
+    if ( board_size == 7 ) {
+        max_handicap = 4;
+    }
+
+    // Check handicap number:
+    handicap = atoi( gtp_argv[0] );
+    if ( handicap < 2 || handicap > max_handicap ) {
+        set_output_error();
+        add_output("invalid handicap");
+
+        return;
+    }
+
+    output[0] = '\0';
+
+    i = board_size - edge_distance;
+    j = board_size - edge_distance;
+    add_handicap( i, j, output );
+
+    i = edge_distance - 1;
+    j = edge_distance - 1;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+    if ( handicap == 2 ) {
+        add_output(output);
+
+        return;
+    }
+
+    i = board_size - edge_distance;
+    j = edge_distance - 1;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+    if ( handicap == 3 ) {
+        add_output(output);
+
+        return;
+    }
+
+    i = edge_distance - 1;
+    j = board_size - edge_distance;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+    if ( handicap == 4 ) {
+        add_output(output);
+
+        return;
+    }
+
+    if ( handicap == 5 || handicap == 7 || handicap == 9 ) {
+        i = board_size / 2;
+        j = board_size / 2;
+        strcat( output, " " );
+        add_handicap( i, j, output );
+    }
+    if ( handicap == 5 ) {
+        add_output(output);
+
+        return;
+    }
+
+    i = edge_distance - 1;
+    j = board_size / 2;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+    i = board_size - edge_distance;
+    j = board_size / 2;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+    if ( handicap == 6 || handicap == 7 ) {
+        add_output(output);
+
+        return;
+    }
+
+    i = board_size / 2;
+    j = edge_distance - 1;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+    i = board_size / 2;
+    j = board_size - edge_distance;
+    strcat( output, " " );
+    add_handicap( i, j, output );
+
+
+    add_output(output);
+
+    return;
+}
+
+void add_handicap( int i, int j, char output[] )
+{
+    char x[2];
+    char y[3];
+
+    set_vertex( BLACK, i, j );
+    i_to_x( i, x );
+    j_to_y( j, y );
+    strcat( output, x );
+    strcat( output, y );
+
+    return;
+}
+
+void i_to_x( int i, char x[] )
+{
+
+    if ( i >= 8 ) {
+        i++;
+    }
+    x[0] = i + 65;
+    x[1] = '\0';
+
+    return;
+}
+
+void j_to_y( int j, char y[] )
+{
+
+    j++;
+    if ( j < 10 ) {
+        y[0] = (char)( j + 48 );
+        y[1] = '\0';
+    }
+    else {
+        y[0] = (char)(int)( j / 10 + 48 );
+        y[1] = (char)( j % 10 + 48 );
+        y[2] = '\0';
+    }
 
     return;
 }

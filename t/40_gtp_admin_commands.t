@@ -24,6 +24,7 @@ my @known_commands = qw{
     boardsize
     clear_board
     komi
+    fixed_handicap
     play
     showboard
     genmove
