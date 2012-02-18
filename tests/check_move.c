@@ -16,6 +16,7 @@ struct move {
     int  i;
     int  j;
     int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int  count_stones;
 
 } next_move;
 
@@ -42,6 +43,7 @@ START_TEST (test_init_move_history_1)
             fail_if( move_history[k].stones[l][0] != INVALID, "stones i is INVALID after init" );
             fail_if( move_history[k].stones[l][1] != INVALID, "stones j is INVALID after init" );
         }
+        fail_if( move_history[k].count_stones != INVALID, "count_stones is INVALID" );
     }
 
 }

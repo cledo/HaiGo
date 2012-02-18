@@ -13,7 +13,7 @@ int move_number = 0;
  * @brief   Structure that represents a move.
  *
  **/
-struct move {
+struct move_st {
     int  number;    //!< The number of the move in the move history.
     int  color;     //!< Color of the current stone.
     bool pass;      //!< Indicates whether this move is a pass or not.
@@ -21,10 +21,11 @@ struct move {
     int  i;         //!< The horizontal coordinate of the vertex.
     int  j;         //!< The vertical coordinate of the vertex.
     int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];    //!< List of captured stones; In move zero: List of handicap stones.
+    int  count_stones;  //!< Number of captured stones
 } next_move;
 
 //! Move history: contains all moves performed.
-struct move move_history[MOVE_HISTORY_MAX];
+struct move_st move_history[MOVE_HISTORY_MAX];
 
 
 /**
@@ -53,6 +54,7 @@ void init_move_history(void)
             move_history[k].stones[l][0] = INVALID;
             move_history[k].stones[l][1] = INVALID;
         }
+        move_history[k].count_stones = INVALID;
     }
 
     return;
@@ -82,6 +84,7 @@ void create_next_move(void)
     }
     next_move.ko[0] = INVALID;
     next_move.ko[1] = INVALID;
+    next_move.count_stones = 0;
 
     return;
 }
@@ -117,7 +120,7 @@ void set_move_vertex( int color, int i, int j )
  * The next_move structure must know all stones that have been captured. This
  * may be needed for undoing a move, for example.
  *
- * @param[out]  captured_stones      Array of vertexes
+ * @param[in]   captured_stones      Array of vertexes
  * @return      Nothing
  */
 void set_move_captured_stones( int captured_stones[][2] )
@@ -131,6 +134,8 @@ void set_move_captured_stones( int captured_stones[][2] )
     }
     next_move.stones[k][0] = INVALID;
     next_move.stones[k][1] = INVALID;
+
+    next_move.count_stones = k;
 
     return;
 }
@@ -208,6 +213,33 @@ void push_move(void)
     move_history[move_number] = next_move;
 
     return;
+}
+
+void pop_move(void)
+{
+    int k;
+
+    move_history[move_number].number = INVALID;
+    move_history[move_number].color  = EMPTY;
+    move_history[move_number].pass   = true;
+    move_history[move_number].ko[0]  = INVALID;
+    move_history[move_number].ko[1]  = INVALID;
+    move_history[move_number].i      = INVALID;
+    move_history[move_number].j      = INVALID;
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        move_history[move_number].stones[k][0] = INVALID;
+        move_history[move_number].stones[k][1] = INVALID;
+    }
+    move_history[move_number].count_stones = INVALID;
+
+    move_number--;
+
+    return;
+}
+
+int get_move_number(void)
+{
+    return move_number;
 }
 
 /**
@@ -363,3 +395,51 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] 
     return count;
 }
 
+int get_last_move_color(void)
+{
+    int color = move_history[move_number].color;
+
+
+    return color;
+}
+
+int get_last_move_i(void)
+{
+    int i = move_history[move_number].i;
+
+    return i;
+}
+
+int get_last_move_j(void)
+{
+    int j = move_history[move_number].j;
+
+    return j;
+}
+
+bool get_last_move_pass(void)
+{
+    bool pass = move_history[move_number].pass;
+
+    return pass;
+}
+
+int get_last_move_count_stones(void)
+{
+    int count_stones = move_history[move_number].count_stones;
+
+    return count_stones;
+}
+
+void get_last_move_stones( int stones[][2] )
+{
+    int k;
+    int count_stones = move_history[move_number].count_stones;
+
+    for ( k = 0; k < count_stones; k++ ) {
+        stones[k][0] = move_history[move_number].stones[k][0];
+        stones[k][1] = move_history[move_number].stones[k][1];
+    }
+
+    return;
+}

@@ -4,7 +4,7 @@
 #include "io.h"
 
 /// Defines the number of known GTP commands.
-#define COUNT_KNOWN_COMMANDS 14
+#define COUNT_KNOWN_COMMANDS 15
 
 void init_known_commands(void);
 void select_command( struct command *command_data );

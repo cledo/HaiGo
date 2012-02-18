@@ -63,8 +63,7 @@ static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-/// @todo These functions have to be implemented: gtp_undo.
-/// - void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
+static void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
 
 /* Regression commands */
 static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -262,6 +261,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_showboard);
     my_strcpy( known_commands[i].command, "genmove", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_genmove);
+    my_strcpy( known_commands[i].command, "undo", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_undo);
     my_strcpy( known_commands[i].command, "loadsgf", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_loadsgf);
 
@@ -501,6 +502,7 @@ void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     free_board();
     init_board(board_size);
+    init_move_history();
 
     return;
 }
@@ -580,6 +582,7 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int nr_of_liberties;
     int group_size;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
 
     // Check if first argument is black or white:
     if ( ! is_color_valid( gtp_argv[0], &color ) ) {
@@ -1218,4 +1221,49 @@ bool sgf_komi( char *value )
     komi = atof(value);
 
     return true;
+}
+
+static void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] )
+{
+    int  move_number;
+    int  color;
+    int  i, j;
+    bool is_pass;
+    int  count_stones;
+    int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int  k;
+
+    move_number = get_move_number();
+
+    if ( move_number <= 0 ) {
+        set_output_error();
+        add_output("cannot undo");
+
+        return;
+    }
+
+    color        = get_last_move_color();
+    i            = get_last_move_i();
+    j            = get_last_move_j();
+    is_pass      = get_last_move_pass();
+    count_stones = get_last_move_count_stones();
+
+    printf( "# Nr.:   %d\n", move_number );
+    printf( "# Color: %d\n", color );
+    printf( "# Move:  %d,%d\n", i, j );
+    printf( "# Pass:  %d\n", is_pass );
+    printf( "# Capt:  %d\n", count_stones );
+
+    set_vertex( EMPTY, i, j );
+
+    if ( count_stones > 0 ) {
+        get_last_move_stones(stones);
+        for ( k = 0; k < count_stones; k++ ) {
+            set_vertex( color * -1, stones[k][0], stones[k][1] );
+        }
+    }
+
+    pop_move();
+
+    return;
 }
