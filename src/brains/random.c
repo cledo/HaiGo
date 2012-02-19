@@ -2,7 +2,15 @@
 #include <time.h>
 #include "random.h"
 
-
+/**
+ * @file    brains/random.c
+ *
+ * @brief   Brain that chooses a random move.
+ *
+ * From the given list of valid moves a
+ * random move is chosen.
+ *
+ */
 
 /**
  * @brief       Selects random move

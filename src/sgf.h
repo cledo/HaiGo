@@ -1,6 +1,13 @@
 #ifndef SGF_H
 #define SGF_H
 
+/**
+ * @file    sgf.h
+ *
+ * @brief   Interface definitions for sgf.c
+ *
+ */
+
 //! @brief Defines a node in the SGF tree
 struct node_st {
     int  number;        //!< Node number starting with zero

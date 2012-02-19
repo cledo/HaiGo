@@ -5,6 +5,15 @@
 #include "move.h"
 #include "board.h"
 
+/**
+ * @file    move.c
+ *
+ * @brief   Defines move structure, move history
+ *
+ * Defines all data structures, such as move and move_history, and its
+ * corresponding functions.
+ *
+ */
 
 //! The number of the latest move.
 int move_number = 0;

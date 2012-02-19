@@ -3,8 +3,14 @@
 
 #include "io.h"
 
-/// Defines the number of known GTP commands.
-#define COUNT_KNOWN_COMMANDS 16
+/**
+ * @file    run_program.h
+ *
+ * @brief   Interface definition for run_program.c
+ *
+ */
+
+#define COUNT_KNOWN_COMMANDS 16 //!< Defines the number of known GTP commands.
 
 void init_known_commands(void);
 void select_command( struct command *command_data );
@@ -12,3 +18,4 @@ void select_command( struct command *command_data );
 int run( int argc, char **argv );
 
 #endif
+

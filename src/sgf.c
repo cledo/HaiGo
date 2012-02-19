@@ -7,6 +7,16 @@
 #include "sgf.h"
 #include "global_tools.h"
 
+/**
+ * @file    sgf.c
+ *
+ * @brief   Parses SGF files
+ *
+ * Functions and data structures for parsing SGF files.
+ * The SGF tree is build as completely as possible, even if the loadsgf GTP
+ * command only needs the main line.
+ *
+ */
 
 static void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
 static void add_property( struct node_st *sgf_tree, char property_name[] );
