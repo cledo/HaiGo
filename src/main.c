@@ -12,6 +12,15 @@
  *
  */
 
+/**
+ * @file    main.c
+ *
+ * @brief   The file main.c only contains the main() function.
+ *
+ * The file main.c only contains the main() function. Besides the code it also
+ * contains the doxygen documentation for the main page.
+ */
+
 
 /**
  *  @brief The main() function is only a wrapper for the run() function.

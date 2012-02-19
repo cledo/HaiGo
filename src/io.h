@@ -1,16 +1,26 @@
 #ifndef IO_H
 #define IO_H
 
+
 #include <stdbool.h>
 #include "global_const.h"
 
-#define SIZE_INPUT_BUFFER 256
+#define SIZE_INPUT_BUFFER 256   //!< Size of input buffer
 
+
+/**
+ * @file    io.h
+ *
+ * @brief   Interface for io.c
+ *
+ */
+
+//! @brief  Data structure to define GTP commands.
 struct command {
-    int  id;
-    char name[MAX_TOKEN_LENGTH];
-    char gtp_argv[MAX_TOKEN_COUNT+1][MAX_TOKEN_LENGTH];
-    int  gtp_argc;
+    int  id;                                            //!< Id of GTP command
+    char name[MAX_TOKEN_LENGTH];                        //!< Name of GTP command
+    char gtp_argv[MAX_TOKEN_COUNT+1][MAX_TOKEN_LENGTH]; //!< Argument vector for GTP command
+    int  gtp_argc;                                      //!< Argument count for GTP command
 };
 
 void read_gtp_input( /*@out@*/ struct command *command_data );

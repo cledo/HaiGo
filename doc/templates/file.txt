@@ -1,0 +1,9 @@
+/**
+ * @file    [file name]
+ *
+ * @brief   [brief description]
+ *
+ * [Multi-line
+ * description]
+ *
+ */

@@ -8,19 +8,29 @@
 #include "move.h"
 
 
+/**
+ * @file    board.c
+ *
+ * @brief   Represents the board
+ *
+ * Represents the board and all its data structures.
+ * It provides all necessary functions to work with board data.
+ *
+ */
+
 /* State variables */
 // As described in GTP v2.0 chapter 5.1
-int  **board;
-int  **group;
-bool **hoshi;
-int board_size     = 0;
-int black_captured = 0;
-int white_captured = 0;
-int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
-int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
-int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
-int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
-int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+int  **board;   //!< The main board data structure.
+int  **group;   //!< A helper board which contains group numbers.
+bool **hoshi;   //!< A helper board which defines the star points.
+int board_size     = 0;     //!< The size of the board.
+int black_captured = 0;     //!< Number of white stones captured by black.
+int white_captured = 0;     //!< Number of black stones captured by white.
+int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per black group.
+int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per white group.
+int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
+int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
+int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
 
 
 static void get_label_x( int i, char x[] );

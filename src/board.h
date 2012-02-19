@@ -1,6 +1,13 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+/**
+ * @file    board.h
+ *
+ * @brief   Interface definition for board.c
+ *
+ */
+
 void init_board( int wanted_board_size );
 void free_board(void);
 void get_board_as_string( char board_output[] );

@@ -16,8 +16,18 @@
 #include "sgf.h"
 #include "./brains/all_brains.h"
 
+/**
+ * @file    run_program.c
+ *
+ * @brief   The file run_program.c contains the main working loop.
+ *
+ * The file run_program.c contains the main working loop and defines all the
+ * GTP commands the program knows about.
+ */
 
-//! The default help message shown with -h
+
+//! @brief  The default help message shown with -h
+//! @return Nothing
 static const char help_message[] =
 "This is a placeholder for the help message.\n\
 This message is shown when the program is called\n\
@@ -64,7 +74,7 @@ static void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] 
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-static void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] );
+static void gtp_undo( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Regression commands */
 static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -700,6 +710,17 @@ void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     return;
 }
 
+/**
+ * @brief       Adds given stone as handicap.
+ *
+ * Adds a black stone for the given vertex as handicap. The verteces are
+ * appended to the given output string.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @param[out]  output  String of verteces of handicap stones.
+ * @return      Nothing
+ */
 void add_handicap( int i, int j, char output[] )
 {
     char x[2];
@@ -714,6 +735,16 @@ void add_handicap( int i, int j, char output[] )
     return;
 }
 
+/**
+ * @brief       Converts i to x.
+ *
+ * Converts the board coordinate i to its string representation.
+ *
+ * @param[in]   i   Horizontal numerical board coordinate.
+ * @param[out]  x   The string representation of i.
+ * @return      Nothing
+ * @sa          j_to_y()
+ */
 void i_to_x( int i, char x[] )
 {
 
@@ -726,6 +757,16 @@ void i_to_x( int i, char x[] )
     return;
 }
 
+/**
+ * @brief       Converts j to y.
+ *
+ * Converts the board coordinate j to its string representation.
+ *
+ * @param[in]   j   Vertical numerical board coordinate.
+ * @param[out]  y   The string representation of j.
+ * @return      Nothing
+ * @sa          i_to_x()
+ */
 void j_to_y( int j, char y[] )
 {
 
@@ -1274,6 +1315,15 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     return;
 }
 
+/**
+ * @brief       Sets the board size.
+ *
+ * Sets the size of the board when an SGF property of SZ is found.
+ *
+ * @param[in]   value   The value of the SZ property
+ * @return      true|false
+ * @note        Returns false if board size is invalid.
+ */
 bool sgf_size( char *value )
 {
     int board_size;
@@ -1289,6 +1339,17 @@ bool sgf_size( char *value )
     return true;
 }
 
+/**
+ * @brief       Adds a stone to the board.
+ *
+ * Adds a stone of the given color to the board when an SGF property of AB or
+ * AW is found.
+ *
+ * @param[in]   color   Color of the stone to set.
+ * @param[in]   value   Pointer to list of verteces (as strings).
+ * @param[in]   value_count   Number of verteces to set.
+ * @return      true|false
+ */
 bool sgf_add( int color, char **value, int value_count )
 {
     int k;
@@ -1321,6 +1382,17 @@ bool sgf_add( int color, char **value, int value_count )
     return true;
 }
 
+/**
+ * @brief       Performs a move.
+ *
+ * Performs a move when an B or W property is found in an SGF file.
+ *
+ * @param[in]   color   Color of side to move.
+ * @param[out]  value   The SGF property value of the move to perform.
+ * @return      true|false
+ * @note        If the given property value does not describe a vertex the
+ *              function returns false.
+ */
 bool sgf_move( int color, char *value )
 {
     int i, j;
@@ -1402,6 +1474,14 @@ bool sgf_move( int color, char *value )
     return true;
 }
 
+/**
+ * @brief       Sets komi.
+ *
+ * Sets the komi value when an KO property is found in an SGF file.
+ *
+ * @param[in]   value   Pointer to komi value as string.
+ * @return      true
+ */
 bool sgf_komi( char *value )
 {
 
@@ -1410,7 +1490,17 @@ bool sgf_komi( char *value )
     return true;
 }
 
-static void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] )
+/**
+ * @brief       Takes back move.
+ *
+ * The GTP undo command takes back the last move. It restores the board, the
+ * number of captured stones and removes the last move from the move history.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ */
+static void gtp_undo( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     int  move_number;
     int  color;
@@ -1455,3 +1545,4 @@ static void gtp_undo( int argc, char argv[][MAX_TOKEN_LENGTH] )
 
     return;
 }
+
