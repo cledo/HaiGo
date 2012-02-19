@@ -7,11 +7,21 @@
 #include "io.h"
 #include "global_tools.h"
 
-char command_input_buffer[SIZE_INPUT_BUFFER];
+/**
+ * @file    io.c
+ *
+ * @brief   Defines all necessary I/O functions.
+ *
+ * This file contains all functions, that are necessary to read GTP input, and
+ * send GTP answers to output.
+ *
+ */
 
-bool input_empty    = false;
-bool output_error   = false;
-char output[MAX_OUTPUT_LENGTH];
+char command_input_buffer[SIZE_INPUT_BUFFER];   //!< Input buffer for GTP commands
+
+bool input_empty    = false;        //!< Flag that indicates if input has been empty
+bool output_error   = false;        //!< Flag that indicates if output should show error
+char output[MAX_OUTPUT_LENGTH];     //!< Output buffer for GTP answers
 
 
 /**

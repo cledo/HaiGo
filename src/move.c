@@ -176,17 +176,44 @@ void set_move_pass( int color )
     return;
 }
 
+/**
+ * @brief       Returns i of last move's ko.
+ *
+ * Returns the horizontal coordinate of the last move's ko field.
+ *
+ * @return      Horizontal coordinate of ko field
+ * @sa          get_last_move_j()
+ */
 int get_move_last_ko_i(void)
 {
 
     return move_history[move_number].ko[0];
 }
+
+/**
+ * @brief       Returns j of last move's ko.
+ *
+ * Returns the vertical coordinate of the last move's ko field.
+ *
+ * @return      Horizontal coordinate of ko field
+ * @sa          get_last_move_i()
+ */
 int get_move_last_ko_j(void)
 {
 
     return move_history[move_number].ko[1];
 }
-int get_move_last_ko_color(void)
+
+/**
+ * @brief       Returns color of last move.
+ *
+ * Returns the color of the last move in the move history.
+ *
+ * @return      BLACK|WHITE
+ * @note        Remember that the Go Text Protocol does not say that colors
+ *              must change every move!
+ */
+int get_move_last_color(void)
 {
 
     return move_history[move_number].color;
@@ -200,6 +227,7 @@ int get_move_last_ko_color(void)
  * @return      Nothing
  * @note        When the move number reaches MOVE_HISTORY_MAX, the program
  *              exits with a failure message.
+ * @sa          pop_move()
  */
 void push_move(void)
 {
@@ -215,6 +243,15 @@ void push_move(void)
     return;
 }
 
+/**
+ * @brief       Pops last move from move history.
+ *
+ * The last move of the move history is deleted. It is not really a pop,
+ * because nothing is returned here.
+ *
+ * @return      Nothing
+ * @sa          push_move()
+ */
 void pop_move(void)
 {
     int k;
@@ -237,6 +274,13 @@ void pop_move(void)
     return;
 }
 
+/**
+ * @brief       Returns last move number.
+ *
+ * Returns the move number of the last move.
+ *
+ * @return      Move number
+ */
 int get_move_number(void)
 {
     return move_number;
@@ -260,7 +304,7 @@ bool is_move_ko( int color, int i, int j )
 
     ko_i     = get_move_last_ko_i();
     ko_j     = get_move_last_ko_j();
-    ko_color = get_move_last_ko_color();
+    ko_color = get_move_last_color();
 
     if ( ko_i != INVALID && ko_j != INVALID ) {
         if ( ko_i == i && ko_j == j && ko_color == color * -1 ) {
@@ -395,6 +439,13 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] 
     return count;
 }
 
+/**
+ * @brief       Return color of last move.
+ *
+ * Returns the color of the stone of the last move.
+ *
+ * @return      BLACK|WHITE
+ */
 int get_last_move_color(void)
 {
     int color = move_history[move_number].color;
@@ -403,6 +454,14 @@ int get_last_move_color(void)
     return color;
 }
 
+/**
+ * @brief       Returns i of last move.
+ *
+ * Returns the horizontal coordinate of the last move.
+ *
+ * @return      Horizontal coordinate
+ * @sa          get_last_move_j()
+ */
 int get_last_move_i(void)
 {
     int i = move_history[move_number].i;
@@ -410,6 +469,14 @@ int get_last_move_i(void)
     return i;
 }
 
+/**
+ * @brief       Returns j of last move.
+ *
+ * Returns the vertical coordinate of the last move.
+ *
+ * @return      Vertical coordinate
+ * @sa          get_last_move_i()
+ */
 int get_last_move_j(void)
 {
     int j = move_history[move_number].j;
@@ -417,6 +484,14 @@ int get_last_move_j(void)
     return j;
 }
 
+/**
+ * @brief       Shows if last move was a PASS.
+ *
+ * Returns true if the last move in the move history has been a PASS, false
+ * otherwise.
+ *
+ * @return      true|false
+ */
 bool get_last_move_pass(void)
 {
     bool pass = move_history[move_number].pass;
@@ -424,6 +499,13 @@ bool get_last_move_pass(void)
     return pass;
 }
 
+/**
+ * @brief       Returns number of captured stones of last move.
+ *
+ * Returns the number of stones which have been captured by the last move.
+ *
+ * @return      Number of captured stones.
+ */
 int get_last_move_count_stones(void)
 {
     int count_stones = move_history[move_number].count_stones;
@@ -431,6 +513,15 @@ int get_last_move_count_stones(void)
     return count_stones;
 }
 
+/**
+ * @brief       Returns verteces of captured stones.
+ *
+ * Returns a list of verteces which shows where the last move has captured
+ * stones.
+ *
+ * @param[out]  stones  List of verteces
+ * @return      Nothing
+ */
 void get_last_move_stones( int stones[][2] )
 {
     int k;
@@ -443,3 +534,4 @@ void get_last_move_stones( int stones[][2] )
 
     return;
 }
+

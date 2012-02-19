@@ -5,6 +5,13 @@
 #include "global_tools.h"
 
 /**
+ * @file    global_tools.c
+ *
+ * @brief   Defines globally available helper functions.
+ *
+ */
+
+/**
  *  @brief Converts a given string into upper case.
  *
  *  Converts a given string into upper case. The string is converted inplace.

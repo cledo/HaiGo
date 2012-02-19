@@ -218,9 +218,9 @@ START_TEST (test_get_move_last_ko)
 
     init_move_history();
 
-    fail_if( get_move_last_ko_i()     != INVALID, "ko_i is INVALID"   );
-    fail_if( get_move_last_ko_j()     != INVALID, "ko_j is INVALID"   );
-    fail_if( get_move_last_ko_color() != EMPTY,   "ko_color is EMPTY" );
+    fail_if( get_move_last_ko_i()  != INVALID, "ko_i is INVALID"   );
+    fail_if( get_move_last_ko_j()  != INVALID, "ko_j is INVALID"   );
+    fail_if( get_move_last_color() != EMPTY,   "ko_color is EMPTY" );
 
     create_next_move();
     set_move_vertex( color, i, j );
@@ -229,9 +229,9 @@ START_TEST (test_get_move_last_ko)
 
     fail_if( next_move.number != number + 1, "next move number increased" );
 
-    fail_if( get_move_last_ko_i()     != i-1,   "ko_i is correct"     );
-    fail_if( get_move_last_ko_j()     != j,     "ko_j is correct"     );
-    fail_if( get_move_last_ko_color() != color, "ko_color is correct" );
+    fail_if( get_move_last_ko_i()  != i-1,   "ko_i is correct"     );
+    fail_if( get_move_last_ko_j()  != j,     "ko_j is correct"     );
+    fail_if( get_move_last_color() != color, "ko_color is correct" );
 
     fail_if( is_move_ko( WHITE, i-1, j ) != true,  "move is a ko"     );
     fail_if( is_move_ko( WHITE, i, j-1 ) != false, "move is not a ko" );

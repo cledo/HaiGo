@@ -11,7 +11,7 @@
 /**
  * @file    io.h
  *
- * @brief   Interface for io.c
+ * @brief   Interface definition for io.c
  *
  */
 

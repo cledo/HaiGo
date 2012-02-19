@@ -1,6 +1,13 @@
 #ifndef GLOBAL_CONST_H
 #define GLOBAL_CONST_H
 
+/**
+ * @file    global_const.h
+ *
+ * @brief   Definition of global constants
+ *
+ */
+
 //! Defines the name of the program.
 #define PROGRAM_NAME    "HaiGo"
 //! Defines the current version of the program.
