@@ -296,7 +296,7 @@ void add_value( struct property_st *property, char *value )
         property->value = realloc( property->value, sizeof(char **) * value_count );
     }
     *(property->value + value_count - 1) = malloc( strlen(value) + 1 );
-    strcpy( *(property->value + value_count - 1), value );
+    my_strcpy( *(property->value + value_count - 1), value, (int) strlen(value) );
 
     return;
 }
