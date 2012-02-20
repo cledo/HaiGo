@@ -1088,3 +1088,28 @@ void set_white_captured( int captured )
     return;
 }
 
+/**
+ * @brief       Count stones on board.
+ *
+ * Counts the number of stones of a given color on the board. Because EMPTY is
+ * treated as color also, empty fields may be counted, too.
+ *
+ * @param[in]   color   Color of stones or EMPTY
+ * @return      Number of stones (or empty fields)
+ */
+int get_stone_count( int color )
+{
+    int i, j;
+    int count = 0;
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            if ( board[i][j] == color ) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+

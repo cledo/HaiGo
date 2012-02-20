@@ -31,6 +31,7 @@ int  get_black_captured(void);
 int  get_white_captured(void);
 void set_black_captured( int captured );
 void set_white_captured( int captured );
+int  get_stone_count( int color );
 
 //DEBUG:
 void print_groups(void);

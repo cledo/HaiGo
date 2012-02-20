@@ -596,12 +596,13 @@ void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int  board_size = get_board_size();
 
     // Handicap only on empty boards:
-    if ( get_move_number() > 0 ) {
+    if ( get_stone_count(BLACK) + get_stone_count(WHITE) != 0 ) {
         set_output_error();
         add_output("board not empty");
 
         return;
     }
+
 
     // No handicap on mini boards:
     if ( board_size <= 6 ) {
@@ -1290,7 +1291,6 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
             else {
                 continue;
             }
-
 
             if ( ! is_sgf_ok ) {
                 break;
