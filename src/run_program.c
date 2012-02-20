@@ -1176,6 +1176,7 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     //int  m = 0;
 
     struct node_st     *sgf_tree;
+    struct node_st     *sgf_tree_start;
     struct property_st *property;
     //char *value;
     int property_count;
@@ -1230,7 +1231,8 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     fclose(sgf_file);
     file_content[k] = '\0';
 
-    sgf_tree = parse_sgf(file_content);
+    sgf_tree       = parse_sgf(file_content);
+    sgf_tree_start = sgf_tree;
 
     // DEBUG:
     /*
@@ -1252,9 +1254,10 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
         sgf_tree++;
     }
+    sgf_tree = sgf_tree_start;
     */
 
-    while ( sgf_tree->is_main && sgf_tree->number != -1 ) {
+    while ( sgf_tree->number != -1 && sgf_tree->is_main ) {
         property_count = sgf_tree->property_count;
         for ( k = 0; k < property_count; k++ ) {
             property    = sgf_tree->property + k;
@@ -1306,6 +1309,7 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     free(file_content);
+    free_sgf_tree(sgf_tree_start);
 
     if ( ! is_sgf_ok ) {
         set_output_error();
@@ -1334,6 +1338,7 @@ bool sgf_size( char *value )
         return false;
     }
 
+    free_board();
     init_board(board_size);
 
     return true;

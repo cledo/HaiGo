@@ -164,7 +164,7 @@ struct node_st * parse_sgf( char *file_content )
 
     // Mark and of node list:
     sgf_tree++;
-    sgf_tree->number = -1;
+    sgf_tree->number  = -1;
 
     /*
     sgf_tree = sgf_tree_start;
@@ -172,6 +172,8 @@ struct node_st * parse_sgf( char *file_content )
     sgf_tree       = NULL;
     sgf_tree_start = NULL;
     */
+    free(property_name);
+    free(property_value);
 
     return sgf_tree_start;
 }
@@ -277,7 +279,7 @@ void add_property( struct node_st *sgf_tree, char property_name[] )
 /**
  * @brief       Adds a value to the current property
  *
- * Adds a value to the list of value of the current property
+ * Adds a value to the list of values of the current property
  *
  * @param[in]   property    Pointer to the current property
  * @param[in]   value       String of value to add
@@ -293,8 +295,59 @@ void add_value( struct property_st *property, char *value )
     else if ( value_count > 1 ) {
         property->value = realloc( property->value, sizeof(char **) * value_count );
     }
-    *(property->value + value_count - 1) = malloc( strlen(value) );
+    *(property->value + value_count - 1) = malloc( strlen(value) + 1 );
     strcpy( *(property->value + value_count - 1), value );
+
+    return;
+}
+
+/**
+ * @brief       Frees all allocated memory in SGF tree.
+ *
+ * The SGF tree is a list of nodes, which contain parameters and their values.
+ * All the allocated pointers should be freed after the data has been moved to the
+ * move history.
+ *
+ * @param[in]   sgf_tree    Pointer to SGF tree
+ * @return      Nothing
+ */
+void free_sgf_tree( struct node_st *sgf_tree )
+{
+    int k, l, m;
+    int count_nodes      = 0;
+    int count_properties = 0;
+    int count_values     = 0;
+
+    struct node_st *sgf_tree_start = sgf_tree;
+
+    // Count nodes:
+    while ( sgf_tree->number != -1 ) {
+        sgf_tree++;
+        count_nodes++;
+    }
+    sgf_tree = sgf_tree_start;
+
+    // Go through SGF tree nodes from last to first:
+    for ( k = count_nodes - 1; k >= 0; k-- ) {
+        //printf( "NodeNr.: %d\n", (sgf_tree + k)->number );
+        count_properties = (sgf_tree + k)->property_count;
+        for ( l = count_properties - 1; l >= 0; l-- ) {
+            //printf( "   PropNr.: %d\n", ((sgf_tree +k)->property + l)->number );
+            count_values = ((sgf_tree + k)->property + l)->value_count;
+            for ( m = count_values - 1; m >= 0; m-- ) {
+                //printf( "       Val.: %s\n", *(((sgf_tree + k)->property + l)->value + m) );
+                // Free value string:
+                free( *(((sgf_tree + k)->property + l)->value + m) );
+            }
+            // Free value list:
+            free( ((sgf_tree + k)->property + l)->value );
+            // Free property name:
+            free( ((sgf_tree + k)->property + l)->name  );
+        }
+        // Free properties:
+        free( (sgf_tree + k)->property );
+    }
+    free(sgf_tree);
 
     return;
 }

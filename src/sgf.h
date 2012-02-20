@@ -28,5 +28,6 @@ struct property_st {
 };
 
 struct node_st * parse_sgf( char *file_content );
+void   free_sgf_tree( struct node_st *sgf_tree );
 
 #endif
