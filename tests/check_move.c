@@ -292,6 +292,21 @@ START_TEST (test_push_move)
         fail_if( move_history[number].stones[k][1] != INVALID, "move history stones list j correct" );
     }
 
+    pop_move();
+
+    fail_unless( get_move_number() == number - 1);
+
+    fail_if( move_history[number].number != INVALID, "move history number INVALID"  );
+    fail_if( move_history[number].color  != EMPTY,   "move history color EMPTY"     );
+    fail_if( move_history[number].pass   != true ,   "move history pass correct"    );
+    fail_if( move_history[number].ko[0]  != INVALID, "move history ko[0] correct"   );
+    fail_if( move_history[number].ko[1]  != INVALID, "move history ko[1] correct"   );
+    fail_if( move_history[number].i      != INVALID, "move history i correct"       );
+    fail_if( move_history[number].j      != INVALID, "move history j correct"       );
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        fail_if( move_history[number].stones[k][0] != INVALID, "move history stones list i correct" );
+        fail_if( move_history[number].stones[k][1] != INVALID, "move history stones list j correct" );
+    }
 
 }
 END_TEST
@@ -456,19 +471,55 @@ START_TEST (test_get_valid_move_list)
 }
 END_TEST
 
+START_TEST (test_last_move_1)
+{
+    int k;
+    int number = move_number;
+    int color  = BLACK;
+    int i      = 14;
+    int j      = 16;
+    int stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        stones[k][0] = INVALID;
+        stones[k][1] = INVALID;
+    }
+
+    init_move_history();
+
+    create_next_move();
+    set_move_vertex( color, i, j );
+    push_move();
+
+    number++;
+
+    fail_if( next_move.number != number, "next move number increased" );
+
+    fail_unless( get_last_move_color() == color, "last move color correct" );
+    fail_unless( get_last_move_count_stones() == 0, "last move count stones correct" );
+    fail_unless( get_last_move_i() == i, "last move i correct" );
+    fail_unless( get_last_move_j() == j, "last move j correct" );
+    fail_unless( get_last_move_pass() == false, "last move pass correct" );
+    fail_unless( get_last_move_count_stones() == 0, "last move count stones correct" );
+    get_last_move_stones( stones );
+    fail_unless( stones[0][0] == INVALID && stones[0][1] == INVALID, "last move stones empty" );
+}
+END_TEST
+
 
 Suite * move_suite(void) {
     Suite *s                    = suite_create("Run");
 
-    TCase *tc_init_move_history        = tcase_create("init_move_history");
-    TCase *tc_create_next_move         = tcase_create("create_next_move" );
-    TCase *tc_set_move_vertex          = tcase_create("set_move_vertex"  );
+    TCase *tc_init_move_history        = tcase_create("init_move_history"       );
+    TCase *tc_create_next_move         = tcase_create("create_next_move"        );
+    TCase *tc_set_move_vertex          = tcase_create("set_move_vertex"         );
     TCase *tc_set_move_captured_stones = tcase_create("set_move_captured_stones");
-    TCase *tc_set_move_ko              = tcase_create("set_move_ko");
-    TCase *tc_set_move_pass            = tcase_create("set_move_pass");
-    TCase *tc_get_last_ko              = tcase_create("get_last_ko");
-    TCase *tc_push_move                = tcase_create("push_move");
-    TCase *tc_valid_move_list          = tcase_create("valid_move_list");
+    TCase *tc_set_move_ko              = tcase_create("set_move_ko"             );
+    TCase *tc_set_move_pass            = tcase_create("set_move_pass"           );
+    TCase *tc_get_last_ko              = tcase_create("get_last_ko"             );
+    TCase *tc_push_move                = tcase_create("push_move"               );
+    TCase *tc_valid_move_list          = tcase_create("valid_move_list"         );
+    TCase *tc_last_move                = tcase_create("last_move"               );
 
     tcase_add_test( tc_init_move_history,        test_init_move_history_1        );
     tcase_add_test( tc_create_next_move,         test_create_next_move_1         );
@@ -480,6 +531,7 @@ Suite * move_suite(void) {
     tcase_add_test( tc_push_move,                test_push_move                  );
     tcase_add_test( tc_valid_move_list,          test_get_pseudo_valid_move_list );
     tcase_add_test( tc_valid_move_list,          test_get_valid_move_list        );
+    tcase_add_test( tc_last_move,                test_last_move_1                );
 
     tcase_add_exit_test( tc_push_move, test_push_move_fail, EXIT_FAILURE );
 
@@ -494,6 +546,7 @@ Suite * move_suite(void) {
     suite_add_tcase( s, tc_get_last_ko              );
     suite_add_tcase( s, tc_push_move                );
     suite_add_tcase( s, tc_valid_move_list          );
+    suite_add_tcase( s, tc_last_move                );
 
     return s;
 }
