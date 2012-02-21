@@ -8,6 +8,8 @@
  *
  */
 
+#include <stdbool.h>
+
 void init_move_history(void);
 void create_next_move(void);
 void set_move_vertex( int color, int i, int j );

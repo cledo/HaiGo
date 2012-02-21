@@ -14,6 +14,7 @@
 #include "move.h"
 #include "global_tools.h"
 #include "sgf.h"
+#include "engine.h"
 #include "./brains/all_brains.h"
 
 /**
