@@ -16,6 +16,9 @@
  *
  */
 
+static unsigned long long int node_count;
+
+void add_node( int color, int tree_level );
 void add_move( int color, int i, int j );
 void undo_move(void);
 
@@ -35,6 +38,9 @@ void build_tree( int color )
     int i, j;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int nr_of_valid_moves;
+    int tree_level = 0;
+
+    node_count = 0;
 
     // Steps for root node:
     // 1. Get pseudo valid moves
@@ -55,16 +61,20 @@ void build_tree( int color )
         i = valid_moves[k][0];
         j = valid_moves[k][1];
         // Make move:
-        printf( "# make: %d,%d\n", i, j );
+        node_count++;
+        printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
         add_move( color, i, j );
 
-        // Recursive search here ...
+        // Start recursion:
+        add_node( color * -1, tree_level );
 
         // Undo move:
-        printf( "# undo: %d,%d\n", i, j );
+        printf( "# Level: %d undo: %d,%d\n", tree_level, i, j );
         undo_move();
 
     }
+
+    printf( "#### Node count: %d ####\n", node_count );
 
     return;
 }
@@ -155,6 +165,57 @@ void undo_move(void)
     }
 
     pop_move();
+
+    return;
+}
+
+/**
+ * @brief       Adds a new node to the move tree.
+ *
+ * A new node is added to the move tree. For every move in the generated move
+ * list, a new node is added recursively. If a certain level is reached, the
+ * recusrion is stopped.
+ *
+ * @param[in]   color       Color of move to set.
+ * @param[in]   tree_level  Counter that shows the level in the move tree.
+ * @return      Nothing
+ */
+void add_node( int color, int tree_level )
+{
+    int k;
+    int i, j;
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int nr_of_valid_moves;
+
+    if ( tree_level == 2 ) {
+        return;
+    }
+    tree_level++;
+
+    // Get list of pseudo valid moves:
+    nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
+    // Remove zero liberty moves from pseudo valid moves:
+    nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
+
+
+    // Go through move list:
+    for ( k = 0; k < nr_of_valid_moves; k++ ) {
+        i = valid_moves[k][0];
+        j = valid_moves[k][1];
+        // Make move:
+        node_count++;
+        //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
+        add_move( color, i, j );
+
+        // Start recursion:
+        add_node( color * -1, tree_level );
+
+        // Undo move:
+        //printf( "# Level %d undo: %d,%d\n", tree_level, i, j );
+        undo_move();
+
+    }
+
 
     return;
 }
