@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "global_const.h"
 #include "engine.h"
 #include "board.h"
@@ -39,6 +40,8 @@ void build_tree( int color )
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int nr_of_valid_moves;
     int tree_level = 0;
+    time_t start;
+    time_t stop;
 
     node_count = 0;
 
@@ -50,6 +53,8 @@ void build_tree( int color )
     //      ....
     //      5. Undo move
  
+    time(&start);
+
     // Get list of pseudo valid moves:
     nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
     // Remove zero liberty moves from pseudo valid moves:
@@ -62,19 +67,23 @@ void build_tree( int color )
         j = valid_moves[k][1];
         // Make move:
         node_count++;
-        printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
+        //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
         add_move( color, i, j );
 
         // Start recursion:
         add_node( color * -1, tree_level );
 
         // Undo move:
-        printf( "# Level: %d undo: %d,%d\n", tree_level, i, j );
+        //printf( "# Level: %d undo: %d,%d\n", tree_level, i, j );
         undo_move();
 
     }
 
-    printf( "#### Node count: %d ####\n", node_count );
+    time(&stop);
+
+    printf( "#### Node count: %lld ####\n", node_count );
+    printf( "Duration: %ld\n", stop - start );
+    printf( "Nodes/sec.: %lld\n", node_count / ( stop - start ) );
 
     return;
 }
