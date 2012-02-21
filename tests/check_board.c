@@ -125,6 +125,10 @@ START_TEST (test_init_board_1)
 
     init_board(s);
 
+    fail_if( is_board_null(),       "board is initialized"       );
+    fail_if( is_group_board_null(), "group board is initialized" );
+    fail_if( is_hoshi_board_null(), "hoshi board is initialized" );
+
     for ( i = 0; i < s; i++ ) {
         for ( j = 0; j < s; j++ ) {
             fail_unless( get_vertex( i, j ) == EMPTY
@@ -139,6 +143,10 @@ START_TEST (test_init_board_1)
     fail_if( s != get_board_size(), "correct board size returned (%d,%d)", s, s );
 
     free_board();
+
+    fail_unless( is_board_null(),       "board is NULL"       );
+    fail_unless( is_group_board_null(), "group board is NULL" );
+    fail_unless( is_hoshi_board_null(), "hoshi board is NULL" );
 }
 END_TEST
 

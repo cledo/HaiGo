@@ -36,6 +36,10 @@ void set_black_captured( int captured );
 void set_white_captured( int captured );
 int  get_stone_count( int color );
 
+bool is_board_null(void);
+bool is_group_board_null(void);
+bool is_hoshi_board_null(void);
+
 //DEBUG:
 void print_groups(void);
 

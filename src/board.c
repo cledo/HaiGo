@@ -1113,3 +1113,69 @@ int get_stone_count( int color )
     return count;
 }
 
+/**
+ * @brief       Checks if board pointer is NULL.
+ *
+ * Returns true if board points to NULL, false otherwise.
+ *
+ * @return      true|false
+ * @sa          is_hoshi_board_null(), is_group_board_null()
+ */
+bool is_board_null(void)
+{
+    bool is_null;
+
+    if ( board == NULL ) {
+        is_null = true;
+    }
+    else {
+        is_null = false;
+    }
+
+    return is_null;
+}
+
+/**
+ * @brief       Checks if group board points to NULL.
+ *
+ * Returns true if the group board points to NULL, false otherwise.
+ *
+ * @return      true|false
+ * @sa          is_board_null(), is_hoshi_board_null()
+ */
+bool is_group_board_null(void)
+{
+    bool is_null;
+
+    if ( group == NULL ) {
+        is_null = true;
+    }
+    else {
+        is_null = false;
+    }
+
+    return is_null;
+}
+
+/**
+ * @brief       Checks if hoshi board points to NULL.
+ *
+ * Returns true if the hoshi board points to NULL, false otherwise.
+ *
+ * @return      true|false
+ * @sa          is_board_null(), is_group_board_null()
+ */
+bool is_hoshi_board_null(void)
+{
+    bool is_null;
+
+    if ( hoshi == NULL ) {
+        is_null = true;
+    }
+    else {
+        is_null = false;
+    }
+
+    return is_null;
+}
+
