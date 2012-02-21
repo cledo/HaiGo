@@ -20,9 +20,6 @@
 
 /* State variables */
 // As described in GTP v2.0 chapter 5.1
-int  **board;   //!< The main board data structure.
-int  **group;   //!< A helper board which contains group numbers.
-bool **hoshi;   //!< A helper board which defines the star points.
 int board_size     = 0;     //!< The size of the board.
 int black_captured = 0;     //!< Number of white stones captured by black.
 int white_captured = 0;     //!< Number of black stones captured by white.
@@ -416,7 +413,7 @@ int get_vertex( int i, int j )
 /**
  * @brief       Creates groups of stones.
  *
- * This function creates groups of stone and assigns numbers to them. Thess
+ * This function creates groups of stone and assigns numbers to them. These
  * numbers are stored in the group data structure. Black groups have positive
  * numbers, white groups have negative numbers. Empty fields are marked with
  * zero.

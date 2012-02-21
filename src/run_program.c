@@ -1082,6 +1082,9 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
+    // TEST:
+    build_tree(color);
+
     // Get list of pseudo valid moves:
     nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
     // Remove zero liberty moves from pseudo valid moves:

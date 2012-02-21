@@ -1,19 +1,141 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include "global_const.h"
 #include "engine.h"
 #include "board.h"
 #include "move.h"
 
 
 /**
+ * @file    engine.c
+ *
+ * @brief   Engine for building the move tree.
+ *
+ * [Multi-line
+ * description still missing ...]
+ *
+ */
+
+void add_move( int color, int i, int j );
+void undo_move(void);
+
+/**
  * @brief       Builds move tree.
  *
  * Builds a complete move tree recursively.
  *
+ * @param[in]   color   Color to move
  * @return      Nothing
  * @note        This function currently only serves as a proof of concept.
  * @todo        Must think about proper parameters ...
  */
-void build_tree(void) {
+void build_tree( int color )
+{
+    int k;
+    int i, j;
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int nr_of_valid_moves;
+
+    // Steps for root node:
+    // 1. Get pseudo valid moves
+    // 2. Get list valid moves
+    // 3. Go through move list
+    //      4. Make move
+    //      ....
+    //      5. Undo move
+ 
+    // Get list of pseudo valid moves:
+    nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
+    // Remove zero liberty moves from pseudo valid moves:
+    nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
+
+
+    // Go through move list:
+    for ( k = 0; k < nr_of_valid_moves; k++ ) {
+        i = valid_moves[k][0];
+        j = valid_moves[k][1];
+        // Make move:
+        //printf( "# make: %d,%d\n", i, j );
+        add_move( color, i, j );
+
+        // Recursive search here ...
+
+        // Undo move:
+        //printf( "# undo: %d,%d\n", i, j );
+        undo_move();
+
+    }
+
+    return;
+}
+
+void add_move( int color, int i, int j )
+{
+    int nr_of_removed_stones;
+    int group_nr;
+    int nr_of_liberties;
+    int group_size;
+    int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    set_vertex( color, i, j );
+    create_groups();
+    count_liberties();
+    set_groups_size();
+    nr_of_removed_stones = remove_stones( color * -1 );
+    if ( nr_of_removed_stones > 0 ) {
+        create_groups();
+        count_liberties();
+        set_groups_size();
+    }
+
+    nr_of_removed_stones = get_captured_now(captured_now);
+
+    create_next_move();
+    set_move_vertex( color, i, j );
+    set_move_captured_stones(captured_now);
+
+    group_nr        = get_group_nr( i, j );
+    nr_of_liberties = get_nr_of_liberties(group_nr);
+    group_size      = get_size_of_group(group_nr);
+
+    // Check if this move is a ko:
+    if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
+        // If only one stone has been captured it must be the first in the
+        // captured_now list:
+        set_move_ko( captured_now[0][0], captured_now[0][1] );
+    }
+
+    push_move();
+
+    return;
+}
+
+void undo_move(void)
+{
+    int k;
+    int i            = get_last_move_i();
+    int j            = get_last_move_j();
+    int color        = get_last_move_color();
+    int count_stones = get_last_move_count_stones();
+    int stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    get_last_move_stones(stones);
+
+    set_vertex( EMPTY, i, j );
+    if ( count_stones > 0 ) {
+        for ( k = 0; k < count_stones; k++ ) {
+            set_vertex( color * -1, stones[k][0], stones[k][1] );
+        }
+
+        if ( color == BLACK ) {
+            set_black_captured( get_black_captured() - count_stones );
+        }
+        else {
+            set_white_captured( get_white_captured() - count_stones );
+        }
+    }
+
+    pop_move();
 
     return;
 }

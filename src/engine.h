@@ -8,7 +8,7 @@
  *
  */
 
-void build_tree(void);
+void build_tree( int color );
 
 #endif
 

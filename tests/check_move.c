@@ -8,6 +8,7 @@
 
 extern int move_number;
 
+/*
 struct move {
     int  number;
     int  color;
@@ -21,7 +22,7 @@ struct move {
 } next_move;
 
 struct move move_history[MOVE_HISTORY_MAX];
-
+*/
 
 START_TEST (test_init_move_history_1)
 {
@@ -29,7 +30,7 @@ START_TEST (test_init_move_history_1)
 
     init_move_history();
 
-    fail_if( move_number != 0, "move number is 0" );
+    fail_if( get_move_number() != 0, "move number is 0" );
 
     for ( k = 0; k < MOVE_HISTORY_MAX; k++ ) {
         fail_if( move_history[k].number != INVALID, "number is INVALID after init" );
@@ -52,7 +53,7 @@ END_TEST
 START_TEST (test_create_next_move_1)
 {
     int k;
-    int number = move_number;
+    int number = get_move_number();
 
     create_next_move();
 
@@ -73,7 +74,7 @@ END_TEST
 
 START_TEST (test_set_move_vertex_1)
 {
-    int number = move_number;
+    int number = get_move_number();
     int color  = BLACK;
     int i      = 9;
     int j      = 9;
@@ -95,7 +96,7 @@ START_TEST (test_set_move_captured_stones_1)
     int k;
     int i, j;
     int board_size = BOARD_SIZE_DEFAULT;
-    int number = move_number;
+    int number = get_move_number();
     int captured_stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
 
     //
@@ -123,7 +124,7 @@ START_TEST (test_set_move_captured_stones_1)
     create_next_move();
     set_move_captured_stones(captured_stones);
 
-    fail_if( next_move.number != number + 2, "next move number increased" );
+    fail_if( next_move.number != number + 1, "next move number increased" );
 
     fail_if( next_move.stones[0][0] != 9,       "first stone has INVALID"  );
     fail_if( next_move.stones[0][1] != 9,       "first stone has INVALID"  );
@@ -148,7 +149,7 @@ START_TEST (test_set_move_captured_stones_1)
     create_next_move();
     set_move_captured_stones(captured_stones);
 
-    fail_if( next_move.number != number + 3, "next move number increased" );
+    fail_if( next_move.number != number + 1, "next move number increased" );
 
     k = 0;
     for ( i = 0; i < board_size; i++ ) {
@@ -167,7 +168,7 @@ END_TEST
 
 START_TEST (test_set_move_ko_1)
 {
-    int number = move_number;
+    int number = get_move_number();
     int i      = 9;
     int j      = 9;
 
@@ -182,7 +183,7 @@ END_TEST
 
 START_TEST (test_set_move_pass_1)
 {
-    int number = move_number;
+    int number = get_move_number();
     int color  = WHITE;
 
     create_next_move();
@@ -200,7 +201,7 @@ START_TEST (test_set_move_pass_1)
     create_next_move();
     set_move_pass(color);
 
-    fail_if( next_move.number != number + 2, "next move number increased" );
+    fail_if( next_move.number != number + 1, "next move number increased" );
 
     fail_if( next_move.color != color,  "next move color set to %d", color );
     fail_if( next_move.pass  != true,    "next move set to pass"           );
@@ -211,7 +212,7 @@ END_TEST
 
 START_TEST (test_get_move_last_ko)
 {
-    int number = move_number;
+    int number = get_move_number();
     int color  = BLACK;
     int i      = 9;
     int j      = 9;
@@ -241,7 +242,7 @@ END_TEST
 START_TEST (test_push_move)
 {
     int k;
-    int number = move_number;
+    int number = get_move_number();
     int color  = BLACK;
     int i      = 14;
     int j      = 16;
@@ -256,7 +257,7 @@ START_TEST (test_push_move)
 
     fail_if( next_move.number != number, "next move number increased" );
 
-    fail_if( move_history[number].number != number,  "move history number correct" );
+    fail_if( move_history[number].number != number,  "move history number correct: %d, %d", number, get_move_number() );
     fail_if( move_history[number].color  != color,   "move history color correct"  );
     fail_if( move_history[number].pass   != false,   "move history pass correct"   );
     fail_if( move_history[number].ko[0]  != INVALID, "move history ko[0] correct"  );
@@ -313,14 +314,20 @@ END_TEST
 
 START_TEST (test_push_move_fail)
 {
+    int k;
     int color  = BLACK;
     int i      = 14;
     int j      = 16;
+    int move_number = MOVE_HISTORY_MAX;
 
 
     init_move_history();
 
-    move_number = MOVE_HISTORY_MAX;
+    for ( k = 0; k < MOVE_HISTORY_MAX; k++ ) {
+        create_next_move();
+        set_move_vertex( color, i, j );
+        push_move();
+    }
 
     create_next_move();
     set_move_vertex( color, i, j );
@@ -474,7 +481,7 @@ END_TEST
 START_TEST (test_last_move_1)
 {
     int k;
-    int number = move_number;
+    int number = get_move_number();
     int color  = BLACK;
     int i      = 14;
     int j      = 16;

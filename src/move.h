@@ -9,6 +9,25 @@
  */
 
 #include <stdbool.h>
+#include "global_const.h"
+
+/**
+ * @brief   Structure that represents a move.
+ *
+ **/
+struct move_st {
+    int  number;    //!< The number of the move in the move history.
+    int  color;     //!< Color of the current stone.
+    bool pass;      //!< Indicates whether this move is a pass or not.
+    int  ko[2];     //!< Saves the vertex of the last ko field.
+    int  i;         //!< The horizontal coordinate of the vertex.
+    int  j;         //!< The vertical coordinate of the vertex.
+    int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];    //!< List of captured stones; In move zero: List of handicap stones.
+    int  count_stones;  //!< Number of captured stones
+} next_move;
+
+//! Move history: contains all moves performed.
+struct move_st move_history[MOVE_HISTORY_MAX];
 
 void init_move_history(void);
 void create_next_move(void);

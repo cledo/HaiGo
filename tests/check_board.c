@@ -7,9 +7,9 @@
 #include "../src/board.h"
 #include "../src/move.h"
 
-int  **board = NULL;
-int  **group = NULL;
-bool **hoshi = NULL;
+//int  **board = NULL;
+//int  **group = NULL;
+//bool **hoshi = NULL;
 
 static const int board_count  = 5;
 static const int board_size[] = {

@@ -1,12 +1,17 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <stdbool.h>
+
 /**
  * @file    board.h
  *
  * @brief   Interface definition for board.c
  *
  */
+int  **board;   //!< The main board data structure.
+int  **group;   //!< A helper board which contains group numbers.
+bool **hoshi;   //!< A helper board which defines the star points.
 
 void init_board( int wanted_board_size );
 void free_board(void);
