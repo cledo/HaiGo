@@ -584,7 +584,8 @@ void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  * @param[in]   gtp_argv    Array of all arguments for GTP command
  * @return      Nothing
  * @sa          Go Text Protocol version 2, 4.1.1 Fixed Handicap Placement
- * @todo        Description still missing!!
+ * 
+ * @ingroup GTP_Setup_Commands
  */
 void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
