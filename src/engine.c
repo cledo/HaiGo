@@ -69,6 +69,17 @@ void build_tree( int color )
     return;
 }
 
+/**
+ * @brief       Performs move
+ *
+ * Performs a move on the board and adds it to the move history.
+ *
+ * @param[in]   color   Color of stone to move
+ * @param[in]   i       Horizontal coordinate of move
+ * @param[in]   j       Vertical coordinate of move
+ * @return      Nothing
+ * @sa          undo_move()
+ */
 void add_move( int color, int i, int j )
 {
     int nr_of_removed_stones;
@@ -110,6 +121,14 @@ void add_move( int color, int i, int j )
     return;
 }
 
+/**
+ * @brief       Performs undo move.
+ *
+ * Takes back last move from move history and on the board.
+ *
+ * @return      Nothing
+ * @sa          add_move()
+ */
 void undo_move(void)
 {
     int k;
