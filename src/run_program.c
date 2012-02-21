@@ -1273,7 +1273,7 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
             else if ( strcmp( property->name, "SZ" ) == 0 ) {
                 is_sgf_ok = sgf_size( *(property->value) );
             }
-            else if ( strcmp( property->name, "KO" ) == 0 ) {
+            else if ( strcmp( property->name, "KM" ) == 0 ) {
                 is_sgf_ok = sgf_komi( *(property->value) );
             }
             else if ( strcmp( property->name, "AB" ) == 0 ) {
@@ -1482,7 +1482,7 @@ bool sgf_move( int color, char *value )
 /**
  * @brief       Sets komi.
  *
- * Sets the komi value when an KO property is found in an SGF file.
+ * Sets the komi value when an KM property is found in an SGF file.
  *
  * @param[in]   value   Pointer to komi value as string.
  * @return      true

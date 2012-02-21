@@ -273,6 +273,12 @@ START_TEST (test_select_command_15)
     select_command(&command_data);
     fail_unless( get_output_error() == false, "play command identified" );
 
+    command_data.id = 0;
+    my_strcpy( command_data.name, "undo", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "undo command identified" );
 }
 END_TEST
 
@@ -407,6 +413,39 @@ START_TEST (test_select_command_22)
 }
 END_TEST
 
+START_TEST (test_select_command_23)
+{
+    struct command command_data;
+    char filename[] = "game2.sgf";
+    FILE *sgf_file;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], filename, MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "loadsgf with valid filename, sgf_add" );
+}
+END_TEST
+
+START_TEST (test_fixed_handicap_1)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "fixed_handicap", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "9", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_board(19);
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "fixed_handicap 9 set" );
+}
+END_TEST
+
 Suite * run_program_suite(void) {
     Suite *s = suite_create("Run");
 
@@ -440,6 +479,8 @@ Suite * run_program_suite(void) {
     tcase_add_test( tc_gtp, test_select_command_20 );
     tcase_add_test( tc_gtp, test_select_command_21 );
     tcase_add_test( tc_gtp, test_select_command_22 );
+    tcase_add_test( tc_gtp, test_select_command_23 );
+    tcase_add_test( tc_gtp, test_fixed_handicap_1  );
 
     suite_add_tcase( s, tc_core );
     suite_add_tcase( s, tc_gtp  );
