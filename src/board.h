@@ -9,9 +9,6 @@
  * @brief   Interface definition for board.c
  *
  */
-int  **board;   //!< The main board data structure.
-int  **group;   //!< A helper board which contains group numbers.
-bool **hoshi;   //!< A helper board which defines the star points.
 
 void init_board( int wanted_board_size );
 void free_board(void);
@@ -19,6 +16,7 @@ void get_board_as_string( char board_output[] );
 int  get_board_size(void);
 void set_vertex( int color, int i, int j );
 int  get_vertex( int i, int j );
+bool is_hoshi( int i, int j );
 void create_groups(void);
 void count_liberties(void);
 int  remove_stones( int color );

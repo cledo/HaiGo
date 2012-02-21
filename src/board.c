@@ -20,6 +20,10 @@
 
 /* State variables */
 // As described in GTP v2.0 chapter 5.1
+static int  **board;   //!< The main board data structure.
+static int  **group;   //!< A helper board which contains group numbers.
+static bool **hoshi;   //!< A helper board which defines the star points.
+
 int board_size     = 0;     //!< The size of the board.
 int black_captured = 0;     //!< Number of white stones captured by black.
 int white_captured = 0;     //!< Number of black stones captured by white.
@@ -33,7 +37,6 @@ int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of
 static void get_label_x( int i, char x[] );
 static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
-static bool is_hoshi( int i, int j );   // This will be needed as extern maybe ..
 
 
 

@@ -7,9 +7,6 @@
 #include "../src/board.h"
 #include "../src/move.h"
 
-//int  **board = NULL;
-//int  **group = NULL;
-//bool **hoshi = NULL;
 
 static const int board_count  = 5;
 static const int board_size[] = {
@@ -123,21 +120,25 @@ static char *test_board[] = { "\n"
 
 START_TEST (test_init_board_1)
 {
+    int i, j;
     int s = board_size[_i];
 
     init_board(s);
 
-    fail_if( board == NULL, "board initialised (%dx%d)", s, s );
-    fail_if( group == NULL, "group initialised (%dx%d)", s, s );
-    fail_if( hoshi == NULL, "hoshi initialised (%dx%d)", s, s );
+    for ( i = 0; i < s; i++ ) {
+        for ( j = 0; j < s; j++ ) {
+            fail_unless( get_vertex( i, j ) == EMPTY
+                , "field %d,%d is EMPTY", i, j );
+            fail_unless( get_group_nr( i, j ) == 0
+                , "group_nr for %d,%d is 0", i, j );
+            fail_unless( is_hoshi( i, j ) == true || is_hoshi( i, j ) == false
+                , "hoshi is initialized for %d,%d", i, j );
+        }
+    }
 
     fail_if( s != get_board_size(), "correct board size returned (%d,%d)", s, s );
 
     free_board();
-
-    fail_if( board != NULL, "board is NULL" );
-    fail_if( group != NULL, "group is NULL" );
-    fail_if( hoshi != NULL, "hoshi is NULL" );
 }
 END_TEST
 
@@ -366,9 +367,9 @@ START_TEST (test_vertex_1)
     // Set BLACK
     for ( i = 0; i < s; i++ ) {
         for ( j = 0; j < s; j++ ) {
-            fail_if( board[i][j] != EMPTY, "%d,%d is empty", i, j );
+            fail_if( get_vertex( i, j ) != EMPTY, "%d,%d is empty", i, j );
             set_vertex( BLACK, i, j );
-            fail_if( board[i][j] != BLACK, "%d,%d is black", i, j );
+            fail_if( get_vertex( i, j ) != BLACK, "%d,%d is black", i, j );
         }
     }
 
@@ -376,16 +377,16 @@ START_TEST (test_vertex_1)
     for ( i = 0; i < s; i++ ) {
         for ( j = 0; j < s; j++ ) {
             set_vertex( EMPTY, i, j );
-            fail_if( board[i][j] != EMPTY, "%d,%d is empty", i, j );
+            fail_if( get_vertex( i, j ) != EMPTY, "%d,%d is empty", i, j );
         }
     }
 
     // Set WHITE
     for ( i = 0; i < s; i++ ) {
         for ( j = 0; j < s; j++ ) {
-            fail_if( board[i][j] != EMPTY, "%d,%d is empty", i, j );
+            fail_if( get_vertex( i, j ) != EMPTY, "%d,%d is empty", i, j );
             set_vertex( WHITE, i, j );
-            fail_if( board[i][j] != WHITE, "%d,%d is white", i, j );
+            fail_if( get_vertex( i, j ) != WHITE, "%d,%d is white", i, j );
         }
     }
 

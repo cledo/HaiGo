@@ -55,13 +55,13 @@ void build_tree( int color )
         i = valid_moves[k][0];
         j = valid_moves[k][1];
         // Make move:
-        //printf( "# make: %d,%d\n", i, j );
+        printf( "# make: %d,%d\n", i, j );
         add_move( color, i, j );
 
         // Recursive search here ...
 
         // Undo move:
-        //printf( "# undo: %d,%d\n", i, j );
+        printf( "# undo: %d,%d\n", i, j );
         undo_move();
 
     }
