@@ -27,26 +27,32 @@ struct move move_history[MOVE_HISTORY_MAX];
 START_TEST (test_init_move_history_1)
 {
     int k, l;
+    int stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
+        stones[l][0] = INVALID;
+        stones[l][1] = INVALID;
+    }
 
     init_move_history();
 
-    fail_if( get_move_number() != 0, "move number is 0" );
+    fail_unless( get_move_number() == 0, "move number is 0" );
 
     for ( k = 0; k < MOVE_HISTORY_MAX; k++ ) {
-        fail_if( move_history[k].number != INVALID, "number is INVALID after init" );
-        fail_if( move_history[k].color  != EMPTY,   "color is EMPTY after init"    );
-        fail_if( move_history[k].pass   != true,    "pass is true after init"      );
-        fail_if( move_history[k].ko[0]  != INVALID, "ko[0] is INVALID after init"  );
-        fail_if( move_history[k].ko[1]  != INVALID, "ko[1] is INVALID after init"  );
-        fail_if( move_history[k].i      != INVALID, "i is INVALID after init"      );
-        fail_if( move_history[k].j      != INVALID, "j is INVALID after init"      );
+        fail_unless( get_last_move_number() == INVALID, "number is INVALID after init" );
+        fail_unless( get_last_move_color()  == EMPTY,   "color is EMPTY after init"    );
+        fail_unless( get_last_move_pass()   == true,    "pass is true after init"      );
+        fail_unless( get_move_last_ko_i()   == INVALID, "ko_i is INVALID after init"   );
+        fail_unless( get_move_last_ko_j()   == INVALID, "ko_j is INVALID after init"   );
+        fail_unless( get_last_move_i()      == INVALID, "i is INVALID after init"      );
+        fail_unless( get_last_move_j()      == INVALID, "j is INVALID after init"      );
+        get_last_move_stones(stones);
         for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
-            fail_if( move_history[k].stones[l][0] != INVALID, "stones i is INVALID after init" );
-            fail_if( move_history[k].stones[l][1] != INVALID, "stones j is INVALID after init" );
+            fail_unless( stones[l][0] == INVALID, "stones i is INVALID after init" );
+            fail_unless( stones[l][1] == INVALID, "stones j is INVALID after init" );
         }
-        fail_if( move_history[k].count_stones != INVALID, "count_stones is INVALID" );
+        fail_unless( get_last_move_count_stones() == INVALID, "count_stones is INVALID" );
     }
-
 }
 END_TEST
 
@@ -57,16 +63,16 @@ START_TEST (test_create_next_move_1)
 
     create_next_move();
 
-    fail_if( next_move.number != number + 1, "next move number increased" );
-    fail_if( next_move.color  != EMPTY,      "next move color EMPTY"      );
-    fail_if( next_move.pass   != true,       "next move pass true"        );
-    fail_if( next_move.i      != INVALID,    "next move i INVALID"        );
-    fail_if( next_move.j      != INVALID,    "next move j INVALID"        );
-    fail_if( next_move.ko[0]  != INVALID,    "next move ko[0] INVALID"    );
-    fail_if( next_move.ko[1]  != INVALID,    "next move ko[1] INVALID"    );
+    fail_unless( next_move.number == number + 1, "next move number increased" );
+    fail_unless( next_move.color  == EMPTY,      "next move color EMPTY"      );
+    fail_unless( next_move.pass   == true,       "next move pass true"        );
+    fail_unless( next_move.i      == INVALID,    "next move i INVALID"        );
+    fail_unless( next_move.j      == INVALID,    "next move j INVALID"        );
+    fail_unless( next_move.ko[0]  == INVALID,    "next move ko[0] INVALID"    );
+    fail_unless( next_move.ko[1]  == INVALID,    "next move ko[1] INVALID"    );
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        fail_if( next_move.stones[k][0] != INVALID, "next move stone i INVALID" );
-        fail_if( next_move.stones[k][1] != INVALID, "next move stone j INVALID" );
+        fail_unless( next_move.stones[k][0] == INVALID, "next move stone i INVALID" );
+        fail_unless( next_move.stones[k][1] == INVALID, "next move stone j INVALID" );
     }
 
 }
@@ -82,12 +88,12 @@ START_TEST (test_set_move_vertex_1)
     create_next_move();
     set_move_vertex( color, i, j );
 
-    fail_if( next_move.number != number + 1, "next move number increased" );
+    fail_unless( next_move.number == number + 1, "next move number increased" );
 
-    fail_if( next_move.color != color, "next move color is %d",  color );
-    fail_if( next_move.i     != i,     "next move i is %d",      i     );
-    fail_if( next_move.j     != j,     "next move j is %d",      j     );
-    fail_if( next_move.pass  != false, "next move pass is false"       );
+    fail_unless( next_move.color == color, "next move color is %d",  color );
+    fail_unless( next_move.i     == i,     "next move i is %d",      i     );
+    fail_unless( next_move.j     == j,     "next move j is %d",      j     );
+    fail_unless( next_move.pass  == false, "next move pass is false"       );
 }
 END_TEST
 
@@ -110,10 +116,10 @@ START_TEST (test_set_move_captured_stones_1)
     create_next_move();
     set_move_captured_stones(captured_stones);
 
-    fail_if( next_move.number != number + 1, "next move number increased" );
+    fail_unless( next_move.number == number + 1, "next move number increased" );
 
-    fail_if( next_move.stones[0][0] != INVALID, "first stone has INVALID" );
-    fail_if( next_move.stones[0][1] != INVALID, "first stone has INVALID" );
+    fail_unless( next_move.stones[0][0] == INVALID, "first stone has INVALID" );
+    fail_unless( next_move.stones[0][1] == INVALID, "first stone has INVALID" );
 
     //
     // One stone captured:
@@ -124,12 +130,12 @@ START_TEST (test_set_move_captured_stones_1)
     create_next_move();
     set_move_captured_stones(captured_stones);
 
-    fail_if( next_move.number != number + 1, "next move number increased" );
+    fail_unless( next_move.number == number + 1, "next move number increased" );
 
-    fail_if( next_move.stones[0][0] != 9,       "first stone has INVALID"  );
-    fail_if( next_move.stones[0][1] != 9,       "first stone has INVALID"  );
-    fail_if( next_move.stones[1][0] != INVALID, "second stone has INVALID" );
-    fail_if( next_move.stones[1][1] != INVALID, "second stone has INVALID" );
+    fail_unless( next_move.stones[0][0] == 9,       "first stone has INVALID"  );
+    fail_unless( next_move.stones[0][1] == 9,       "first stone has INVALID"  );
+    fail_unless( next_move.stones[1][0] == INVALID, "second stone has INVALID" );
+    fail_unless( next_move.stones[1][1] == INVALID, "second stone has INVALID" );
 
     //
     // All stones captured (except one):
@@ -149,7 +155,7 @@ START_TEST (test_set_move_captured_stones_1)
     create_next_move();
     set_move_captured_stones(captured_stones);
 
-    fail_if( next_move.number != number + 1, "next move number increased" );
+    fail_unless( next_move.number == number + 1, "next move number increased" );
 
     k = 0;
     for ( i = 0; i < board_size; i++ ) {
@@ -246,27 +252,37 @@ START_TEST (test_push_move)
     int color  = BLACK;
     int i      = 14;
     int j      = 16;
+    int stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        stones[k][0] = INVALID;
+        stones[k][1] = INVALID;
+    }
 
     init_move_history();
 
     create_next_move();
     set_move_vertex( color, i, j );
+
+    // First move:
     push_move();
 
     number++;
 
-    fail_if( next_move.number != number, "next move number increased" );
+    fail_unless( next_move.number == number, "next move number increased" );
 
-    fail_if( move_history[number].number != number,  "move history number correct: %d, %d", number, get_move_number() );
-    fail_if( move_history[number].color  != color,   "move history color correct"  );
-    fail_if( move_history[number].pass   != false,   "move history pass correct"   );
-    fail_if( move_history[number].ko[0]  != INVALID, "move history ko[0] correct"  );
-    fail_if( move_history[number].ko[1]  != INVALID, "move history ko[1] correct"  );
-    fail_if( move_history[number].i      != i,       "move history i correct"      );
-    fail_if( move_history[number].j      != j,       "move history j correct"      );
+    fail_unless( get_last_move_number()       == number,  "move history number correct"   );
+    fail_unless( get_last_move_color()        == color,   "move history color correct"  );
+    fail_unless( get_last_move_pass()         == false,   "move history pass correct"   );
+    fail_unless( get_move_last_ko_i()         == INVALID, "move history ko[0] correct"  );
+    fail_unless( get_move_last_ko_j()         == INVALID, "move history ko[1] correct"  );
+    fail_unless( get_last_move_i()            == i,       "move history i correct"      );
+    fail_unless( get_last_move_j()            == j,       "move history j correct"      );
+    fail_unless( get_last_move_count_stones() == 0, "move history count stones correct" );
+    get_last_move_stones(stones);
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        fail_if( move_history[number].stones[k][0] != INVALID, "move history stones list i correct" );
-        fail_if( move_history[number].stones[k][1] != INVALID, "move history stones list j correct" );
+        fail_unless( stones[k][0] == INVALID, "move history stones list i correct" );
+        fail_unless( stones[k][1] == INVALID, "move history stones list j correct" );
     }
 
     color = WHITE;
@@ -275,38 +291,49 @@ START_TEST (test_push_move)
 
     create_next_move();
     set_move_vertex( color, i, j );
+
+    // Second move
     push_move();
 
     number++;
 
-    fail_if( next_move.number != number, "next move number increased" );
+    fail_unless( next_move.number == number, "next move number increased" );
 
-    fail_if( move_history[number].number != number,  "move history number correct" );
-    fail_if( move_history[number].color  != color,   "move history color correct"  );
-    fail_if( move_history[number].pass   != false,   "move history pass correct"   );
-    fail_if( move_history[number].ko[0]  != INVALID, "move history ko[0] correct"  );
-    fail_if( move_history[number].ko[1]  != INVALID, "move history ko[1] correct"  );
-    fail_if( move_history[number].i      != i,       "move history i correct"      );
-    fail_if( move_history[number].j      != j,       "move history j correct"      );
+    fail_unless( get_last_move_number()       == number,  "move history number correct" );
+    fail_unless( get_last_move_color()        == color,   "move history color correct"  );
+    fail_unless( get_last_move_pass()         == false,   "move history pass correct"   );
+    fail_unless( get_move_last_ko_i()         == INVALID, "move history ko[0] correct"  );
+    fail_unless( get_move_last_ko_j()         == INVALID, "move history ko[1] correct"  );
+    fail_unless( get_last_move_i()            == i,       "move history i correct"      );
+    fail_unless( get_last_move_j()            == j,       "move history j correct"      );
+    fail_unless( get_last_move_count_stones() == 0, "move history count stones correct" );
+    get_last_move_stones(stones);
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        fail_if( move_history[number].stones[k][0] != INVALID, "move history stones list i correct" );
-        fail_if( move_history[number].stones[k][1] != INVALID, "move history stones list j correct" );
+        fail_unless( stones[k][0] == INVALID, "move history stones list i correct" );
+        fail_unless( stones[k][1] == INVALID, "move history stones list j correct" );
     }
 
+    // Undo second move
     pop_move();
 
     fail_unless( get_move_number() == number - 1);
 
-    fail_if( move_history[number].number != INVALID, "move history number INVALID"  );
-    fail_if( move_history[number].color  != EMPTY,   "move history color EMPTY"     );
-    fail_if( move_history[number].pass   != true ,   "move history pass correct"    );
-    fail_if( move_history[number].ko[0]  != INVALID, "move history ko[0] correct"   );
-    fail_if( move_history[number].ko[1]  != INVALID, "move history ko[1] correct"   );
-    fail_if( move_history[number].i      != INVALID, "move history i correct"       );
-    fail_if( move_history[number].j      != INVALID, "move history j correct"       );
+    // Check must be the same as first move:
+    color = BLACK;
+    i     = 14;
+    j     = 16;
+    fail_unless( get_last_move_number()       == number-1,"move history number same as move before" );
+    fail_unless( get_last_move_color()        == color,   "move history color same as move before"  );
+    fail_unless( get_last_move_pass()         == false ,  "move history pass same as move before"   );
+    fail_unless( get_move_last_ko_i()         == INVALID, "move history ko[0] same as move before"  );
+    fail_unless( get_move_last_ko_j()         == INVALID, "move history ko[1] same as move before"  );
+    fail_unless( get_last_move_i()            == i,       "move history i same as move before"      );
+    fail_unless( get_last_move_j()            == j,       "move history j same as move before"      );
+    fail_unless( get_last_move_count_stones() == 0, "move history count stones same as move before" );
+    get_last_move_stones(stones);
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        fail_if( move_history[number].stones[k][0] != INVALID, "move history stones list i correct" );
-        fail_if( move_history[number].stones[k][1] != INVALID, "move history stones list j correct" );
+        fail_unless( stones[k][0] == INVALID, "move history stones list i correct" );
+        fail_unless( stones[k][1] == INVALID, "move history stones list j correct" );
     }
 
 }

@@ -18,6 +18,9 @@
 //! The number of the latest move.
 static int move_number = 0;
 
+//! Move history: contains all moves performed.
+static struct move_st move_history[MOVE_HISTORY_MAX];
+
 
 
 /**
@@ -194,6 +197,21 @@ int get_move_last_ko_j(void)
 {
 
     return move_history[move_number].ko[1];
+}
+
+/**
+ * @brief       Returns the number of the last move in the move history.
+ *
+ * Returns the number of the last move in the move history. As the first move
+ * data in the move_history starts with an invalid move, the returned number
+ * should be INVALID if no move has been made yet.
+ *
+ * @return      Move number or INVALID
+ */
+int get_last_move_number(void)
+{
+
+    return move_history[move_number].number;
 }
 
 /**

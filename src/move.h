@@ -26,8 +26,6 @@ struct move_st {
     int  count_stones;  //!< Number of captured stones
 } next_move;
 
-//! Move history: contains all moves performed.
-struct move_st move_history[MOVE_HISTORY_MAX];
 
 void init_move_history(void);
 void create_next_move(void);
@@ -46,6 +44,7 @@ int  get_pseudo_valid_move_list( int color, int valid_moves[][2] );
 int  get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] );
 
 int  get_move_number(void);
+int  get_last_move_number(void);
 int  get_last_move_color(void);
 int  get_last_move_i(void);
 int  get_last_move_j(void);
