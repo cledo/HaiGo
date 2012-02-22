@@ -1048,7 +1048,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int k;
     int color;
     int nr_of_valid_moves;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];

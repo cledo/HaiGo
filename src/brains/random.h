@@ -8,7 +8,7 @@
  *
  */
 
-int brain_random( int *i, int *j, int valid_moves[][2], int nr_of_valid_moves );
+int brain_random( int *i, int *j, int valid_moves[][3], int nr_of_valid_moves );
 
 #endif
 

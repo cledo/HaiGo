@@ -346,7 +346,6 @@ START_TEST (test_push_move_fail)
     int color  = BLACK;
     int i      = 14;
     int j      = 16;
-    int move_number = MOVE_HISTORY_MAX;
 
 
     init_move_history();
@@ -371,7 +370,7 @@ START_TEST (test_get_pseudo_valid_move_list)
     int i, j;
     int color      = BLACK;
     int board_size;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
 
 
@@ -478,7 +477,7 @@ START_TEST (test_get_valid_move_list)
     int color;
     int valid_moves_count = 0;
 
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
 
     init_board(s);

@@ -5,6 +5,7 @@
 #include "../src/run_program.h"
 #include "../src/io.h"
 #include "../src/global_tools.h"
+#include "../src/board.h"
 
 
 /*
@@ -370,7 +371,7 @@ START_TEST (test_select_command_21)
     struct command command_data;
     //char filename[] = "testfile.sgf";
     char filename[] = "game1.sgf";
-    FILE *sgf_file;
+    //FILE *sgf_file;
 
     //sgf_file = fopen( filename, "w" );
 
@@ -394,7 +395,7 @@ START_TEST (test_select_command_22)
     struct command command_data;
     //char filename[] = "testfile.sgf";
     char filename[] = "game1.sgf";
-    FILE *sgf_file;
+    //FILE *sgf_file;
 
     //sgf_file = fopen( filename, "w" );
 
@@ -417,7 +418,7 @@ START_TEST (test_select_command_23)
 {
     struct command command_data;
     char filename[] = "game2.sgf";
-    FILE *sgf_file;
+    //FILE *sgf_file;
 
     command_data.id = 0;
     my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );

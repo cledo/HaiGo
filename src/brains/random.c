@@ -24,7 +24,7 @@
  * @param[in]   nr_of_valid_moves   Number of elements in list of valid moves
  * @return      Estimated value of selected move
  */
-int brain_random( int *i, int *j, int valid_moves[][2], int nr_of_valid_moves )
+int brain_random( int *i, int *j, int valid_moves[][3], int nr_of_valid_moves )
 {
     int move_value = 0;
     int rand_index;

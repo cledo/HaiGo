@@ -37,11 +37,12 @@ void build_tree( int color )
 {
     int k;
     int i, j;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
     int tree_level = 0;
     time_t start;
     time_t stop;
+    time_t diff_time;
 
     node_count = 0;
 
@@ -81,9 +82,13 @@ void build_tree( int color )
 
     (void) time(&stop);
 
+    diff_time = stop - start;
+    if ( diff_time == 0 ) {
+        diff_time = 1;
+    }
     //printf( "#### Node count: %lld ####\n", node_count );
     //printf( "Duration: %ld\n", stop - start );
-    //printf( "Nodes/sec.: %lld\n", node_count / ( stop - start ) );
+    //printf( "Nodes/sec.: %lld\n", node_count / diff_time );
 
     return;
 }
@@ -193,7 +198,7 @@ void add_node( int color, int tree_level )
 {
     int k;
     int i, j;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
 
     if ( tree_level == 1 ) {

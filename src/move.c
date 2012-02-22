@@ -344,7 +344,7 @@ bool is_move_ko( int color, int i, int j )
  *              without a liberty are still contained in this list. Therefore
  *              the term "pseudo valid".
  */
-int get_pseudo_valid_move_list( int color, int valid_moves[][2] )
+int get_pseudo_valid_move_list( int color, int valid_moves[][3] )
 {
     int count;
     int i, j;
@@ -373,15 +373,15 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][2] )
  * get_pseudo_valid_move_list()) and droppes the zero liberty moves. The
  * number of valid moves is returned.
  *
- * @param[in]   color   Color of moving side (BLACK|WHITE)
+ * @param[in]   color               Color of moving side (BLACK|WHITE)
  * @param[in]   valid_moves_count   Number of moves in valid_moves array
- * @param[out]  valid_moves List of valid moves (zero liberty moves excluded)
+ * @param[out]  valid_moves         List of valid moves (zero liberty moves excluded)
  * @return      Number of valid moves
  * @sa          get_pseudo_valid_move_list()
  * @warning     The function get_pseudo_valid_move_list() must be called
  *              before get_valid_move_list().
  */
-int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] )
+int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] )
 {
     int  count = 0;
     int  i, j;
@@ -391,7 +391,8 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] 
     int  group_nr;
     int  nr_of_liberties;
     bool is_valid;
-    int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+    int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int  value;
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         temp_moves[k][0] = INVALID;
@@ -421,6 +422,10 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] 
             }
         }
 
+        // TEST:
+        value = 10;
+
+
         // Undo move:
         nr_of_removed_stones = get_captured_now(captured_now);
         set_vertex( EMPTY, i, j );
@@ -436,8 +441,9 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] 
 
         // Save only valid moves in temporary list:
         if ( is_valid ) {
-            temp_moves[count][0] = valid_moves[k][0];
-            temp_moves[count][1] = valid_moves[k][1];
+            temp_moves[count][0] = i;
+            temp_moves[count][1] = j;
+            temp_moves[count][2] = value;
             count++;
         }
     }
@@ -446,6 +452,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][2] 
     for ( k = 0; k < count; k++ ) {
         valid_moves[k][0] = temp_moves[k][0];
         valid_moves[k][1] = temp_moves[k][1];
+        valid_moves[k][2] = temp_moves[k][2];
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;
