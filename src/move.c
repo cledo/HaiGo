@@ -50,6 +50,7 @@ void init_move_history(void)
             move_history[k].stones[l][1] = INVALID;
         }
         move_history[k].count_stones = INVALID;
+        move_history[k].value        = 0;
     }
 
     return;
@@ -77,9 +78,10 @@ void create_next_move(void)
         next_move.stones[k][0] = INVALID;
         next_move.stones[k][1] = INVALID;
     }
-    next_move.ko[0] = INVALID;
-    next_move.ko[1] = INVALID;
+    next_move.ko[0]        = INVALID;
+    next_move.ko[1]        = INVALID;
     next_move.count_stones = 0;
+    next_move.value        = 0;
 
     return;
 }
@@ -545,5 +547,18 @@ void get_last_move_stones( int stones[][2] )
     }
 
     return;
+}
+
+/**
+ * @brief       Returns value of move.
+ *
+ * Returns the value of the last move in the move_history.
+ *
+ * @return      value   Value of move
+ */
+int get_last_move_value(void)
+{
+
+    return move_history[move_number].value;
 }
 

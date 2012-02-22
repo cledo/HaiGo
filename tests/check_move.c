@@ -52,6 +52,7 @@ START_TEST (test_init_move_history_1)
             fail_unless( stones[l][1] == INVALID, "stones j is INVALID after init" );
         }
         fail_unless( get_last_move_count_stones() == INVALID, "count_stones is INVALID" );
+        fail_unless( get_last_move_value() == 0,              "value is 0" );
     }
 }
 END_TEST

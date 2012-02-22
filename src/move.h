@@ -24,6 +24,7 @@ struct move_st {
     int  j;         //!< The vertical coordinate of the vertex.
     int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];    //!< List of captured stones; In move zero: List of handicap stones.
     int  count_stones;  //!< Number of captured stones
+    int  value;         //!< Value of move will be stored here
 } next_move;
 
 
@@ -51,5 +52,6 @@ int  get_last_move_j(void);
 bool get_last_move_pass(void);
 int  get_last_move_count_stones(void);
 void get_last_move_stones( int stones[][2] );
+int  get_last_move_value(void);
 
 #endif
