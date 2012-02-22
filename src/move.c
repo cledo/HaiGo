@@ -459,7 +459,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     valid_moves[count][1] = INVALID;
 
     // Sort valid moves list by value
-    qsort( valid_moves, count, sizeof(valid_moves[0]), compare_by_value );
+    qsort( valid_moves, (size_t)count, sizeof(valid_moves[0]), compare_by_value );
 
     return count;
 }

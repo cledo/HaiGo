@@ -32,6 +32,7 @@ static int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of numb
 static int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
 static int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
 static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
+static void set_group( int i, int j );     //!< Creates groups, by setting group numbers on group board.
 
 
 static void get_label_x( int i, char x[] );

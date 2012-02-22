@@ -69,14 +69,14 @@ void build_tree( int color, int *x, int *y )
         value = valid_moves[k][2];
         // Make move:
         node_count++;
-        printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
+        //printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
         add_move( color, i, j );
 
         // Start recursion:
         add_node( color * -1, tree_level );
 
         // Undo move:
-        printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
+        //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
         undo_move();
 
     }
@@ -87,9 +87,9 @@ void build_tree( int color, int *x, int *y )
     if ( diff_time == 0 ) {
         diff_time = 1;
     }
-    printf( "#### Node count: %lld ####\n", node_count );
-    printf( "Duration: %ld\n", stop - start );
-    printf( "Nodes/sec.: %lld\n", node_count / diff_time );
+    //printf( "#### Node count: %lld ####\n", node_count );
+    //printf( "Duration: %ld\n", stop - start );
+    //printf( "Nodes/sec.: %lld\n", node_count / diff_time );
 
     *x = valid_moves[0][0];
     *y = valid_moves[0][1];
