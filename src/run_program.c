@@ -1061,7 +1061,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     char vertex[4] = "\0";
 
     // TEST:
-    int move_value;
+    //int move_value;
 
     // Initialise captured stones list:
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
@@ -1083,8 +1083,9 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     // TEST:
-    build_tree(color);
+    build_tree( color, &i, &j );
 
+    /*
     // Get list of pseudo valid moves:
     nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
     // Remove zero liberty moves from pseudo valid moves:
@@ -1100,9 +1101,10 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
         return;
     }
+    */
 
     // Use brain_random as placeholder for now:
-    move_value = brain_random( &i, &j, valid_moves, nr_of_valid_moves );
+    //move_value = brain_random( &i, &j, valid_moves, nr_of_valid_moves );
 
     set_vertex( color, i, j );
     create_groups();

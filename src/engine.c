@@ -33,13 +33,13 @@ void undo_move(void);
  * @note        This function currently only serves as a proof of concept.
  * @todo        Must think about proper parameters ...
  */
-void build_tree( int color )
+void build_tree( int color, int *x, int *y )
 {
-    int k;
-    int i, j;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
-    int nr_of_valid_moves;
-    int tree_level = 0;
+    int    k;
+    int    i, j, value;
+    int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int    nr_of_valid_moves;
+    int    tree_level = 0;
     time_t start;
     time_t stop;
     time_t diff_time;
@@ -64,18 +64,19 @@ void build_tree( int color )
 
     // Go through move list:
     for ( k = 0; k < nr_of_valid_moves; k++ ) {
-        i = valid_moves[k][0];
-        j = valid_moves[k][1];
+        i     = valid_moves[k][0];
+        j     = valid_moves[k][1];
+        value = valid_moves[k][2];
         // Make move:
         node_count++;
-        //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
+        printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
         add_move( color, i, j );
 
         // Start recursion:
         add_node( color * -1, tree_level );
 
         // Undo move:
-        //printf( "# Level: %d undo: %d,%d\n", tree_level, i, j );
+        printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
         undo_move();
 
     }
@@ -86,9 +87,12 @@ void build_tree( int color )
     if ( diff_time == 0 ) {
         diff_time = 1;
     }
-    //printf( "#### Node count: %lld ####\n", node_count );
-    //printf( "Duration: %ld\n", stop - start );
-    //printf( "Nodes/sec.: %lld\n", node_count / diff_time );
+    printf( "#### Node count: %lld ####\n", node_count );
+    printf( "Duration: %ld\n", stop - start );
+    printf( "Nodes/sec.: %lld\n", node_count / diff_time );
+
+    *x = valid_moves[0][0];
+    *y = valid_moves[0][1];
 
     return;
 }
@@ -201,7 +205,7 @@ void add_node( int color, int tree_level )
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
 
-    if ( tree_level == 1 ) {
+    if ( tree_level == 0 ) {
         return;
     }
     tree_level++;

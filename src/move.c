@@ -21,6 +21,7 @@ static int move_number = 0;
 //! Move history: contains all moves performed.
 static struct move_st move_history[MOVE_HISTORY_MAX];
 
+static int compare_by_value( const void *move1, const void *move2 );
 
 
 /**
@@ -423,7 +424,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
         }
 
         // TEST:
-        value = 10;
+        value = get_black_captured() - get_white_captured();
 
 
         // Undo move:
@@ -456,6 +457,9 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;
+
+    // Sort valid moves list by value
+    qsort( valid_moves, count, sizeof(valid_moves[0]), compare_by_value );
 
     return count;
 }
@@ -567,5 +571,28 @@ int get_last_move_value(void)
 {
 
     return move_history[move_number].value;
+}
+
+/**
+ * @brief       Helper function for qsort().
+ *
+ * This is a helper function for qsort(), that makes it possible to sort the
+ * move list by move value.
+ *
+ * @param[in]   move1   Pointer to first move
+ * @param[in]   move2   Pointer to second move
+ * @return      1|0|-1
+ * @sa          man 3 qsort
+ */
+int compare_by_value( const void *move1, const void *move2 )
+{
+    if ( ((int *)move1)[2] > ( (int *)move2)[2] ) {
+        return -1;
+    }
+    else if ( ( (int *)move1)[2] < ( (int *)move2)[2] ) {
+        return 1;
+    }
+
+    return 0;
 }
 
