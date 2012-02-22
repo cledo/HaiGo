@@ -17,7 +17,7 @@
  *
  */
 
-static unsigned long long int node_count;
+static unsigned long long int node_count;   //!< Counts the number of nodes in move tree.
 
 void add_node( int color, int tree_level );
 void add_move( int color, int i, int j );
@@ -53,7 +53,7 @@ void build_tree( int color )
     //      ....
     //      5. Undo move
  
-    time(&start);
+    (void) time(&start);
 
     // Get list of pseudo valid moves:
     nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
@@ -79,11 +79,11 @@ void build_tree( int color )
 
     }
 
-    time(&stop);
+    (void) time(&stop);
 
-    printf( "#### Node count: %lld ####\n", node_count );
-    printf( "Duration: %ld\n", stop - start );
-    printf( "Nodes/sec.: %lld\n", node_count / ( stop - start ) );
+    //printf( "#### Node count: %lld ####\n", node_count );
+    //printf( "Duration: %ld\n", stop - start );
+    //printf( "Nodes/sec.: %lld\n", node_count / ( stop - start ) );
 
     return;
 }
@@ -196,7 +196,7 @@ void add_node( int color, int tree_level )
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int nr_of_valid_moves;
 
-    if ( tree_level == 2 ) {
+    if ( tree_level == 1 ) {
         return;
     }
     tree_level++;

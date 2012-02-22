@@ -485,6 +485,8 @@ Suite * run_program_suite(void) {
     suite_add_tcase( s, tc_core );
     suite_add_tcase( s, tc_gtp  );
 
+    tcase_set_timeout( tc_gtp, 20 );
+
     return s;
 }
 

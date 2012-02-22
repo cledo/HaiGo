@@ -24,14 +24,14 @@ static int  **board;   //!< The main board data structure.
 static int  **group;   //!< A helper board which contains group numbers.
 static bool **hoshi;   //!< A helper board which defines the star points.
 
-int board_size     = 0;     //!< The size of the board.
-int black_captured = 0;     //!< Number of white stones captured by black.
-int white_captured = 0;     //!< Number of black stones captured by white.
-int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per black group.
-int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per white group.
-int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
-int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
-int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
+static int board_size     = 0;     //!< The size of the board.
+static int black_captured = 0;     //!< Number of white stones captured by black.
+static int white_captured = 0;     //!< Number of black stones captured by white.
+static int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per black group.
+static int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per white group.
+static int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
+static int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
+static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
 
 
 static void get_label_x( int i, char x[] );
@@ -1120,6 +1120,7 @@ int get_stone_count( int color )
  *
  * @return      true|false
  * @sa          is_hoshi_board_null(), is_group_board_null()
+ * @note        This function is needed for testing only.
  */
 bool is_board_null(void)
 {
@@ -1142,6 +1143,7 @@ bool is_board_null(void)
  *
  * @return      true|false
  * @sa          is_board_null(), is_hoshi_board_null()
+ * @note        This function is needed for testing only.
  */
 bool is_group_board_null(void)
 {
@@ -1164,6 +1166,7 @@ bool is_group_board_null(void)
  *
  * @return      true|false
  * @sa          is_board_null(), is_group_board_null()
+ * @note        This function is needed for testing only.
  */
 bool is_hoshi_board_null(void)
 {
