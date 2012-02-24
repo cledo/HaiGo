@@ -17,7 +17,7 @@
  *
  */
 
-static int search_level = DEFAULT_SEARCH_LEVEL;
+static int search_level = DEFAULT_SEARCH_LEVEL; //!< Sets depth of search tree.
 
 static unsigned long long int node_count;   //!< Counts the number of nodes in move tree.
 
@@ -90,10 +90,10 @@ void build_tree( int color, int *x, int *y )
     if ( diff_time == 0 ) {
         diff_time = 1;
     }
-    printf( "#### Node count: %lld ####\n", node_count );
+    printf( "#### Node count: %llu ####\n", node_count );
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
-    printf( "Nodes/sec.: %lld\n", node_count / diff_time );
+    printf( "Nodes/sec.: %llu\n", node_count / diff_time );
 
     *x = valid_moves[0][0];
     *y = valid_moves[0][1];
