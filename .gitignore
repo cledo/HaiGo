@@ -38,4 +38,7 @@ tests/Makefile.in
 */.deps/*.Po
 .vimrc
 tests/testfile.sgf
+haigo.log
+level01.sgf
+log2
 

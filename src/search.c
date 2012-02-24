@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <limits.h>
 #include "global_const.h"
 #include "board.h"
 #include "move.h"
@@ -57,6 +58,11 @@ void search_tree( int color, int *i_selected, int *j_selected )
     time_t diff_time;
     char   x[2];
     char   y[3];
+    //int    best_move_i = INVALID;
+    //int    best_move_j = INVALID;
+    int    value;
+
+    value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
     node_count = 0;
 
@@ -92,6 +98,24 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
         // Start recursion:
         valid_moves[k][2] = add_node( color * -1, tree_level );
+
+        if ( color == BLACK ) {
+            // For black: remember highest value
+            if ( valid_moves[k][2] > value ) {
+                value = valid_moves[k][2];
+                //best_move_i = i;
+                //best_move_j = j;
+            }
+        }
+        else {
+            // For white: remember lowest value
+            if ( valid_moves[k][2] < value ) {
+                value = valid_moves[k][2];
+                //best_move_i = i;
+                //best_move_j = j;
+            }
+        }
+
         if ( do_log ) {
             i_to_x( i, x );
             j_to_y( j, y );
@@ -124,6 +148,8 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
+    // *i_selected = best_move_i;
+    // *j_selected = best_move_j;
 
     if ( log_file != NULL ) {
         fclose(log_file);
@@ -239,10 +265,12 @@ int add_node( int color, int tree_level )
     int  i, j;
     int  valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int  nr_of_valid_moves;
-    int  value = 0;
+    int  value;
     char x[2];
     char y[3];
     char indent[10];
+
+    value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
     if ( tree_level == search_level ) {
         value = evaluate_position();
@@ -268,6 +296,20 @@ int add_node( int color, int tree_level )
 
         // Start recursion:
         valid_moves[k][2] = add_node( color * -1, tree_level );
+
+        if ( color == BLACK ) {
+            // For black: remember highest value
+            if ( valid_moves[k][2] > value ) {
+                value = valid_moves[k][2];
+            }
+        }
+        else {
+            // For white: remember lowest value
+            if ( valid_moves[k][2] < value ) {
+                value = valid_moves[k][2];
+            }
+        }
+
         if ( do_log ) {
             i_to_x( i, x );
             j_to_y( j, y );
@@ -284,14 +326,16 @@ int add_node( int color, int tree_level )
     }
 
     // Sort move list by value:
+    /*
     if ( color == BLACK ) {
         qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_black );
     }
     else {
         qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_white );
     }
+    */
 
-    value = valid_moves[0][2];
+    //value = valid_moves[0][2];
 
     return value;
 }
