@@ -4,6 +4,7 @@
 #include "global_const.h"
 #include "move.h"
 #include "board.h"
+#include "evaluate.h"
 
 /**
  * @file    move.c
@@ -425,7 +426,8 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
         }
 
         // TEST:
-        value = get_black_captured() - get_white_captured();
+        //value = get_black_captured() - get_white_captured();
+        value = evaluate_position();
 
 
         // Undo move:

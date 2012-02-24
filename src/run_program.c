@@ -14,7 +14,7 @@
 #include "move.h"
 #include "global_tools.h"
 #include "sgf.h"
-#include "engine.h"
+#include "search.h"
 #include "./brains/all_brains.h"
 
 /**
@@ -1113,7 +1113,7 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     // TEST:
     i = INVALID;
     j = INVALID;
-    build_tree( color, &i, &j );
+    search_tree( color, &i, &j );
 
     if ( i == INVALID && j == INVALID ) {
         create_next_move();

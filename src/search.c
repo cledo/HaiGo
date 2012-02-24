@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <time.h>
 #include "global_const.h"
-#include "engine.h"
 #include "board.h"
 #include "move.h"
+#include "evaluate.h"
+#include "search.h"
 
 
 /**
- * @file    engine.c
+ * @file    search.c
  *
  * @brief   Engine for building the move tree.
  *
@@ -21,8 +22,8 @@ static int search_level = DEFAULT_SEARCH_LEVEL; //!< Sets depth of search tree.
 
 static unsigned long long int node_count;   //!< Counts the number of nodes in move tree.
 
-static void add_node( int color, int tree_level );
-static void add_move( int color, int i, int j );
+static int  add_node( int color, int tree_level );
+static void make_move( int color, int i, int j );
 static void undo_move(void);
 
 /**
@@ -36,7 +37,7 @@ static void undo_move(void);
  * @return      Nothing
  * @note        If no move is selected i and j are INVALID.
  */
-void build_tree( int color, int *x, int *y )
+void search_tree( int color, int *x, int *y )
 {
     int    k;
     int    i, j, value;
@@ -69,17 +70,17 @@ void build_tree( int color, int *x, int *y )
     for ( k = 0; k < nr_of_valid_moves; k++ ) {
         i     = valid_moves[k][0];
         j     = valid_moves[k][1];
-        value = valid_moves[k][2];
+        value = valid_moves[k][2]; // ???
         // Make move:
         node_count++;
-        printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
-        add_move( color, i, j );
+        //printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
+        make_move( color, i, j );
 
         // Start recursion:
-        add_node( color * -1, tree_level );
+        value = add_node( color * -1, tree_level );
 
         // Undo move:
-        printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
+        //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
         undo_move();
 
     }
@@ -90,10 +91,10 @@ void build_tree( int color, int *x, int *y )
     if ( diff_time == 0 ) {
         diff_time = 1;
     }
-    printf( "#### Node count: %llu ####\n", node_count );
-    printf( "Level:      %d\n", search_level );
-    printf( "Duration:   %ld\n", stop - start );
-    printf( "Nodes/sec.: %llu\n", node_count / diff_time );
+    //printf( "#### Node count: %llu ####\n", node_count );
+    //printf( "Level:      %d\n", search_level );
+    //printf( "Duration:   %ld\n", stop - start );
+    //printf( "Nodes/sec.: %llu\n", node_count / diff_time );
 
     *x = valid_moves[0][0];
     *y = valid_moves[0][1];
@@ -112,7 +113,7 @@ void build_tree( int color, int *x, int *y )
  * @return      Nothing
  * @sa          undo_move()
  */
-void add_move( int color, int i, int j )
+void make_move( int color, int i, int j )
 {
     int nr_of_removed_stones;
     int group_nr;
@@ -159,7 +160,7 @@ void add_move( int color, int i, int j )
  * Takes back last move from move history and on the board.
  *
  * @return      Nothing
- * @sa          add_move()
+ * @sa          make_move()
  */
 void undo_move(void)
 {
@@ -200,17 +201,20 @@ void undo_move(void)
  *
  * @param[in]   color       Color of move to set.
  * @param[in]   tree_level  Counter that shows the level in the move tree.
- * @return      Nothing
+ * @return      Value of position
  */
-void add_node( int color, int tree_level )
+int add_node( int color, int tree_level )
 {
     int k;
     int i, j;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
+    int value = 10000;
 
     if ( tree_level == search_level ) {
-        return;
+        value = evaluate_position();
+
+        return value;
     }
     tree_level++;
 
@@ -227,10 +231,10 @@ void add_node( int color, int tree_level )
         // Make move:
         node_count++;
         //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
-        add_move( color, i, j );
+        make_move( color, i, j );
 
         // Start recursion:
-        add_node( color * -1, tree_level );
+        value = add_node( color * -1, tree_level );
 
         // Undo move:
         //printf( "# Level %d undo: %d,%d\n", tree_level, i, j );
@@ -239,7 +243,7 @@ void add_node( int color, int tree_level )
     }
 
 
-    return;
+    return value;
 }
 
 /**
