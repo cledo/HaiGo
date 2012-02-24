@@ -25,6 +25,7 @@ my @known_commands = qw{
     clear_board
     komi
     fixed_handicap
+    level
     play
     showboard
     genmove

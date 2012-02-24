@@ -17,6 +17,8 @@
  *
  */
 
+static int search_level = DEFAULT_SEARCH_LEVEL;
+
 static unsigned long long int node_count;   //!< Counts the number of nodes in move tree.
 
 static void add_node( int color, int tree_level );
@@ -29,9 +31,10 @@ static void undo_move(void);
  * Builds a complete move tree recursively.
  *
  * @param[in]   color   Color to move
+ * @param[out]  *x      Pointer to horizontal coordinate of selected move.
+ * @param[out]  *y      Pointer to vertical coordinate of selected move.
  * @return      Nothing
- * @note        This function currently only serves as a proof of concept.
- * @todo        Must think about proper parameters ...
+ * @note        If no move is selected i and j are INVALID.
  */
 void build_tree( int color, int *x, int *y )
 {
@@ -69,14 +72,14 @@ void build_tree( int color, int *x, int *y )
         value = valid_moves[k][2];
         // Make move:
         node_count++;
-        //printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
+        printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
         add_move( color, i, j );
 
         // Start recursion:
         add_node( color * -1, tree_level );
 
         // Undo move:
-        //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
+        printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
         undo_move();
 
     }
@@ -87,9 +90,10 @@ void build_tree( int color, int *x, int *y )
     if ( diff_time == 0 ) {
         diff_time = 1;
     }
-    //printf( "#### Node count: %lld ####\n", node_count );
-    //printf( "Duration: %ld\n", stop - start );
-    //printf( "Nodes/sec.: %lld\n", node_count / diff_time );
+    printf( "#### Node count: %lld ####\n", node_count );
+    printf( "Level:      %d\n", search_level );
+    printf( "Duration:   %ld\n", stop - start );
+    printf( "Nodes/sec.: %lld\n", node_count / diff_time );
 
     *x = valid_moves[0][0];
     *y = valid_moves[0][1];
@@ -205,7 +209,7 @@ void add_node( int color, int tree_level )
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
 
-    if ( tree_level == 0 ) {
+    if ( tree_level == search_level ) {
         return;
     }
     tree_level++;
@@ -238,3 +242,18 @@ void add_node( int color, int tree_level )
     return;
 }
 
+/**
+ * @brief       Sets level of search tree.
+ *
+ * Determines the maximum level of the search depth.
+ *
+ * @param[in]   level   Search tree depth
+ * @return      Nothing
+ */
+void set_search_level( int level )
+{
+
+    search_level = level;
+
+    return;
+}

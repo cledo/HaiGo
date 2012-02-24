@@ -58,5 +58,8 @@
 //! Defines the maximum length of a file name.
 #define MAX_FILENAME_LENGTH 256
 
+//! Defines default level of depth for serch tree.
+#define DEFAULT_SEARCH_LEVEL    1
+
 #endif
 

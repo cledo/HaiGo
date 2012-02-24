@@ -71,6 +71,7 @@ static void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_komi( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_level( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Core play commands */
 static void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
@@ -275,6 +276,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_komi);
     my_strcpy( known_commands[i].command, "fixed_handicap", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_fixed_handicap);
+    my_strcpy( known_commands[i].command, "level", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_level);
     my_strcpy( known_commands[i].command, "play", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_play);
     my_strcpy( known_commands[i].command, "showboard", MAX_TOKEN_LENGTH );
@@ -714,6 +717,31 @@ void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 }
 
 /**
+ * @brief       Sets level of search tree depth.
+ *
+ * Determines the number of levels of the search tree.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ */
+void gtp_level( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    int level = atoi( gtp_argv[0] );
+
+    if ( level < 0 || level > 9 ) {
+        set_output_error();
+        add_output("invalid level");
+
+        return;
+    }
+
+    set_search_level(level);
+
+    return;
+}
+
+/**
  * @brief       Adds given stone as handicap.
  *
  * Adds a black stone for the given vertex as handicap. The verteces are
@@ -1083,11 +1111,11 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     // TEST:
-    i = -1;
-    j = -1;
+    i = INVALID;
+    j = INVALID;
     build_tree( color, &i, &j );
 
-    if ( i == -1 && j == -1 ) {
+    if ( i == INVALID && j == INVALID ) {
         create_next_move();
         set_move_pass(color);
         push_move();
