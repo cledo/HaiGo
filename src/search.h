@@ -10,6 +10,7 @@
 
 void set_search_level( int level );
 void search_tree( int color, int *i, int *j );
+int  get_search_level(void);
 
 #endif
 

@@ -727,7 +727,17 @@ void gtp_fixed_handicap( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  */
 void gtp_level( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
-    int level = atoi( gtp_argv[0] );
+    int level;
+    char output[2];
+
+    if ( gtp_argc == 0 ) {
+        snprintf( output, 2, "%d", get_search_level() );
+        add_output(output);
+
+        return;
+    }
+
+    level = atoi( gtp_argv[0] );
 
     if ( level < 0 || level > 9 ) {
         set_output_error();

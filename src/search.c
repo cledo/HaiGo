@@ -26,6 +26,9 @@ static int  add_node( int color, int tree_level );
 static void make_move( int color, int i, int j );
 static void undo_move(void);
 
+static int compare_value_black( const void *move1, const void *move2 );
+static int compare_value_white( const void *move1, const void *move2 );
+
 /**
  * @brief       Builds move tree.
  *
@@ -40,7 +43,7 @@ static void undo_move(void);
 void search_tree( int color, int *x, int *y )
 {
     int    k;
-    int    i, j, value;
+    int    i, j;
     int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int    nr_of_valid_moves;
     int    tree_level = 0;
@@ -68,21 +71,28 @@ void search_tree( int color, int *x, int *y )
 
     // Go through move list:
     for ( k = 0; k < nr_of_valid_moves; k++ ) {
-        i     = valid_moves[k][0];
-        j     = valid_moves[k][1];
-        value = valid_moves[k][2]; // ???
+        i = valid_moves[k][0];
+        j = valid_moves[k][1];
+
         // Make move:
         node_count++;
         //printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
         make_move( color, i, j );
 
         // Start recursion:
-        value = add_node( color * -1, tree_level );
+        valid_moves[k][2] = add_node( color * -1, tree_level );
 
         // Undo move:
         //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
         undo_move();
+    }
 
+    // Sort move list by value:
+    if ( color == BLACK ) {
+        qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_black );
+    }
+    else {
+        qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_white );
     }
 
     (void) time(&stop);
@@ -209,7 +219,7 @@ int add_node( int color, int tree_level )
     int i, j;
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int nr_of_valid_moves;
-    int value = 10000;
+    int value = 0;
 
     if ( tree_level == search_level ) {
         value = evaluate_position();
@@ -234,14 +244,22 @@ int add_node( int color, int tree_level )
         make_move( color, i, j );
 
         // Start recursion:
-        value = add_node( color * -1, tree_level );
+        valid_moves[k][2] = add_node( color * -1, tree_level );
 
         // Undo move:
         //printf( "# Level %d undo: %d,%d\n", tree_level, i, j );
         undo_move();
-
     }
 
+    // Sort move list by value:
+    if ( color == BLACK ) {
+        qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_black );
+    }
+    else {
+        qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_white );
+    }
+
+    value = valid_moves[0][2];
 
     return value;
 }
@@ -261,3 +279,63 @@ void set_search_level( int level )
 
     return;
 }
+
+/**
+ * @brief       Returns level of search tree.
+ *
+ * Returns the currently set depth of the search tree.
+ *
+ * @return      Level of search tree
+ */
+int get_search_level(void)
+{
+
+    return search_level;
+}
+
+/**
+ * @brief       Helper function for qsort().
+ *
+ * This is a helper function for qsort(), that makes it possible to sort the
+ * move list by move value. The best move for black is sorted first.
+ *
+ * @param[in]   move1   Pointer to first move
+ * @param[in]   move2   Pointer to second move
+ * @return      1|0|-1
+ * @sa          man 3 qsort
+ */
+int compare_value_black( const void *move1, const void *move2 )
+{
+    if ( ((int *)move1)[2] > ( (int *)move2)[2] ) {
+        return -1;
+    }
+    else if ( ( (int *)move1)[2] < ( (int *)move2)[2] ) {
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief       Helper function for qsort().
+ *
+ * This is a helper function for qsort(), that makes it possible to sort the
+ * move list by move value. The best move for white is sorted first.
+ *
+ * @param[in]   move1   Pointer to first move
+ * @param[in]   move2   Pointer to second move
+ * @return      1|0|-1
+ * @sa          man 3 qsort
+ */
+int compare_value_white( const void *move1, const void *move2 )
+{
+    if ( ((int *)move1)[2] > ( (int *)move2)[2] ) {
+        return 1;
+    }
+    else if ( ( (int *)move1)[2] < ( (int *)move2)[2] ) {
+        return -1;
+    }
+
+    return 0;
+}
+

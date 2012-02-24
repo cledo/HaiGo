@@ -22,9 +22,6 @@ static int move_number = 0;
 //! Move history: contains all moves performed.
 static struct move_st move_history[MOVE_HISTORY_MAX];
 
-static int compare_value_black( const void *move1, const void *move2 );
-static int compare_value_white( const void *move1, const void *move2 );
-
 
 /**
  * @brief       Initialises the move_history data structure.
@@ -395,7 +392,6 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     int  nr_of_liberties;
     bool is_valid;
     int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
-    int  value;
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         temp_moves[k][0] = INVALID;
@@ -427,7 +423,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
 
         // TEST:
         //value = get_black_captured() - get_white_captured();
-        value = evaluate_position();
+        //value = evaluate_position();
 
 
         // Undo move:
@@ -447,7 +443,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
         if ( is_valid ) {
             temp_moves[count][0] = i;
             temp_moves[count][1] = j;
-            temp_moves[count][2] = value;
+            //temp_moves[count][2] = value;
             count++;
         }
     }
@@ -456,18 +452,20 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     for ( k = 0; k < count; k++ ) {
         valid_moves[k][0] = temp_moves[k][0];
         valid_moves[k][1] = temp_moves[k][1];
-        valid_moves[k][2] = temp_moves[k][2];
+        //valid_moves[k][2] = temp_moves[k][2];
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;
 
     // Sort valid moves list by value
+    /*
     if ( color == BLACK ) {
         qsort( valid_moves, (size_t)count, sizeof(valid_moves[0]), compare_value_black );
     }
     else {
         qsort( valid_moves, (size_t)count, sizeof(valid_moves[0]), compare_value_white );
     }
+    */
 
     return count;
 }
@@ -579,51 +577,5 @@ int get_last_move_value(void)
 {
 
     return move_history[move_number].value;
-}
-
-/**
- * @brief       Helper function for qsort().
- *
- * This is a helper function for qsort(), that makes it possible to sort the
- * move list by move value. The best move for black is sorted first.
- *
- * @param[in]   move1   Pointer to first move
- * @param[in]   move2   Pointer to second move
- * @return      1|0|-1
- * @sa          man 3 qsort
- */
-int compare_value_black( const void *move1, const void *move2 )
-{
-    if ( ((int *)move1)[2] > ( (int *)move2)[2] ) {
-        return -1;
-    }
-    else if ( ( (int *)move1)[2] < ( (int *)move2)[2] ) {
-        return 1;
-    }
-
-    return 0;
-}
-
-/**
- * @brief       Helper function for qsort().
- *
- * This is a helper function for qsort(), that makes it possible to sort the
- * move list by move value. The best move for white is sorted first.
- *
- * @param[in]   move1   Pointer to first move
- * @param[in]   move2   Pointer to second move
- * @return      1|0|-1
- * @sa          man 3 qsort
- */
-int compare_value_white( const void *move1, const void *move2 )
-{
-    if ( ((int *)move1)[2] > ( (int *)move2)[2] ) {
-        return 1;
-    }
-    else if ( ( (int *)move1)[2] < ( (int *)move2)[2] ) {
-        return -1;
-    }
-
-    return 0;
 }
 
