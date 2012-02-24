@@ -19,9 +19,9 @@
 
 static unsigned long long int node_count;   //!< Counts the number of nodes in move tree.
 
-void add_node( int color, int tree_level );
-void add_move( int color, int i, int j );
-void undo_move(void);
+static void add_node( int color, int tree_level );
+static void add_move( int color, int i, int j );
+static void undo_move(void);
 
 /**
  * @brief       Builds move tree.
