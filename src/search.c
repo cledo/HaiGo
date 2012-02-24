@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include "global_const.h"
 #include "board.h"
 #include "move.h"
 #include "evaluate.h"
+#include "global_tools.h"
 #include "search.h"
 
 
@@ -20,7 +22,10 @@
 
 static int search_level = DEFAULT_SEARCH_LEVEL; //!< Sets depth of search tree.
 
-static unsigned long long int node_count;   //!< Counts the number of nodes in move tree.
+static bool do_log = false;                     //!< Defines if logging is turned on or off.
+
+static unsigned long long int node_count;       //!< Counts the number of nodes in move tree.
+static FILE *log_file = NULL;                   //!< Log file handler
 
 static int  add_node( int color, int tree_level );
 static void make_move( int color, int i, int j );
@@ -34,13 +39,13 @@ static int compare_value_white( const void *move1, const void *move2 );
  *
  * Builds a complete move tree recursively.
  *
- * @param[in]   color   Color to move
- * @param[out]  *x      Pointer to horizontal coordinate of selected move.
- * @param[out]  *y      Pointer to vertical coordinate of selected move.
+ * @param[in]   color       Color to move
+ * @param[out]  *i_selected Pointer to horizontal coordinate of selected move.
+ * @param[out]  *j_selected Pointer to vertical coordinate of selected move.
  * @return      Nothing
  * @note        If no move is selected i and j are INVALID.
  */
-void search_tree( int color, int *x, int *y )
+void search_tree( int color, int *i_selected, int *j_selected )
 {
     int    k;
     int    i, j;
@@ -50,8 +55,14 @@ void search_tree( int color, int *x, int *y )
     time_t start;
     time_t stop;
     time_t diff_time;
+    char   x[2];
+    char   y[3];
 
     node_count = 0;
+
+    if ( do_log ) {
+        log_file = fopen( LOG_FILE, "w" );
+    }
 
     // Steps for root node:
     // 1. Get pseudo valid moves
@@ -81,6 +92,11 @@ void search_tree( int color, int *x, int *y )
 
         // Start recursion:
         valid_moves[k][2] = add_node( color * -1, tree_level );
+        if ( do_log ) {
+            i_to_x( i, x );
+            j_to_y( j, y );
+            fprintf( log_file, "%s%s (%d)\n", x, y, valid_moves[k][2] );
+        }
 
         // Undo move:
         //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
@@ -106,8 +122,12 @@ void search_tree( int color, int *x, int *y )
     //printf( "Duration:   %ld\n", stop - start );
     //printf( "Nodes/sec.: %llu\n", node_count / diff_time );
 
-    *x = valid_moves[0][0];
-    *y = valid_moves[0][1];
+    *i_selected = valid_moves[0][0];
+    *j_selected = valid_moves[0][1];
+
+    if ( log_file != NULL ) {
+        fclose(log_file);
+    }
 
     return;
 }
@@ -215,11 +235,14 @@ void undo_move(void)
  */
 int add_node( int color, int tree_level )
 {
-    int k;
-    int i, j;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
-    int nr_of_valid_moves;
-    int value = 0;
+    int  k, l;
+    int  i, j;
+    int  valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int  nr_of_valid_moves;
+    int  value = 0;
+    char x[2];
+    char y[3];
+    char indent[10];
 
     if ( tree_level == search_level ) {
         value = evaluate_position();
@@ -245,6 +268,15 @@ int add_node( int color, int tree_level )
 
         // Start recursion:
         valid_moves[k][2] = add_node( color * -1, tree_level );
+        if ( do_log ) {
+            i_to_x( i, x );
+            j_to_y( j, y );
+            indent[0] = '\0';
+            for ( l = 1; l <= tree_level; l++ ) {
+                strcat( indent, "\t" );
+            }
+            fprintf( log_file, "%s%s%s (%d)\n", indent, x, y, valid_moves[k][2] );
+        }
 
         // Undo move:
         //printf( "# Level %d undo: %d,%d\n", tree_level, i, j );
@@ -337,5 +369,37 @@ int compare_value_white( const void *move1, const void *move2 )
     }
 
     return 0;
+}
+
+/**
+ * @brief       Checks if logging is turned on or off.
+ *
+ * Returns the value of the do_log flag, to determine if logging is currently
+ * turned on or off.
+ *
+ * @return      true|false
+ * @sa          set_do_log()
+ */
+bool get_do_log(void)
+{
+
+    return do_log;
+}
+
+/**
+ * @brief       Turns logging of search tree on or off.
+ *
+ * If logging is currently disabled, this function turns logging on, and vice
+ * versa.
+ *
+ * @return      Nothing.
+ * @sa          get_do_log()
+ */
+void set_do_log(void)
+{
+
+    do_log = get_do_log() ? false : true;
+
+    return;
 }
 

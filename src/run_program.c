@@ -83,6 +83,7 @@ static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 /* Debug commands */
 static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
 /* SGF parsing commands */
@@ -93,8 +94,6 @@ bool sgf_move( int color, char *value );
 
 
 /* Misc functions */
-void i_to_x( int i, char x[] );
-void j_to_y( int j, char y[] );
 void add_handicap( int i, int j, char output[] );
 
 /**
@@ -213,7 +212,6 @@ void read_opts( int argc, char **argv )
  *  This function is called when the command line paramter -h is set.
  *
  *  @return     nothing
- *  @sa         [n/a]
  */
 void print_help_message(void)
 {
@@ -233,7 +231,6 @@ void print_help_message(void)
  *  This function is called when the command line parameter -v is set.
  *
  *  @return     nothing
- *  @sa         [n/a]
  */
 void print_version(void)
 {
@@ -250,7 +247,6 @@ void print_version(void)
  *  The data structure is an array of pairs of names and function pointers.
  *
  *  @return     nothing
- *  @sa         [n/a]
  */
 void init_known_commands(void)
 {
@@ -288,6 +284,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_undo);
     my_strcpy( known_commands[i].command, "loadsgf", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_loadsgf);
+    my_strcpy( known_commands[i].command, "hg-log", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_hg_log);
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
@@ -313,7 +311,6 @@ void init_known_commands(void)
  *
  *  @param[in]  *command_data   struct command
  *  @return     nothing
- *  @sa         [n/a]
  */
 void select_command( struct command *command_data )
 {
@@ -772,55 +769,6 @@ void add_handicap( int i, int j, char output[] )
     j_to_y( j, y );
     strcat( output, x );
     strcat( output, y );
-
-    return;
-}
-
-/**
- * @brief       Converts i to x.
- *
- * Converts the board coordinate i to its string representation.
- *
- * @param[in]   i   Horizontal numerical board coordinate.
- * @param[out]  x   The string representation of i.
- * @return      Nothing
- * @sa          j_to_y()
- */
-void i_to_x( int i, char x[] )
-{
-
-    if ( i >= 8 ) {
-        i++;
-    }
-    x[0] = i + 65;
-    x[1] = '\0';
-
-    return;
-}
-
-/**
- * @brief       Converts j to y.
- *
- * Converts the board coordinate j to its string representation.
- *
- * @param[in]   j   Vertical numerical board coordinate.
- * @param[out]  y   The string representation of j.
- * @return      Nothing
- * @sa          i_to_x()
- */
-void j_to_y( int j, char y[] )
-{
-
-    j++;
-    if ( j < 10 ) {
-        y[0] = (char)( j + 48 );
-        y[1] = '\0';
-    }
-    else {
-        y[0] = (char)(int)( j / 10 + 48 );
-        y[1] = (char)( j % 10 + 48 );
-        y[2] = '\0';
-    }
 
     return;
 }
@@ -1604,6 +1552,30 @@ static void gtp_undo( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     pop_move();
+
+    return;
+}
+
+/**
+ * @brief       Turns logging of search tree on and off.
+ *
+ * Turns the logging of the search tree on and off. The search tree itself
+ * will be written a file. The logging will not be written to STDOUT.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ */
+void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    set_do_log();
+
+    if ( get_do_log() ) {
+        add_output("log on");
+    }
+    else {
+        add_output("log off");
+    }
 
     return;
 }

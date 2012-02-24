@@ -61,5 +61,8 @@
 //! Defines default level of depth for serch tree.
 #define DEFAULT_SEARCH_LEVEL    1
 
+//! Defines name of log file for search tree.
+#define LOG_FILE    "haigo.log"
+
 #endif
 

@@ -61,3 +61,53 @@ void my_strcpy( char destination[], char source[], int destination_length )
 
     return;
 }
+
+/**
+ * @brief       Converts i to x.
+ *
+ * Converts the board coordinate i to its string representation.
+ *
+ * @param[in]   i   Horizontal numerical board coordinate.
+ * @param[out]  x   The string representation of i.
+ * @return      Nothing
+ * @sa          j_to_y()
+ */
+void i_to_x( int i, char x[] )
+{
+
+    if ( i >= 8 ) {
+        i++;
+    }
+    x[0] = i + 65;
+    x[1] = '\0';
+
+    return;
+}
+
+/**
+ * @brief       Converts j to y.
+ *
+ * Converts the board coordinate j to its string representation.
+ *
+ * @param[in]   j   Vertical numerical board coordinate.
+ * @param[out]  y   The string representation of j.
+ * @return      Nothing
+ * @sa          i_to_x()
+ */
+void j_to_y( int j, char y[] )
+{
+
+    j++;
+    if ( j < 10 ) {
+        y[0] = (char)( j + 48 );
+        y[1] = '\0';
+    }
+    else {
+        y[0] = (char)(int)( j / 10 + 48 );
+        y[1] = (char)( j % 10 + 48 );
+        y[2] = '\0';
+    }
+
+    return;
+}
+

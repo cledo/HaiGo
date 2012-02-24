@@ -31,6 +31,7 @@ my @known_commands = qw{
     genmove
     undo
     loadsgf
+    hg-log
     showgroups
 };
 
