@@ -5,6 +5,7 @@
 #include "move.h"
 #include "board.h"
 #include "evaluate.h"
+#include "search.h"
 
 /**
  * @file    move.c
@@ -356,6 +357,7 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][3] )
             if ( get_vertex( i, j ) == EMPTY && ! is_move_ko( color, i, j ) ) {
                 valid_moves[count][0] = i;
                 valid_moves[count][1] = j;
+                valid_moves[count][2] = 0;
                 count++;
             }
         }
@@ -392,6 +394,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     int  nr_of_liberties;
     bool is_valid;
     int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int  value;
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         temp_moves[k][0] = INVALID;
@@ -423,7 +426,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
 
         // TEST:
         //value = get_black_captured() - get_white_captured();
-        //value = evaluate_position();
+        value = evaluate_position();
 
 
         // Undo move:
@@ -443,7 +446,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
         if ( is_valid ) {
             temp_moves[count][0] = i;
             temp_moves[count][1] = j;
-            //temp_moves[count][2] = value;
+            temp_moves[count][2] = value;
             count++;
         }
     }
@@ -452,20 +455,18 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     for ( k = 0; k < count; k++ ) {
         valid_moves[k][0] = temp_moves[k][0];
         valid_moves[k][1] = temp_moves[k][1];
-        //valid_moves[k][2] = temp_moves[k][2];
+        valid_moves[k][2] = temp_moves[k][2];
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;
 
     // Sort valid moves list by value
-    /*
     if ( color == BLACK ) {
         qsort( valid_moves, (size_t)count, sizeof(valid_moves[0]), compare_value_black );
     }
     else {
         qsort( valid_moves, (size_t)count, sizeof(valid_moves[0]), compare_value_white );
     }
-    */
 
     return count;
 }

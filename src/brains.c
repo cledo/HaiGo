@@ -60,3 +60,55 @@ int brain_atari(void)
 
     return value;
 }
+
+/**
+ * @brief       Counts stones on edge.
+ *
+ * The returned value is determined by the number of stones on the edge of the
+ * board.
+ *
+ * @return      Value of position
+ */
+int brain_edge_stones(void)
+{
+    int i, j;
+    int value       = 0;
+    int board_size  = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        value += get_vertex( i, 0 );
+        value += get_vertex( i, board_size - 1 );
+    }
+    for ( j = 0; j < board_size; j++ ) {
+        value += get_vertex( 0, j );
+        value += get_vertex( board_size - 1, j );
+    }
+
+    return value * -1;
+}
+
+/**
+ * @brief       Evaluates stones on star points
+ *
+ * Stones on star points get extra value.
+ *
+ * @return      Value of position
+ * @todo        This should probably be only done in the opening phase.
+ */
+int brain_hoshi_stones(void)
+{
+    int i, j;
+    int value      = 0;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i ++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            if ( is_hoshi( i, j ) ) {
+                value += get_vertex( i, j );
+            }
+        }
+    }
+
+    return value;
+}
+

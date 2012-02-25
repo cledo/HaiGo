@@ -10,5 +10,7 @@
 
 int brain_capture(void);
 int brain_atari(void);
+int brain_edge_stones(void);
+int brain_hoshi_stones(void);
 
 #endif

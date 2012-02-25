@@ -18,5 +18,8 @@ int  get_search_level(void);
 bool get_do_log(void);
 void set_do_log(void);
 
+int compare_value_black( const void *move1, const void *move2 );
+int compare_value_white( const void *move1, const void *move2 );
+
 #endif
 
