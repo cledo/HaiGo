@@ -15,7 +15,6 @@
 #include "global_tools.h"
 #include "sgf.h"
 #include "search.h"
-#include "./brains/all_brains.h"
 
 /**
  * @file    run_program.c
@@ -1100,9 +1099,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
     */
-
-    // Use brain_random as placeholder for now:
-    //move_value = brain_random( &i, &j, valid_moves, nr_of_valid_moves );
 
     set_vertex( color, i, j );
     create_groups();
