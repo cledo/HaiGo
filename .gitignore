@@ -39,6 +39,6 @@ tests/Makefile.in
 .vimrc
 tests/testfile.sgf
 haigo.log
-level01.sgf
+level*.sgf
 log2
 
