@@ -9,5 +9,6 @@
  */
 
 #include "random.h"
+#include "capture.h"
 
 #endif
