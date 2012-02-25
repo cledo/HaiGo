@@ -28,7 +28,7 @@ static bool do_log = false;                     //!< Defines if logging is turne
 static unsigned long long int node_count;       //!< Counts the number of nodes in move tree.
 static FILE *log_file = NULL;                   //!< Log file handler
 
-static int  add_node( int color, int tree_level );
+static int  add_node( int color, int tree_level, int alpha, int beta );
 static void make_move( int color, int i, int j );
 static void undo_move(void);
 
@@ -58,16 +58,22 @@ void search_tree( int color, int *i_selected, int *j_selected )
     time_t diff_time;
     char   x[2];
     char   y[3];
-    //int    best_move_i = INVALID;
-    //int    best_move_j = INVALID;
     int    value;
 
+    int alpha = INT_MIN;
+    int beta  = INT_MAX;
+
     value = ( color == BLACK ) ? INT_MIN : INT_MAX;
+
 
     node_count = 0;
 
     if ( do_log ) {
         log_file = fopen( LOG_FILE, "w" );
+        if ( log_file == NULL ) {
+            printf( "# Cannot open log file\n" );
+            exit(1);
+        }
     }
 
     // Steps for root node:
@@ -97,22 +103,18 @@ void search_tree( int color, int *i_selected, int *j_selected )
         make_move( color, i, j );
 
         // Start recursion:
-        valid_moves[k][2] = add_node( color * -1, tree_level );
+        valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
 
         if ( color == BLACK ) {
             // For black: remember highest value
             if ( valid_moves[k][2] > value ) {
                 value = valid_moves[k][2];
-                //best_move_i = i;
-                //best_move_j = j;
             }
         }
         else {
             // For white: remember lowest value
             if ( valid_moves[k][2] < value ) {
                 value = valid_moves[k][2];
-                //best_move_i = i;
-                //best_move_j = j;
             }
         }
 
@@ -148,8 +150,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
-    // *i_selected = best_move_i;
-    // *j_selected = best_move_j;
 
     if ( log_file != NULL ) {
         fclose(log_file);
@@ -257,9 +257,11 @@ void undo_move(void)
  *
  * @param[in]   color       Color of move to set.
  * @param[in]   tree_level  Counter that shows the level in the move tree.
+ * @param[in]   alpha       Alpha-Beta pruning
+ * @param[in]   beta        Alpha-Beta pruning
  * @return      Value of position
  */
-int add_node( int color, int tree_level )
+int add_node( int color, int tree_level, int alpha, int beta )
 {
     int  k, l;
     int  i, j;
@@ -275,8 +277,20 @@ int add_node( int color, int tree_level )
     if ( tree_level == search_level ) {
         value = evaluate_position();
 
+        if ( color == BLACK ) {
+            if ( value > alpha ) {
+                alpha = value;
+            }
+        }
+        else {
+            if ( value < beta ) {
+                beta = value;
+            }
+        }
+
         return value;
     }
+
     tree_level++;
 
     // Get list of pseudo valid moves:
@@ -295,18 +309,24 @@ int add_node( int color, int tree_level )
         make_move( color, i, j );
 
         // Start recursion:
-        valid_moves[k][2] = add_node( color * -1, tree_level );
+        valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
 
         if ( color == BLACK ) {
             // For black: remember highest value
             if ( valid_moves[k][2] > value ) {
                 value = valid_moves[k][2];
+                if ( value > alpha ) {
+                    alpha = value;
+                }
             }
         }
         else {
             // For white: remember lowest value
             if ( valid_moves[k][2] < value ) {
                 value = valid_moves[k][2];
+                if ( value < beta ) {
+                    beta = value;
+                }
             }
         }
 
@@ -323,6 +343,18 @@ int add_node( int color, int tree_level )
         // Undo move:
         //printf( "# Level %d undo: %d,%d\n", tree_level, i, j );
         undo_move();
+
+
+        if ( color == BLACK ) {
+            if ( valid_moves[k][2] > beta ) {
+                break;
+            }
+        }
+        else {
+            if ( valid_moves[k][2] < alpha ) {
+                break;
+            }
+        }
     }
 
     // Sort move list by value:
@@ -334,8 +366,6 @@ int add_node( int color, int tree_level )
         qsort( valid_moves, (size_t)nr_of_valid_moves, sizeof(valid_moves[0]), compare_value_white );
     }
     */
-
-    //value = valid_moves[0][2];
 
     return value;
 }
