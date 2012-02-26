@@ -409,8 +409,8 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
         // Make move
         set_vertex( color, i, j );
         create_groups();
+        set_groups_size();
         count_liberties();
-        //set_groups_size();
         nr_of_removed_stones = remove_stones( color * -1 );
 
         if ( nr_of_removed_stones > 0 ) {
@@ -424,8 +424,6 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
             }
         }
 
-        // TEST:
-        //value = get_black_captured() - get_white_captured();
         value = evaluate_position();
 
 

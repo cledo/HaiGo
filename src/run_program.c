@@ -845,16 +845,16 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     set_vertex( color, i, j );
 
     create_groups();
-    count_liberties();
     set_groups_size();
+    count_liberties();
 
     nr_of_removed_stones = remove_stones( color * -1 );
 
     // If board has changed, rebuild groups and liberties:
     if ( nr_of_removed_stones > 0 ) {
         create_groups();
-        count_liberties();
         set_groups_size();
+        count_liberties();
     }
 
     group_nr        = get_group_nr( i, j );
@@ -1102,13 +1102,13 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     set_vertex( color, i, j );
     create_groups();
-    count_liberties();
     set_groups_size();
+    count_liberties();
     nr_of_removed_stones = remove_stones( color * -1 );
     if ( nr_of_removed_stones > 0 ) {
         create_groups();
-        count_liberties();
         set_groups_size();
+        count_liberties();
     }
 
     nr_of_removed_stones = get_captured_now(captured_now);
@@ -1436,16 +1436,16 @@ bool sgf_move( int color, char *value )
     set_vertex( color, i, j );
 
     create_groups();
-    count_liberties();
     set_groups_size();
+    count_liberties();
 
     nr_of_removed_stones = remove_stones( color * -1 );
 
     // If board has changed, rebuild groups and liberties:
     if ( nr_of_removed_stones > 0 ) {
         create_groups();
-        count_liberties();
         set_groups_size();
+        count_liberties();
     }
 
     group_nr        = get_group_nr( i, j );

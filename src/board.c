@@ -549,7 +549,6 @@ void set_group( int i, int j )
             break;
     }
 
-
     return;
 }
 
@@ -646,40 +645,30 @@ int get_free_group_nr( int color )
 int get_last_group_nr( int color )
 {
     int i, j;
-    int field          = 0;
-    int group_nr       = 0;
-    int group_nr_black = 0;
-    int group_nr_white = 0;
+    int field    = 0;
+    int group_nr = 0;
 
-    // Check if color is valid:
-    if ( color != BLACK && color != WHITE ) {
-        fprintf( stderr, "invalid color given to get_last_group_nr()" );
-        exit(EXIT_FAILURE);
-    }
-
-    for ( i = 0; i < board_size; i++ ) {
-        for ( j = 0; j < board_size; j++ ) {
-            field = group[i][j];
-            // Get highest number of black group:
-            if ( field > 0 && field > group_nr_black ) {
-                group_nr_black = field;
-            }
-            // Get lowest number of white group:
-            else if ( field < 0 && field < group_nr_white ) {
-                group_nr_white = field;
+    if ( color == BLACK ) {
+        for ( i = 0; i < board_size; i++ ) {
+            for ( j = 0; j < board_size; j++ ) {
+                field = group[i][j];
+                // Get highest number of black group:
+                if ( field > group_nr ) {
+                    group_nr = field;
+                }
             }
         }
     }
-
-    switch (color) {
-        case BLACK:
-            group_nr = group_nr_black;
-            break;
-        case WHITE:
-            group_nr = group_nr_white;
-            break;
-        default:
-            break;
+    else {
+        for ( i = 0; i < board_size; i++ ) {
+            for ( j = 0; j < board_size; j++ ) {
+                field = group[i][j];
+                // Get lowest number of white group:
+                if ( field < group_nr ) {
+                    group_nr = field;
+                }
+            }
+        }
     }
 
     return group_nr;
@@ -724,8 +713,14 @@ void count_liberties(void)
     int i, j;
     int group_nr;
     int count;
+    int count_group;
+    int group_size;
     int black_group_nr_max = 0;
     int white_group_nr_min = 0;
+    int *north = NULL;
+    int *south = NULL;
+    int *east  = NULL;
+    int *west  = NULL;
 
     // Get highest black group number, get lowest white group number.
     black_group_nr_max = get_last_group_nr(BLACK);
@@ -739,27 +734,44 @@ void count_liberties(void)
 
     // Get next black group:
     for ( group_nr = 1; group_nr <= black_group_nr_max; group_nr++ ) {
-        count = 0;
+        group_size  = get_size_of_group(group_nr);
+        count       = 0;
+        count_group = 0;
 
         // Search group board:
         for ( i = 0; i < board_size; i++ ) {
             for ( j = 0; j < board_size; j++ ) {
                 if ( group_nr == group[i][j] ) {
-                    // Stone of current group found,
-                    // set liberties to INT_MAX:
-                    if ( j + 1 < board_size && group[i][j+1] == EMPTY ) {
-                        group[i][j+1] = INT_MAX;
+                    // Stone of current group found
+                    count_group++;
+
+                    north = &( group[i][j+1] );
+                    south = &( group[i][j-1] );
+                    east  = &( group[i+1][j] );
+                    west  = &( group[i-1][j] );
+                    
+                    // Set liberties to INT_MAX:
+                    if ( j + 1 < board_size && *north == EMPTY ) {
+                        *north = INT_MAX;
                     }
-                    if ( i + 1 < board_size && group[i+1][j] == EMPTY ) {
-                        group[i+1][j] = INT_MAX;
+                    if ( i + 1 < board_size && *east == EMPTY ) {
+                        *east = INT_MAX;
                     }
-                    if ( i - 1 >= 0 && group[i-1][j] == EMPTY ) {
-                        group[i-1][j] = INT_MAX;
+                    if ( i - 1 >= 0 && *west == EMPTY ) {
+                        *west = INT_MAX;
                     }
-                    if ( j - 1 >= 0 && group[i][j-1] == EMPTY ) {
-                        group[i][j-1] = INT_MAX;
+                    if ( j - 1 >= 0 && *south == EMPTY ) {
+                        *south = INT_MAX;
                     }
                 }
+
+                //if ( count_group >= group_size ) {
+                    //break;
+                //}
+            }
+
+            if ( count_group >= group_size ) {
+                break;
             }
         }
 
@@ -780,31 +792,48 @@ void count_liberties(void)
 
     // Get next white group:
     for ( group_nr = -1; group_nr >= white_group_nr_min; group_nr-- ) {
-        count = 0;
+        group_size  = get_size_of_group(group_nr);
+        count       = 0;
+        count_group = 0;
 
         // Search group board:
         for ( i = 0; i < board_size; i++ ) {
             for ( j = 0; j < board_size; j++ ) {
                 if ( group_nr == group[i][j] ) {
-                    // Stone of current group found,
-                    // set liberties to INT_MIN:
-                    if ( j + 1 < board_size && group[i][j+1] == EMPTY ) {
-                        group[i][j+1] = INT_MIN;
+                    // Stone of current group found
+                    count_group++;
+
+                    north = &( group[i][j+1] );
+                    south = &( group[i][j-1] );
+                    east  = &( group[i+1][j] );
+                    west  = &( group[i-1][j] );
+
+                    // Set liberties to INT_MIN:
+                    if ( j + 1 < board_size && *north == EMPTY ) {
+                        *north = INT_MIN;
                     }
-                    if ( i + 1 < board_size && group[i+1][j] == EMPTY ) {
-                        group[i+1][j] = INT_MIN;
+                    if ( i + 1 < board_size && *east == EMPTY ) {
+                        *east = INT_MIN;
                     }
-                    if ( i - 1 >= 0 && group[i-1][j] == EMPTY ) {
-                        group[i-1][j] = INT_MIN;
+                    if ( i - 1 >= 0 && *west == EMPTY ) {
+                        *west = INT_MIN;
                     }
-                    if ( j - 1 >= 0 && group[i][j-1] == EMPTY ) {
-                        group[i][j-1] = INT_MIN;
+                    if ( j - 1 >= 0 && *south == EMPTY ) {
+                        *south = INT_MIN;
                     }
                 }
+
+                if ( count_group >= group_size ) {
+                    break;
+                }
+            }
+
+            if ( count_group >= group_size ) {
+                break;
             }
         }
 
-        // Count number of INT_MIN on boad, which is the number of liberties
+        // Count number of INT_MIN on board, which is the number of liberties
         // for current group:
         for ( i = 0; i < board_size; i++ ) {
             for ( j = 0; j < board_size; j++ ) {
@@ -818,18 +847,6 @@ void count_liberties(void)
         // Save number of liberties for current group in liberties list:
         white_liberties[group_nr * -1] = count;
     }
-
-    // DEBUG:
-    /*
-    printf("Black groups:\n");
-    for ( i = 1; i <= black_group_nr_max; i++ ) {
-        printf( "\tGroup %d: %d\n", i, black_liberties[i] );
-    }
-    printf("White groups:\n");
-    for ( i = 1; i <= white_group_nr_min * -1; i++ ) {
-        printf( "\tGroup %d: %d\n", i, white_liberties[i] );
-    }
-    */
 
     return;
 }

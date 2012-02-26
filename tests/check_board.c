@@ -418,6 +418,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( BLACK, i, j );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -430,6 +431,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( BLACK, i, j );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -441,6 +443,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( WHITE, 1, 1 );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -450,6 +453,7 @@ START_TEST (test_count_liberties_1)
 
     set_vertex( WHITE, 2, 0 );
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -464,6 +468,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( BLACK, i, j );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -474,6 +479,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( WHITE, i-1, j );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -484,6 +490,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( WHITE, i, j-1 );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -494,6 +501,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( WHITE, i+1, j );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -504,6 +512,7 @@ START_TEST (test_count_liberties_1)
     set_vertex( WHITE, i, j+1 );
 
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( i, j );
@@ -516,6 +525,7 @@ START_TEST (test_count_liberties_1)
 
     set_vertex( WHITE, 0, 0 );
     create_groups();
+    set_groups_size();
     count_liberties();
 
     group_nr  = get_group_nr( 0, 0 );
@@ -543,6 +553,7 @@ START_TEST (test_remove_stones_1)
     set_vertex( WHITE, i, j-1 );
 
     create_groups();
+    set_groups_size();
     count_liberties();
     removed = remove_stones(BLACK);
     removed = get_captured_now(captured);
@@ -573,6 +584,7 @@ START_TEST (test_remove_stones_1)
     set_vertex( BLACK, i, j );
 
     create_groups();
+    set_groups_size();
     count_liberties();
     removed = remove_stones(WHITE);
 

@@ -19,6 +19,8 @@
  * [Multi-line
  * description still missing ...]
  *
+ * @todo Description still missing!
+ *
  */
 
 static int alpha_break;     //!< Count alpha breaks.
@@ -62,7 +64,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     char   x[2];
     char   y[3];
     int    value;
-    int    last_search_level;
+    int    search_level_incr;
 
     int alpha = INT_MIN;
     int beta  = INT_MAX;
@@ -101,8 +103,8 @@ void search_tree( int color, int *i_selected, int *j_selected )
     nr_of_valid_moves_cut = nr_of_valid_moves;
 
     // Loop start:
-    last_search_level = get_search_level();
-    for ( l = 0; l <= last_search_level; l++ ) {
+    search_level_incr = get_search_level();
+    for ( l = 0; l <= search_level_incr; l++ ) {
         set_search_level(l);
 
         /*
@@ -153,21 +155,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
             // Undo move:
             //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
             undo_move();
-
-            // TEST:
-            if ( color == BLACK ) {
-                if ( valid_moves[k][2] >= beta ) {  // Maybe only '>' is correct!?
-                    beta_break++;
-                    break;
-                }
-            }
-            else {
-                if ( valid_moves[k][2] <= alpha ) { // Maybe only '<' is correct!?
-                    alpha_break++;
-                    break;
-                }
-            }
-
         }
 
         // Sort move list by value:
@@ -345,13 +332,13 @@ void make_move( int color, int i, int j )
 
     set_vertex( color, i, j );
     create_groups();
-    count_liberties();
     set_groups_size();
+    count_liberties();
     nr_of_removed_stones = remove_stones( color * -1 );
     if ( nr_of_removed_stones > 0 ) {
         create_groups();
-        count_liberties();
         set_groups_size();
+        count_liberties();
     }
 
     nr_of_removed_stones = get_captured_now(captured_now);

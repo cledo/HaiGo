@@ -32,7 +32,7 @@ int brain_capture(void)
 /**
  * @brief       Determines value depending on atari.
  *
- * The returned value is determined by the number and size of groups bein in
+ * The returned value is determined by the number and size of groups being in
  * atari.
  *
  * @return      Value of position
@@ -43,14 +43,17 @@ int brain_atari(void)
     int value             = 0;
     int count_atari_white = 0;
     int count_atari_black = 0;
+
+    int last_white_group = get_last_group_nr(WHITE) * -1;
+    int last_black_group = get_last_group_nr(BLACK);
     
-    for ( k = 0; k <= get_last_group_nr(WHITE) * -1; k++ ) {
+    for ( k = 0; k <= last_white_group; k++ ) {
         if ( get_nr_of_liberties( k * -1 ) == 1 ) {
             count_atari_white += get_size_of_group( k * -1 );
         }
     }
 
-    for ( k = 0; k <= get_last_group_nr(BLACK); k++ ) {
+    for ( k = 0; k <= last_black_group; k++ ) {
         if ( get_nr_of_liberties(k) == 1 ) {
             count_atari_black += get_size_of_group(k);
         }
