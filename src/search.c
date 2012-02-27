@@ -124,7 +124,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
             // Make move:
             node_count++;
-            //printf( "# Level: %d make: %d,%d value: %d\n", tree_level, i, j, value );
+            //printf( "# Level: %d make: %d,%d value: %d\n", l, i, j, value );
             make_move( color, i, j );
             i_to_x( i, x );
             j_to_y( j, y );
@@ -184,6 +184,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Nodes/sec.: %llu\n", node_count / diff_time );
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
+    printf( "Value: (%d)\n", valid_moves[0][2] );
     */
 
     *i_selected = valid_moves[0][0];

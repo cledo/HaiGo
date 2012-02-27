@@ -1,9 +1,10 @@
 #include "brains.h"
 #include "evaluate.h"
 
+
 int evaluate_position(void)
 {
-    int value;
+    int value = 0;
 
     value =  brain_capture() * 10;
     value += brain_atari()   * 2;
