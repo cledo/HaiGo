@@ -73,6 +73,23 @@ void print_groups(void);
 //@}
 
 /**
+ * @name Hash table functions.
+ *
+ * Functions that deal with the transposition hash table.
+ *
+ */
+
+//@{
+void     init_hash_id(void);
+unsigned get_hash_id(void);
+void     set_hash_id( unsigned id );
+void     init_hash_table(void);
+void     insert_hash_table( unsigned id, int value );
+int      select_hash_table_value( unsigned id );
+bool     exists_hash_id( unsigned id );
+//@}
+
+/**
  * @name Other functions
  *
  */

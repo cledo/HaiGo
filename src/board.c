@@ -18,11 +18,27 @@
  *
  */
 
+#define BLACK_HASH 0    //!< Index for black stone in hash board.
+#define WHITE_HASH 1    //!< Index for white stone in hash board.
+#define KO_HASH    2    //!< Index for ko field in hash board.
+//#define EMPTY_HASH 3
+
 /* State variables */
 // As described in GTP v2.0 chapter 5.1
 static int  **board;   //!< The main board data structure.
 static int  **group;   //!< A helper board which contains group numbers.
 static bool **hoshi;   //!< A helper board which defines the star points.
+
+static unsigned ***hash_board;  //!< Initial hash board according to Zobrist hashing.
+static unsigned hash_id;        //!< Represents the hash ID of a position on the board.
+
+//! Element of hash table:
+struct hash_pos_st {
+    bool valid;     //!< Indicates if element is valid.
+    int  value;     //!< Value of position.
+};
+//! Hash table for transpositions:
+struct hash_pos_st hash_table[HASH_TABLE_SIZE];
 
 static int board_size     = 0;     //!< The size of the board.
 static int black_captured = 0;     //!< Number of white stones captured by black.
@@ -36,7 +52,8 @@ static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of vert
 static int black_last_group_nr;     //!< Stores the last used group number for black.
 static int white_last_group_nr;     //!< Stores the last used group number for white.
 
-static void set_group( int i, int j );     //!< Creates groups, by setting group numbers on group board.
+static void init_hash_board(void);
+static void set_group( int i, int j );
 static void get_label_x( int i, char x[] );
 static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
@@ -130,6 +147,8 @@ void init_board( int wanted_board_size )
         captured_now[i][1]  = INVALID;
     }
 
+    init_hash_board();
+
     return;
 }
 
@@ -146,7 +165,7 @@ void init_board( int wanted_board_size )
  */
 void free_board(void)
 {
-    int i;
+    int i, j;
 
     for ( i = 0; i < board_size; i++ ) {
         free( board[i] );
@@ -160,6 +179,16 @@ void free_board(void)
     board = NULL;
     group = NULL;
     hoshi = NULL;
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            free( hash_board[i][j] );
+        }
+        free( hash_board[i] );
+    }
+    free(hash_board);
+
+    hash_board = NULL;
 
     return;
 }
@@ -393,6 +422,22 @@ int get_board_size(void)
  */
 void set_vertex( int color, int i, int j )
 {
+    int old_color = get_vertex( i, j );
+
+    if ( old_color == BLACK ) {
+        hash_id ^= hash_board[i][j][BLACK_HASH];
+    }
+    else if ( old_color == WHITE ) {
+        hash_id ^= hash_board[i][j][WHITE_HASH];
+    }
+
+    if ( color == BLACK ) {
+        hash_id ^= hash_board[i][j][BLACK_HASH];
+    }
+    else if ( color == WHITE ) {
+        hash_id ^= hash_board[i][j][WHITE_HASH];
+    }
+
     board[i][j] = color;
 
     return;
@@ -448,7 +493,7 @@ void create_groups(void)
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
 
-            color = board[i][j];
+            color = get_vertex( i, j );
 
             // Skip field if it is empty:
             if ( color == EMPTY ) {
@@ -494,7 +539,7 @@ void set_group( int i, int j )
     int neighbour[4][2];
     int neighbour_group;
 
-    color = board[i][j];
+    color = get_vertex( i, j );
 
     // Reset data structure for neighbours:
     for ( k = 0; k < 4; k++ ) {
@@ -580,7 +625,7 @@ void set_group( int i, int j )
 int has_neighbour( int i, int j, int neighbour[][2] )
 {
     int k     = 0;
-    int color = board[i][j];
+    int color = get_vertex( i, j );
 
     if ( color == EMPTY ) {
         fprintf( stderr, "invalid color found in group\n" );
@@ -829,7 +874,8 @@ int remove_stones( int color )
                     real_group_nr = ( color == WHITE ) ? group_nr * -1 : group_nr;
                     // Delete this group:
                     if ( group[i][j] == real_group_nr ) {
-                        board[i][j] = EMPTY;
+                        //board[i][j] = EMPTY;
+                        set_vertex( EMPTY, i, j );
                         group[i][j] = EMPTY;
                         stones_removed++;
                         captured_now[k][0] = i;
@@ -1061,7 +1107,7 @@ int get_stone_count( int color )
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
-            if ( board[i][j] == color ) {
+            if ( get_vertex( i, j ) == color ) {
                 count++;
             }
         }
@@ -1137,5 +1183,181 @@ bool is_hoshi_board_null(void)
     }
 
     return is_null;
+}
+
+/**
+ * @brief       Initialises the hash board at start up.
+ *
+ * Initialises the hash board for Zobrist hashing.
+ *
+ * @return      Nothing
+ */
+void init_hash_board(void)
+{
+    int i, j, k;
+    int board_size = get_board_size();
+
+    // Initialise hash_id for empty board:
+    hash_id = 0;
+
+    // Allocate memory for hash_board:
+    hash_board = malloc( sizeof( unsigned *** ) * board_size );
+    for ( i = 0; i < board_size; i ++ ) {
+        hash_board[i] = malloc( sizeof( unsigned ** ) * board_size );
+        for ( j = 0; j < board_size; j++ ) {
+            hash_board[i][j] = malloc( sizeof( unsigned * ) * 3 );
+        }
+    }
+
+    // Set random values to hash_board:
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            for ( k = 0; k < 3; k++ ) {
+                hash_board[i][j][k] = (unsigned)( rand() + rand() );
+            }
+        }
+    }
+
+
+    return;
+}
+
+/**
+ * @brief       Initialises the hash_id for the starting position.
+ *
+ * The initial hash_id for the starting position is calculated. This
+ * must be called explicitely when an SGF file is loaded.
+ *
+ * @return      Nothing.
+ * @note        This function does not return the hash_id.
+ * @sa          get_hash_id()
+ */
+void init_hash_id(void)
+{
+    int i, j;
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            switch ( get_vertex( i, j ) ) {
+                case BLACK:
+                    hash_id ^= hash_board[i][j][BLACK_HASH];
+                    break;
+                case WHITE:
+                    hash_id ^= hash_board[i][j][WHITE_HASH];
+                    break;
+                case EMPTY:
+                    break;
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Returns the current hash_id.
+ *
+ * Returns the hash_id of the current board position.
+ *
+ * @return      hash_id
+ */
+unsigned get_hash_id(void)
+{
+
+    return hash_id;
+}
+
+/**
+ * @brief       Sets the new value of hash_id.
+ *
+ * Sets the hash_id to the given value.
+ *
+ * @param[in]   id   New hash_id of current position.
+ * @return      Nothing
+ */
+void set_hash_id( unsigned id )
+{
+
+    hash_id = id;
+
+    return;
+}
+
+/**
+ * @brief       Initialises hash table.
+ *
+ * Initialises hash table by setting all entries to invalid.
+ *
+ * @return      Nothing
+ */
+void init_hash_table(void)
+{
+    int k;
+
+    for ( k = 0; k < HASH_TABLE_SIZE; k++ ) {
+        hash_table[k].valid = false;
+        hash_table[k].value = 0;
+    }
+
+    return;
+}
+
+/**
+ * @brief       Inserts new element into hash table.
+ *
+ * Inserts a new hash_pos_st element into the hash_table list.
+ *
+ * @param[in]   id      The current position's hash_id.
+ * @param[in]   value   The current position's value.
+ * @return      Nothing
+ */
+void insert_hash_table( unsigned id, int value )
+{
+    
+    unsigned index = id % HASH_TABLE_SIZE;
+
+    hash_table[index].valid = true;
+    hash_table[index].value = value;
+
+    return;
+}
+
+/**
+ * @brief       Select position value from hash table.
+ *
+ * For a given position's hash_id the value from the hash_table is selected.
+ *
+ * @param[in]   id      hash_id of current position.
+ * @return      value   Value of position.
+ */
+int select_hash_table_value( unsigned id )
+{
+    int      value;
+    unsigned index = id % HASH_TABLE_SIZE;
+
+    value = hash_table[index].value;
+
+    return value;
+}
+
+/**
+ * @brief       Checks if current positon has hash_id entry.
+ *
+ * Returns true if the current positon with its hash_id has already a valid
+ * entry in the hash table.
+ *
+ * @param[in]   id      hash_id of current position.
+ * @return      true|false
+ */
+bool exists_hash_id( unsigned id )
+{
+    bool is_valid  = false;
+    unsigned index = id % HASH_TABLE_SIZE;
+
+    if ( hash_table[index].valid ) {
+        is_valid = true;
+    }
+
+    return is_valid;
 }
 

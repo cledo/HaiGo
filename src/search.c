@@ -23,6 +23,7 @@
  *
  */
 
+//static unsigned hash_hit;   //!< Counts the hits in the hash table.
 static int alpha_break;     //!< Count alpha breaks.
 static int beta_break;      //!< Count beta breaks.
 
@@ -52,7 +53,7 @@ static void undo_move(void);
 void search_tree( int color, int *i_selected, int *j_selected )
 {
     int    k, l;
-    //int    m;
+    //int    m;   //DEBUG
     int    i, j;
     int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int    nr_of_valid_moves;
@@ -69,8 +70,10 @@ void search_tree( int color, int *i_selected, int *j_selected )
     int alpha = INT_MIN;
     int beta  = INT_MAX;
 
+    //hash_hit    = 0;
     alpha_break = 0;
     beta_break  = 0;
+    //init_hash_table();
 
     value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
@@ -133,6 +136,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
             // Start recursion:
             valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
 
+            /*
             if ( color == BLACK ) {
                 // For black: remember highest value
                 if ( valid_moves[k][2] > value ) {
@@ -143,6 +147,25 @@ void search_tree( int color, int *i_selected, int *j_selected )
                 // For white: remember lowest value
                 if ( valid_moves[k][2] < value ) {
                     value = valid_moves[k][2];
+                }
+            }
+            */
+            if ( color  == BLACK ) {
+                // For black: remember highest value
+                if ( valid_moves[k][2] > value ) {
+                    value = valid_moves[k][2];
+                    if ( value > alpha ) {
+                        alpha = value;
+                    }
+                }
+            }
+            else {
+                // For white: remember lowest value
+                if ( valid_moves[k][2] < value ) {
+                    value = valid_moves[k][2];
+                    if ( value < beta ) {
+                        beta = value;
+                    }
                 }
             }
 
@@ -165,7 +188,9 @@ void search_tree( int color, int *i_selected, int *j_selected )
             qsort( valid_moves, (size_t)nr_of_valid_moves_cut, sizeof(valid_moves[0]), compare_value_white );
         }
 
-        nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
+        if ( nr_of_valid_moves_cut / 2 > 2 ) {
+            nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
+        }
 
     }
     // Loop end
@@ -182,6 +207,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
     printf( "Nodes/sec.: %llu\n", node_count / diff_time );
+    printf( "HashHit:    %u\n", hash_hit );
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
     printf( "Value: (%d)\n", valid_moves[0][2] );
@@ -220,25 +246,10 @@ int add_node( int color, int tree_level, int alpha, int beta )
     char x[2];
     char y[3];
     char indent[10];
+    //unsigned hash_id;
 
     value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
-    if ( tree_level == search_level ) {
-        value = evaluate_position();
-
-        if ( color == BLACK ) {
-            if ( value > alpha ) {
-                alpha = value;
-            }
-        }
-        else {
-            if ( value < beta ) {
-                beta = value;
-            }
-        }
-
-        return value;
-    }
 
     tree_level++;
 
@@ -257,10 +268,24 @@ int add_node( int color, int tree_level, int alpha, int beta )
         //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
         make_move( color, i, j );
 
-        // Start recursion:
-        valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
 
-        if ( color == BLACK ) {
+        if ( tree_level < search_level ) {
+            // Start recursion:
+            valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
+        }
+        else {
+            //hash_id = get_hash_id();
+            //if ( exists_hash_id(hash_id) ) {
+                //valid_moves[k][2] = select_hash_table_value(hash_id);
+                //hash_hit++;
+            //}
+            //else {
+                valid_moves[k][2] = evaluate_position();
+                //insert_hash_table( hash_id, value );
+            //}
+        }
+
+        if ( color  == BLACK ) {
             // For black: remember highest value
             if ( valid_moves[k][2] > value ) {
                 value = valid_moves[k][2];
@@ -295,19 +320,18 @@ int add_node( int color, int tree_level, int alpha, int beta )
 
 
         if ( color == BLACK ) {
-            if ( valid_moves[k][2] >= beta ) {  // Maybe only '>' is correct!?
+            if ( valid_moves[k][2] >= beta ) {  // Maybe only '>' is correct?!
                 beta_break++;
                 break;
             }
         }
         else {
-            if ( valid_moves[k][2] <= alpha ) { // Maybe only '<' is correct!?
+            if ( valid_moves[k][2] <= alpha ) { // Maybe only '<' is correct?!
                 alpha_break++;
                 break;
             }
         }
     }
-
 
     return value;
 }

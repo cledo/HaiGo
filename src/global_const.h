@@ -64,5 +64,9 @@
 //! Defines name of log file for search tree.
 #define LOG_FILE    "haigo.log"
 
+//! Defines size of transposition hash table.
+//#define HASH_TABLE_SIZE 1048576     // 2 ^ 20
+#define HASH_TABLE_SIZE 33554432  // 2 ^ 25
+
 #endif
 

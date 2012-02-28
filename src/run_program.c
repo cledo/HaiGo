@@ -115,6 +115,7 @@ int run( int argc, char **argv )
 
     // Initialization
     init_board(BOARD_SIZE_DEFAULT);
+    init_hash_table();
     init_known_commands();
     init_move_history();
 
@@ -1316,6 +1317,9 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         set_output_error();
         add_output("cannot load file");
     }
+
+    // Initialise hash_id for loaded position:
+    init_hash_id();
 
     return;
 }
