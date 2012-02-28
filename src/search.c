@@ -23,7 +23,7 @@
  *
  */
 
-//static unsigned hash_hit;   //!< Counts the hits in the hash table.
+static unsigned hash_hit;   //!< Counts the hits in the hash table.
 static int alpha_break;     //!< Count alpha breaks.
 static int beta_break;      //!< Count beta breaks.
 
@@ -53,7 +53,7 @@ static void undo_move(void);
 void search_tree( int color, int *i_selected, int *j_selected )
 {
     int    k, l;
-    //int    m;   //DEBUG
+    int    m;   //DEBUG
     int    i, j;
     int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int    nr_of_valid_moves;
@@ -73,7 +73,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     //hash_hit    = 0;
     alpha_break = 0;
     beta_break  = 0;
-    //init_hash_table();
+    init_hash_table();
 
     value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
@@ -107,18 +107,10 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
     // Loop start:
     search_level_incr = get_search_level();
-    for ( l = 0; l <= search_level_incr; l++ ) {
-        set_search_level(l);
+    //for ( l = 0; l <= search_level_incr; l++ ) {
+        //set_search_level(l);
+        set_search_level(search_level_incr);
 
-        /*
-        printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
-        for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
-            i_to_x( valid_moves[m][0], x );
-            j_to_y( valid_moves[m][1], y );
-            printf( "%s%s (%d), ", x, y, valid_moves[m][2] );
-        }
-        printf("\n");
-        */
 
         // Go through move list:
         for ( k = 0; k < nr_of_valid_moves_cut; k++ ) {
@@ -188,11 +180,20 @@ void search_tree( int color, int *i_selected, int *j_selected )
             qsort( valid_moves, (size_t)nr_of_valid_moves_cut, sizeof(valid_moves[0]), compare_value_white );
         }
 
+        // DEBUG:
+        printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
+        for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
+            i_to_x( valid_moves[m][0], x );
+            j_to_y( valid_moves[m][1], y );
+            printf( "%s%s (%d), ", x, y, valid_moves[m][2] );
+        }
+        printf("\n");
+
         if ( nr_of_valid_moves_cut / 2 > 2 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
         }
 
-    }
+    //}
     // Loop end
 
     (void) time(&stop);
@@ -202,7 +203,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
@@ -211,7 +211,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
     printf( "Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
