@@ -107,9 +107,9 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
     // Loop start:
     search_level_incr = get_search_level();
-    //for ( l = 0; l <= search_level_incr; l++ ) {
-        //set_search_level(l);
-        set_search_level(search_level_incr);
+    for ( l = 0; l <= search_level_incr; l++ ) {
+        set_search_level(l);
+        //set_search_level(search_level_incr);
 
 
         // Go through move list:
@@ -193,7 +193,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
         }
 
-    //}
+    }
     // Loop end
 
     (void) time(&stop);
