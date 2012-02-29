@@ -482,24 +482,24 @@ START_TEST (test_get_valid_move_list)
 
     init_board(s);
 
-    nr_of_valid_moves = get_valid_move_list( BLACK, valid_moves_count, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( BLACK, valid_moves );
     fail_unless( nr_of_valid_moves == 0, "no valid moves (%d)", nr_of_valid_moves );
 
-    nr_of_valid_moves = get_valid_move_list( WHITE, valid_moves_count, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( WHITE, valid_moves );
     fail_unless( nr_of_valid_moves == 0, "no valid moves (%d)", nr_of_valid_moves );
 
 
     // Check for black moves:
     color = BLACK;
-    valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
-    nr_of_valid_moves = get_valid_move_list( color, valid_moves_count, valid_moves );
+    //valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     fail_unless( nr_of_valid_moves == 4, "4 valid moves (%d)", nr_of_valid_moves );
 
     // Check for white moves:
     color = WHITE;
-    valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
-    nr_of_valid_moves = get_valid_move_list( color, valid_moves_count, valid_moves );
+    //valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     fail_unless( nr_of_valid_moves == 4, "4 valid moves (%d)", nr_of_valid_moves );
 }

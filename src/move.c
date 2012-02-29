@@ -23,6 +23,8 @@ static int move_number = 0;
 //! Move history: contains all moves performed.
 static struct move_st move_history[MOVE_HISTORY_MAX];
 
+int get_pseudo_valid_move_list( int color, int valid_moves[][4] );
+
 
 /**
  * @brief       Initialises the move_history data structure.
@@ -377,14 +379,13 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][4] )
  * number of valid moves is returned.
  *
  * @param[in]   color               Color of moving side (BLACK|WHITE)
- * @param[in]   valid_moves_count   Number of moves in valid_moves array
  * @param[out]  valid_moves         List of valid moves (zero liberty moves excluded)
  * @return      Number of valid moves
  * @sa          get_pseudo_valid_move_list()
  * @warning     The function get_pseudo_valid_move_list() must be called
  *              before get_valid_move_list().
  */
-int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][4] )
+int get_valid_move_list( int color, int valid_moves[][4] )
 {
     int  count = 0;
     int  i, j;
@@ -396,6 +397,9 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][4] 
     bool is_valid;
     int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int  value;
+    int  valid_moves_count;
+
+    valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         temp_moves[k][0] = INVALID;

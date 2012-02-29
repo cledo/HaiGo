@@ -1083,23 +1083,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         return;
     }
 
-    /*
-    // Get list of pseudo valid moves:
-    nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
-    // Remove zero liberty moves from pseudo valid moves:
-    nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
-
-    // No valid move possible:
-    if ( nr_of_valid_moves == 0 ) {
-        create_next_move();
-        set_move_pass(color);
-        push_move();
-
-        add_output("pass");
-
-        return;
-    }
-    */
 
     set_vertex( color, i, j );
     create_groups();

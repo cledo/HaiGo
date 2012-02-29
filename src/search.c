@@ -53,7 +53,7 @@ static void undo_move(void);
 void search_tree( int color, int *i_selected, int *j_selected )
 {
     int    k, l;
-    int    m;   //DEBUG
+    //int    m;   //DEBUG
     int    i, j;
     int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int    nr_of_valid_moves;
@@ -99,9 +99,10 @@ void search_tree( int color, int *i_selected, int *j_selected )
     (void) time(&start);
 
     // Get list of pseudo valid moves:
-    nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
+    //nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
     // Remove zero liberty moves from pseudo valid moves:
-    nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
+    //nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     nr_of_valid_moves_cut = nr_of_valid_moves;
 
@@ -181,6 +182,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
+        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -192,6 +194,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
         if ( nr_of_valid_moves_cut / 2 > 2 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
         }
+        */
 
     }
     // Loop end
@@ -203,6 +206,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
+    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
@@ -211,6 +215,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
     printf( "Value: (%d)\n", valid_moves[0][2] );
+    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -254,9 +259,10 @@ int add_node( int color, int tree_level, int alpha, int beta )
     tree_level++;
 
     // Get list of pseudo valid moves:
-    nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
+    //nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
     // Remove zero liberty moves from pseudo valid moves:
-    nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
+    //nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
+    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     // Count tactic moves:
     /*
