@@ -53,7 +53,7 @@ static void undo_move(void);
 void search_tree( int color, int *i_selected, int *j_selected )
 {
     int    k, l;
-    int    m;   //DEBUG
+    //int    m;   //DEBUG
     int    i, j;
     int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int    nr_of_valid_moves;
@@ -70,7 +70,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     int alpha = INT_MIN;
     int beta  = INT_MAX;
 
-    //hash_hit    = 0;
+    hash_hit    = 0;
     alpha_break = 0;
     beta_break  = 0;
     init_hash_table();
@@ -181,6 +181,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
+        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -188,6 +189,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
             printf( "%s%s (%d), ", x, y, valid_moves[m][2] );
         }
         printf("\n");
+        */
 
         if ( nr_of_valid_moves_cut / 2 > 2 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
@@ -203,6 +205,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
+    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
@@ -211,6 +214,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
     printf( "Value: (%d)\n", valid_moves[0][2] );
+    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];

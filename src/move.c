@@ -470,6 +470,42 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
 }
 
 /**
+ * @brief       Creates all capture moves for the given color.
+ *
+ * Creates a list of all capture moves for the given value. The number of
+ * moves id returned.
+ *
+ * @param[in]   color   Color of moving side.
+ * @param[in]   capture_moves_count Number of maximum elements in * capture_moves list.
+ * @param[out]  capture_moves   List of capture moves.
+ * @return      Number of moves found.
+ * @sa          get_valid_move_list()
+ */
+int get_capture_moves( int color, int capture_moves_count, int capture_moves[][3] )
+{
+    int k;
+    int count        = 0;
+    int liberties    = 0;
+    int max_group_nr = get_last_group_nr( color * -1 );
+
+    /* MAYBE THIS STUFF CAN BE DONE IN get_valid_move_list() ? */
+
+    // Get all group numbers for other color.
+    // Get number of liberties for each group.
+    // Get all groups that have only one liberty.
+    // Check if that liberty move is not ko.
+    // Put move into move list.
+    for ( k = 1; k <= max_group_nr; k++ ) {
+        liberties = get_nr_of_liberties(k);
+        //if ( liberties == 1 && ! is_move_ko( color, ) ) {
+            //;
+        //}
+    }
+
+    return count;
+}
+
+/**
  * @brief       Return color of last move.
  *
  * Returns the color of the stone of the last move.
