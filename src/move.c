@@ -345,7 +345,7 @@ bool is_move_ko( int color, int i, int j )
  *              without a liberty are still contained in this list. Therefore
  *              the term "pseudo valid".
  */
-int get_pseudo_valid_move_list( int color, int valid_moves[][3] )
+int get_pseudo_valid_move_list( int color, int valid_moves[][4] )
 {
     int count;
     int i, j;
@@ -358,6 +358,7 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][3] )
                 valid_moves[count][0] = i;
                 valid_moves[count][1] = j;
                 valid_moves[count][2] = 0;
+                valid_moves[count][3] = 0;
                 count++;
             }
         }
@@ -372,7 +373,7 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][3] )
  * @brief       Returnes list of valid moves for given color.
  *
  * This function takes a list of pseudo valid moves (as created by
- * get_pseudo_valid_move_list()) and droppes the zero liberty moves. The
+ * get_pseudo_valid_move_list()) and drops the zero liberty moves. The
  * number of valid moves is returned.
  *
  * @param[in]   color               Color of moving side (BLACK|WHITE)
@@ -383,7 +384,7 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][3] )
  * @warning     The function get_pseudo_valid_move_list() must be called
  *              before get_valid_move_list().
  */
-int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] )
+int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][4] )
 {
     int  count = 0;
     int  i, j;
@@ -393,12 +394,14 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
     int  group_nr;
     int  nr_of_liberties;
     bool is_valid;
-    int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int  value;
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         temp_moves[k][0] = INVALID;
         temp_moves[k][1] = INVALID;
+        temp_moves[k][2] = 0;   // Value of move
+        temp_moves[k][3] = 0;   // Number of captured stones
     }
 
     for ( k = 0; k < valid_moves_count; k++ ) {
@@ -445,6 +448,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
             temp_moves[count][0] = i;
             temp_moves[count][1] = j;
             temp_moves[count][2] = value;
+            temp_moves[count][3] = nr_of_removed_stones;
             count++;
         }
     }
@@ -454,6 +458,7 @@ int get_valid_move_list( int color, int valid_moves_count, int valid_moves[][3] 
         valid_moves[k][0] = temp_moves[k][0];
         valid_moves[k][1] = temp_moves[k][1];
         valid_moves[k][2] = temp_moves[k][2];
+        valid_moves[k][3] = temp_moves[k][3];
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;

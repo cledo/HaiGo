@@ -53,9 +53,9 @@ static void undo_move(void);
 void search_tree( int color, int *i_selected, int *j_selected )
 {
     int    k, l;
-    //int    m;   //DEBUG
+    int    m;   //DEBUG
     int    i, j;
-    int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int    nr_of_valid_moves;
     int    nr_of_valid_moves_cut;
     int    tree_level = 0;
@@ -181,15 +181,13 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
-        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
             j_to_y( valid_moves[m][1], y );
-            printf( "%s%s (%d), ", x, y, valid_moves[m][2] );
+            printf( "%s%s (%d,%d), ", x, y, valid_moves[m][2], valid_moves[m][3] );
         }
         printf("\n");
-        */
 
         if ( nr_of_valid_moves_cut / 2 > 2 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
@@ -205,7 +203,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
@@ -214,7 +211,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
     printf( "Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -243,12 +239,13 @@ int add_node( int color, int tree_level, int alpha, int beta )
 {
     int  k, l;
     int  i, j;
-    int  valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int  valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int  nr_of_valid_moves;
     int  value;
     char x[2];
     char y[3];
     char indent[10];
+    //int  tactic_move = 0;
     //unsigned hash_id;
 
     value = ( color == BLACK ) ? INT_MIN : INT_MAX;
@@ -261,11 +258,31 @@ int add_node( int color, int tree_level, int alpha, int beta )
     // Remove zero liberty moves from pseudo valid moves:
     nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
 
+    // Count tactic moves:
+    /*
+    for ( l = 0; l < nr_of_valid_moves; l++ ) {
+        if ( valid_moves[l][3] > 0 ) {
+            tactic_move++;
+        }
+    }
+    */
+
 
     // Go through move list:
     for ( k = 0; k < nr_of_valid_moves; k++ ) {
         i = valid_moves[k][0];
         j = valid_moves[k][1];
+
+        /*
+        if ( tree_level > search_level ) {
+            if ( tactic_move == 0 ) {
+                value = evaluate_position();
+                break;
+                // Leaves value wrong?
+            }
+        }
+        */
+
         // Make move:
         node_count++;
         //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
@@ -285,6 +302,12 @@ int add_node( int color, int tree_level, int alpha, int beta )
             //else {
                 valid_moves[k][2] = evaluate_position();
                 //insert_hash_table( hash_id, value );
+                /*
+                if ( tactic_move ) {
+                    valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
+                    //printf( "#### Quiet search!\n" );
+                }
+                */
             //}
         }
 
