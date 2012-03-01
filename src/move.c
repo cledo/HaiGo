@@ -401,10 +401,10 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        temp_moves[k][0] = INVALID;
-        temp_moves[k][1] = INVALID;
-        temp_moves[k][2] = 0;   // Value of move
-        temp_moves[k][3] = 0;   // Number of captured stones
+        temp_moves[k][0] = INVALID;     // i coordinate
+        temp_moves[k][1] = INVALID;     // j coordinate
+        temp_moves[k][2] = 0;           // Value of move
+        temp_moves[k][3] = 0;           // Number of captured stones
     }
 
     for ( k = 0; k < valid_moves_count; k++ ) {
