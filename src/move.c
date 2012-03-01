@@ -23,7 +23,6 @@ static int move_number = 0;
 //! Move history: contains all moves performed.
 static struct move_st move_history[MOVE_HISTORY_MAX];
 
-int get_pseudo_valid_move_list( int color, int valid_moves[][4] );
 
 
 /**

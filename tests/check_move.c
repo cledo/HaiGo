@@ -370,7 +370,7 @@ START_TEST (test_get_pseudo_valid_move_list)
     int i, j;
     int color      = BLACK;
     int board_size;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int nr_of_valid_moves;
 
 
@@ -379,6 +379,8 @@ START_TEST (test_get_pseudo_valid_move_list)
         for ( l = 0; l < BOARD_SIZE_MAX * BOARD_SIZE_MAX; l++ ) {
             valid_moves[l][0] = INVALID;
             valid_moves[l][1] = INVALID;
+            valid_moves[l][2] = 0;
+            valid_moves[l][3] = 0;
         }
         board_size = k;
 
@@ -473,20 +475,30 @@ END_TEST
 
 START_TEST (test_get_valid_move_list)
 {
+    int k, l;
     int s = 2;
     int color;
-    int valid_moves_count = 0;
 
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int nr_of_valid_moves;
 
     init_board(s);
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( BLACK, 0, 1 );
+    set_vertex( BLACK, 1, 0 );
+    set_vertex( BLACK, 1, 1 );
 
     nr_of_valid_moves = get_valid_move_list( BLACK, valid_moves );
     fail_unless( nr_of_valid_moves == 0, "no valid moves (%d)", nr_of_valid_moves );
 
     nr_of_valid_moves = get_valid_move_list( WHITE, valid_moves );
     fail_unless( nr_of_valid_moves == 0, "no valid moves (%d)", nr_of_valid_moves );
+
+    set_vertex( EMPTY, 0, 0 );
+    set_vertex( EMPTY, 0, 1 );
+    set_vertex( EMPTY, 1, 0 );
+    set_vertex( EMPTY, 1, 1 );
 
 
     // Check for black moves:
