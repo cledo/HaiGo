@@ -52,31 +52,43 @@ static void undo_move(void);
  */
 void search_tree( int color, int *i_selected, int *j_selected )
 {
-    int    k, l;
-    //int    m;   //DEBUG
-    int    i, j;
-    int    valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
-    int    nr_of_valid_moves;
-    int    nr_of_valid_moves_cut;
-    int    tree_level = 0;
+    // Index variables:
+    int k;
+    int l;   //DEBUG
+    int m;   //DEBUG
+    int i, j;
+
+    // Variables for search tree:
+    int tree_level = 0;
+    int best_value;
+    int search_level_incr;
+    int alpha;
+    int beta;
+
+    // Variables for move list:
+    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
+    int nr_of_valid_moves;
+    int nr_of_valid_moves_cut;
+
+    // Variables for measuring time:
     time_t start;
     time_t stop;
     time_t diff_time;
-    char   x[2];
-    char   y[3];
-    int    value;
-    int    search_level_incr;
 
-    int alpha = INT_MIN;
-    int beta  = INT_MAX;
+    // Variables needed for logging:
+    char x[2];
+    char y[3];
 
+    // Setting to root level values:
+    alpha = INT_MIN;
+    beta  = INT_MAX;
     hash_hit    = 0;
     alpha_break = 0;
     beta_break  = 0;
+
     init_hash_table();
 
-    value = ( color == BLACK ) ? INT_MIN : INT_MAX;
-
+    best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
     node_count = 0;
 
@@ -88,30 +100,16 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
     }
 
-    // Steps for root node:
-    // 1. Get pseudo valid moves
-    // 2. Get list valid moves
-    // 3. Go through move list
-    //      4. Make move
-    //      ....
-    //      5. Undo move
- 
     (void) time(&start);
 
-    // Get list of pseudo valid moves:
-    //nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
-    // Remove zero liberty moves from pseudo valid moves:
-    //nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
-    nr_of_valid_moves = get_valid_move_list( color, valid_moves );
-
+    nr_of_valid_moves     = get_valid_move_list( color, valid_moves );
     nr_of_valid_moves_cut = nr_of_valid_moves;
 
     // Loop start:
     search_level_incr = get_search_level();
-    for ( l = 0; l <= search_level_incr; l++ ) {
-        set_search_level(l);
-        //set_search_level(search_level_incr);
-
+    //for ( l = 0; l <= search_level_incr; l++ ) {
+        //set_search_level(l);
+        set_search_level(search_level_incr);
 
         // Go through move list:
         for ( k = 0; k < nr_of_valid_moves_cut; k++ ) {
@@ -120,44 +118,30 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
             // Make move:
             node_count++;
-            //printf( "# Level: %d make: %d,%d value: %d\n", l, i, j, value );
+            //printf( "# Level: %d make: %d,%d value: %d\n", l, i, j, best_value );
             make_move( color, i, j );
-            i_to_x( i, x );
-            j_to_y( j, y );
+            //i_to_x( i, x );
+            //j_to_y( j, y );
             //printf( "## %s%s\n", x, y );
 
             // Start recursion:
             valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
 
-            /*
-            if ( color == BLACK ) {
-                // For black: remember highest value
-                if ( valid_moves[k][2] > value ) {
-                    value = valid_moves[k][2];
-                }
-            }
-            else {
-                // For white: remember lowest value
-                if ( valid_moves[k][2] < value ) {
-                    value = valid_moves[k][2];
-                }
-            }
-            */
             if ( color  == BLACK ) {
                 // For black: remember highest value
-                if ( valid_moves[k][2] > value ) {
-                    value = valid_moves[k][2];
-                    if ( value > alpha ) {
-                        alpha = value;
+                if ( valid_moves[k][2] > best_value ) {
+                    best_value = valid_moves[k][2];
+                    if ( best_value > alpha ) {
+                        alpha = best_value;
                     }
                 }
             }
             else {
                 // For white: remember lowest value
-                if ( valid_moves[k][2] < value ) {
-                    value = valid_moves[k][2];
-                    if ( value < beta ) {
-                        beta = value;
+                if ( valid_moves[k][2] < best_value ) {
+                    best_value = valid_moves[k][2];
+                    if ( best_value < beta ) {
+                        beta = best_value;
                     }
                 }
             }
@@ -169,7 +153,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
             }
 
             // Undo move:
-            //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, value );
+            //printf( "# Level: %d undo: %d,%d value: %d\n", tree_level, i, j, best_value );
             undo_move();
         }
 
@@ -182,7 +166,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
-        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -191,12 +174,13 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
         printf("\n");
 
+        /*
         if ( nr_of_valid_moves_cut / 2 > 2 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
         }
         */
 
-    }
+    //}
     // Loop end
 
     (void) time(&stop);
@@ -206,7 +190,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "Level:      %d\n", search_level );
     printf( "Duration:   %ld\n", stop - start );
@@ -215,7 +198,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
     printf( "Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -246,22 +228,17 @@ int add_node( int color, int tree_level, int alpha, int beta )
     int  i, j;
     int  valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int  nr_of_valid_moves;
-    int  value;
+    int  best_value;
     char x[2];
     char y[3];
     char indent[10];
     //int  tactic_move = 0;
     //unsigned hash_id;
 
-    value = ( color == BLACK ) ? INT_MIN : INT_MAX;
-
+    best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 
     tree_level++;
 
-    // Get list of pseudo valid moves:
-    //nr_of_valid_moves = get_pseudo_valid_move_list( color, valid_moves );
-    // Remove zero liberty moves from pseudo valid moves:
-    //nr_of_valid_moves = get_valid_move_list( color, nr_of_valid_moves, valid_moves );
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     // Count tactic moves:
@@ -273,6 +250,17 @@ int add_node( int color, int tree_level, int alpha, int beta )
     }
     */
 
+    // Pass if no valid move is possible:
+    if ( nr_of_valid_moves == 0 ) {
+        create_next_move();
+        set_move_pass(color);
+        push_move();
+
+        best_value = evaluate_position();
+
+        pop_move();
+    }
+
 
     // Go through move list:
     for ( k = 0; k < nr_of_valid_moves; k++ ) {
@@ -282,7 +270,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
         /*
         if ( tree_level > search_level ) {
             if ( tactic_move == 0 ) {
-                value = evaluate_position();
+                best_value = evaluate_position();
                 break;
                 // Leaves value wrong?
             }
@@ -307,7 +295,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
             //}
             //else {
                 valid_moves[k][2] = evaluate_position();
-                //insert_hash_table( hash_id, value );
+                //insert_hash_table( hash_id, best_value );
                 /*
                 if ( tactic_move ) {
                     valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
@@ -319,19 +307,19 @@ int add_node( int color, int tree_level, int alpha, int beta )
 
         if ( color  == BLACK ) {
             // For black: remember highest value
-            if ( valid_moves[k][2] > value ) {
-                value = valid_moves[k][2];
-                if ( value > alpha ) {
-                    alpha = value;
+            if ( valid_moves[k][2] > best_value ) {
+                best_value = valid_moves[k][2];
+                if ( best_value > alpha ) {
+                    alpha = best_value;
                 }
             }
         }
         else {
             // For white: remember lowest value
-            if ( valid_moves[k][2] < value ) {
-                value = valid_moves[k][2];
-                if ( value < beta ) {
-                    beta = value;
+            if ( valid_moves[k][2] < best_value ) {
+                best_value = valid_moves[k][2];
+                if ( best_value < beta ) {
+                    beta = best_value;
                 }
             }
         }
@@ -343,7 +331,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
             for ( l = 1; l <= tree_level; l++ ) {
                 strcat( indent, "\t" );
             }
-            fprintf( log_file, "%s%s%s (%d)\n", indent, x, y, valid_moves[k][2] );
+            fprintf( log_file, "%s%s%s (%d) (B: %d, W: %d)\n", indent, x, y, valid_moves[k][2]);
         }
 
         // Undo move:
@@ -365,7 +353,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
         }
     }
 
-    return value;
+    return best_value;
 }
 
 /**
@@ -436,6 +424,12 @@ void undo_move(void)
     int color        = get_last_move_color();
     int count_stones = get_last_move_count_stones();
     int stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+    if ( get_last_move_pass() ) {
+        pop_move();
+
+        return;
+    }
 
     get_last_move_stones(stones);
 
