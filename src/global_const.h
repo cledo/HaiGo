@@ -68,5 +68,8 @@
 //#define HASH_TABLE_SIZE 1048576     // 2 ^ 20
 #define HASH_TABLE_SIZE 33554432  // 2 ^ 25
 
+//! Defines maximal quiescence search depth:
+#define MAX_QSEARCH_DEPTH   6
+
 #endif
 

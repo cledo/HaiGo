@@ -27,6 +27,8 @@ static unsigned hash_hit;   //!< Counts the hits in the hash table.
 static int alpha_break;     //!< Count alpha breaks.
 static int beta_break;      //!< Count beta breaks.
 
+static int count_quiet_search;
+
 static int search_level = DEFAULT_SEARCH_LEVEL; //!< Sets depth of search tree.
 
 static bool do_log = false;                     //!< Defines if logging is turned on or off.
@@ -55,7 +57,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     // Index variables:
     int k;
     int l;   //DEBUG
-    //int m;   //DEBUG
+    int m;   //DEBUG
     int i, j;
 
     // Variables for search tree:
@@ -85,6 +87,8 @@ void search_tree( int color, int *i_selected, int *j_selected )
     hash_hit    = 0;
     alpha_break = 0;
     beta_break  = 0;
+    search_level_incr = 0;
+    count_quiet_search = 0;
 
     init_hash_table();
 
@@ -165,7 +169,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
-        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -173,11 +176,10 @@ void search_tree( int color, int *i_selected, int *j_selected )
             printf( "%s%s (%d,%d), ", x, y, valid_moves[m][2], valid_moves[m][3] );
         }
         printf("\n");
-        */
 
-        if ( nr_of_valid_moves_cut / 2 > 5 ) {
-            nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
-        }
+        //if ( nr_of_valid_moves_cut / 2 > 5 ) {
+            //nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
+        //}
 
     }
     // Loop end
@@ -189,16 +191,15 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
-    printf( "Level:      %d\n", search_level );
-    printf( "Duration:   %ld\n", stop - start );
-    printf( "Nodes/sec.: %llu\n", node_count / diff_time );
-    printf( "HashHit:    %u\n", hash_hit );
+    printf( "Level:       %d\n", search_level );
+    printf( "Duration:    %ld\n", stop - start );
+    printf( "Nodes/sec.:  %llu\n", node_count / diff_time );
+    printf( "HashHit:     %u\n", hash_hit );
     printf( "Alpha break: %d\n", alpha_break );
     printf( "Beta break:  %d\n", beta_break );
+    printf( "Q-Search:    %d\n", count_quiet_search );
     printf( "Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -242,6 +243,13 @@ int add_node( int color, int tree_level, int alpha, int beta )
 
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
+    // PASS if no valid move is possible:
+    if ( nr_of_valid_moves == 0 ) {
+        make_move( color, INVALID, INVALID );
+        best_value = evaluate_position();
+        undo_move();
+    }
+
     // Count tactic moves:
     for ( l = 0; l < nr_of_valid_moves; l++ ) {
         if ( valid_moves[l][3] > 0 ) {
@@ -249,35 +257,21 @@ int add_node( int color, int tree_level, int alpha, int beta )
         }
     }
 
-    // Pass if no valid move is possible:
-    if ( nr_of_valid_moves == 0 ) {
-        make_move( color, INVALID, INVALID );
-        best_value = evaluate_position();
-        undo_move();
-    }
-
     // Go through move list:
     for ( k = 0; k < nr_of_valid_moves; k++ ) {
         i = valid_moves[k][0];
         j = valid_moves[k][1];
 
-        /*
-        if ( tree_level > search_level ) {
-            if ( tactic_move == 0 ) {
-                best_value = evaluate_position();
-                break;
-                // Leaves value wrong?
+        // Skip non-tactical moves in quiescense search:
+        if ( tree_level >= search_level && tactic_move > 0) {
+            if ( valid_moves[k][3] == 0 ) {
+                continue;
             }
         }
-        */
-        //i_to_x( i, x );
-        //j_to_y( j, y );
-        //printf( "## %s%s\n", x, y );
 
         // Make move:
         node_count++;
         make_move( color, i, j );
-        //printf( "# Level: %d make: %d,%d\n", tree_level, i, j );
 
 
         if ( tree_level < search_level ) {
@@ -285,21 +279,14 @@ int add_node( int color, int tree_level, int alpha, int beta )
             valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
         }
         else {
-            //hash_id = get_hash_id();
-            //if ( exists_hash_id(hash_id) ) {
-                //valid_moves[k][2] = select_hash_table_value(hash_id);
-                //hash_hit++;
-            //}
-            //else {
+            //insert_hash_table( hash_id, best_value );
+            if ( tactic_move && tree_level < search_level +  MAX_QSEARCH_DEPTH ) {
+                valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
+                count_quiet_search++;
+            }
+            else {
                 valid_moves[k][2] = evaluate_position();
-                //insert_hash_table( hash_id, best_value );
-                /*
-                if ( tactic_move ) {
-                    valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
-                    //printf( "#### Quiet search!\n" );
-                }
-                */
-            //}
+            }
         }
 
         if ( color  == BLACK ) {

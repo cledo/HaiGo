@@ -392,6 +392,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     int  nr_of_removed_stones;
     int  captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int  group_nr;
+    int  last_group_nr;
     int  nr_of_liberties;
     bool is_valid;
     int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
@@ -404,7 +405,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         temp_moves[k][0] = INVALID;     // i coordinate
         temp_moves[k][1] = INVALID;     // j coordinate
         temp_moves[k][2] = 0;           // Value of move
-        temp_moves[k][3] = 0;           // Number of captured stones
+        temp_moves[k][3] = 0;           // Number of captured stones and atari ...
     }
 
     for ( k = 0; k < valid_moves_count; k++ ) {
@@ -430,8 +431,26 @@ int get_valid_move_list( int color, int valid_moves[][4] )
             }
         }
 
-        value = evaluate_position();
+        // Check if move gives atari:
+        last_group_nr = get_last_group_nr( color * -1 );
+        if ( color * -1 == BLACK ) {
+            for ( l = 1; l <= last_group_nr; l++ ) {
+                if ( get_nr_of_liberties(l) == 1 ) {
+                    // Mark move as atari:
+                    valid_moves[k][3]++;
+                }
+            }
+        }
+        else {
+            for ( l = -1; l >= last_group_nr; l-- ) {
+                if ( get_nr_of_liberties(l) == 1 ) {
+                    // Mark move as atari:
+                    valid_moves[k][3]++;
+                }
+            }
+        }
 
+        value = evaluate_position();
 
         // Undo move:
         nr_of_removed_stones = get_captured_now(captured_now);
@@ -451,7 +470,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
             temp_moves[count][0] = i;
             temp_moves[count][1] = j;
             temp_moves[count][2] = value;
-            temp_moves[count][3] = nr_of_removed_stones;
+            temp_moves[count][3] += nr_of_removed_stones;
             count++;
         }
     }
