@@ -172,10 +172,10 @@ START_TEST (test_select_command_9)
     my_strcpy( command_data.gtp_argv[0], "BLACK", MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 1;
 
-    init_board(BOARD_SIZE_DEFAULT);
+    init_board(BOARD_SIZE_MIN);
     init_known_commands();
     select_command(&command_data);
-    fail_unless( get_output_error() == false, "clear_board command identified" );
+    fail_unless( get_output_error() == false, "genmove command identified" );
 }
 END_TEST
 

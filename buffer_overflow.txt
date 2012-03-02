@@ -1,0 +1,6 @@
+level 0
+loadsgf SGF/book1_003.sgf
+hg-log
+genmove b
+
+=> buffer overflow

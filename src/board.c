@@ -972,6 +972,35 @@ int get_group_count_atari( int color )
 }
 
 /**
+ * @brief       Returns sum of group liberties.
+ *
+ * Returns the sum of all group liberties. A field that is a liberty for two
+ * groups will be counted twice.
+ *
+ * @param[in]   color   Color of groups to count liberties for.
+ * @return      Sum of group liberties.
+ */
+int get_group_count_liberties( int color )
+{
+    int group_nr;
+    int count = 0;
+    int last_group_nr = get_last_group_nr(color);
+
+    if ( color == BLACK ) {
+        for ( group_nr = 1; group_nr <= last_group_nr; group_nr++ ) {
+            count += get_nr_of_liberties(group_nr);
+        }
+    }
+    else {
+        for ( group_nr = -1; group_nr >= last_group_nr; group_nr-- ) {
+            count += get_nr_of_liberties(group_nr);
+        }
+    }
+
+    return count;
+}
+
+/**
  * @brief       Returns number and vertexes of currently captured stones.
  *
  * The number of currently captured stones is returned. The list of vertexes

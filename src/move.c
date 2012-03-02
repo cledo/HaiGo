@@ -401,6 +401,10 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     int  atari_groups_opponent_before;
     int  atari_groups_player_after;
     int  atari_groups_opponent_after;
+    //int  count_liberties_player_before;
+    int  count_liberties_opponent_before;
+    //int  count_liberties_player_after;
+    int  count_liberties_opponent_after;
 
     valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
@@ -420,8 +424,10 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         create_groups();
         set_groups_size();
         count_liberties();
-        atari_groups_player_before   = get_group_count_atari(color);
-        atari_groups_opponent_before = get_group_count_atari( color * -1 );
+        atari_groups_player_before      = get_group_count_atari(color);
+        atari_groups_opponent_before    = get_group_count_atari( color * -1 );
+        //count_liberties_player_before   = get_group_count_liberties(color);
+        count_liberties_opponent_before = get_group_count_liberties( color * -1 );
 
         // Make move
         set_vertex( color, i, j );
@@ -470,6 +476,12 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         }
         // Check if move avoids atari:
         if ( atari_groups_player_after < atari_groups_player_before ) {
+            temp_moves[k][3]++;
+        }
+
+        //count_liberties_player_after   = get_group_count_liberties(color);
+        count_liberties_opponent_after = get_group_count_liberties( color * -1 );
+        if ( count_liberties_opponent_after < count_liberties_opponent_before) {
             temp_moves[k][3]++;
         }
 
