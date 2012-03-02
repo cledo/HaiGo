@@ -466,11 +466,11 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         atari_groups_opponent_after = get_group_count_atari( color * -1 );
         // Check if move gives atari:
         if ( atari_groups_opponent_after > atari_groups_opponent_before ) {
-            valid_moves[k][3]++;
+            temp_moves[k][3]++;
         }
         // Check if move avoids atari:
         if ( atari_groups_player_after < atari_groups_player_before ) {
-            valid_moves[k][3]++;
+            temp_moves[k][3]++;
         }
 
         value = evaluate_position();

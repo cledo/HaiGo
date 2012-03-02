@@ -8,12 +8,19 @@ use IPC::Open3;
 use Test::Builder;
 
 use base qw(Exporter);
-our @EXPORT_OK = qw( get_output ok_command get_pid );
+our @EXPORT_OK = qw(
+    get_output
+    ok_command
+    get_pid
+    get_timeout
+    set_timeout
+);
 
 my $test = Test::Builder->new;
 
 my ( $stdin, $stdout, $stderr );
 my $output;
+my $time_out = 2;
 
 my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
 
@@ -54,7 +61,6 @@ sub get_output {
 
     my $output   = q{};
     my $line     = q{};
-    my $time_out = 2;
 
     eval {
         local $SIG{'ALRM'} = sub { die "alarm\n" };
@@ -70,6 +76,16 @@ sub get_output {
     };
 
     return $output;
+}
+
+sub get_timeout {
+    return $time_out;
+}
+
+sub set_timeout {
+    ($time_out) = @_;
+
+    return;
 }
 
 1;

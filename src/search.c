@@ -56,8 +56,8 @@ void search_tree( int color, int *i_selected, int *j_selected )
 {
     // Index variables:
     int k;
-    int l;   //DEBUG
-    //int m;   //DEBUG
+    int l;
+    int m;   //DEBUG
     int i, j;
 
     // Variables for search tree:
@@ -169,7 +169,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
-        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -177,11 +176,10 @@ void search_tree( int color, int *i_selected, int *j_selected )
             printf( "%s%s (%d,%d), ", x, y, valid_moves[m][2], valid_moves[m][3] );
         }
         printf("\n");
-        */
 
-        //if ( nr_of_valid_moves_cut / 2 > 5 ) {
-            //nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
-        //}
+        if ( nr_of_valid_moves_cut / 2 > 5 ) {
+            nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
+        }
 
     }
     // Loop end
@@ -193,17 +191,15 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
-    printf( "Level:       %d\n", search_level );
-    printf( "Duration:    %ld\n", stop - start );
-    printf( "Nodes/sec.:  %llu\n", node_count / diff_time );
-    printf( "HashHit:     %u\n", hash_hit );
-    printf( "Alpha break: %d\n", alpha_break );
-    printf( "Beta break:  %d\n", beta_break );
-    printf( "Q-Search:    %d\n", count_quiet_search );
-    printf( "Value: (%d)\n", valid_moves[0][2] );
-    */
+    printf( "# Level:       %d\n", search_level );
+    printf( "# Duration:    %ld\n", stop - start );
+    printf( "# Nodes/sec.:  %llu\n", node_count / diff_time );
+    printf( "# HashHit:     %u\n", hash_hit );
+    printf( "# Alpha break: %d\n", alpha_break );
+    printf( "# Beta break:  %d\n", beta_break );
+    printf( "# Q-Search:    %d\n", count_quiet_search );
+    printf( "# Value: (%d)\n", valid_moves[0][2] );
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -325,13 +321,13 @@ int add_node( int color, int tree_level, int alpha, int beta )
         undo_move();
 
         if ( color == BLACK ) {
-            if ( valid_moves[k][2] >= beta ) {  // Maybe only '>' is correct?!
+            if ( valid_moves[k][2] > beta ) {  // Maybe only '>' is correct?!
                 beta_break++;
                 break;
             }
         }
         else {
-            if ( valid_moves[k][2] <= alpha ) { // Maybe only '<' is correct?!
+            if ( valid_moves[k][2] < alpha ) { // Maybe only '<' is correct?!
                 alpha_break++;
                 break;
             }
