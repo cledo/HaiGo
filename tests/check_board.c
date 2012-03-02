@@ -601,6 +601,61 @@ START_TEST (test_remove_stones_1)
 }
 END_TEST
 
+START_TEST (test_atari_1)
+{
+    int board_size = 5;
+
+    init_board(board_size);
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_group_count_atari(BLACK) == 0, "no black groups in atari" );
+    fail_unless( get_group_count_atari(WHITE) == 0, "no white groups in atari" );
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( WHITE, board_size - 1, board_size - 1 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_group_count_atari(BLACK) == 0, "no black groups in atari" );
+    fail_unless( get_group_count_atari(WHITE) == 0, "no white groups in atari" );
+
+    set_vertex( WHITE, 0, 1 );
+    set_vertex( BLACK, board_size - 1, board_size - 2 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_group_count_atari(BLACK) == 1, "one black group in atari" );
+    fail_unless( get_group_count_atari(WHITE) == 1, "one white group in atari" );
+
+    set_vertex( BLACK, 0, 2 );
+    set_vertex( WHITE, board_size - 1, board_size - 3 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_group_count_atari(BLACK) == 2, "two black groups in atari" );
+    fail_unless( get_group_count_atari(WHITE) == 2, "two white groups in atari" );
+
+    set_vertex( WHITE, 0, 3 );
+    set_vertex( BLACK, board_size - 1, board_size - 4 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_group_count_atari(BLACK) == 3, "three black groups in atari" );
+    fail_unless( get_group_count_atari(WHITE) == 3, "three white groups in atari" );
+}
+END_TEST
+
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Run");
     TCase *tc_init_board          = tcase_create("init_board");
@@ -610,6 +665,7 @@ Suite * board_suite(void) {
     TCase *tc_vertex              = tcase_create("vertex");
     TCase *tc_liberties           = tcase_create("liberties");
     TCase *tc_remove_stones       = tcase_create("remove");
+    TCase *tc_atari_groups        = tcase_create("atari");
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
@@ -619,6 +675,7 @@ Suite * board_suite(void) {
     tcase_add_test( tc_vertex,        test_vertex_1          );
     tcase_add_test( tc_liberties,     test_count_liberties_1 );
     tcase_add_test( tc_remove_stones, test_remove_stones_1   );
+    tcase_add_test( tc_atari_groups,  test_atari_1           );
 
     suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
@@ -627,6 +684,7 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_vertex              );
     suite_add_tcase( s, tc_liberties           );
     suite_add_tcase( s, tc_remove_stones       );
+    suite_add_tcase( s, tc_atari_groups        );
 
     return s;
 }

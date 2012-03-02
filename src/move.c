@@ -392,12 +392,15 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     int  nr_of_removed_stones;
     int  captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int  group_nr;
-    int  last_group_nr;
     int  nr_of_liberties;
     bool is_valid;
     int  temp_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int  value;
     int  valid_moves_count;
+    int  atari_groups_player_before;
+    int  atari_groups_opponent_before;
+    int  atari_groups_player_after;
+    int  atari_groups_opponent_after;
 
     valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
@@ -413,6 +416,13 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         i = valid_moves[k][0];
         j = valid_moves[k][1];
 
+        // Check for groups in atari before move is made:
+        create_groups();
+        set_groups_size();
+        count_liberties();
+        atari_groups_player_before   = get_group_count_atari(color);
+        atari_groups_opponent_before = get_group_count_atari( color * -1 );
+
         // Make move
         set_vertex( color, i, j );
         create_groups();
@@ -420,6 +430,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         count_liberties();
         nr_of_removed_stones = remove_stones( color * -1 );
 
+        // Check if this move is valid:
         if ( nr_of_removed_stones > 0 ) {
             is_valid = true;
         }
@@ -432,6 +443,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         }
 
         // Check if move gives atari:
+        /*
         last_group_nr = get_last_group_nr( color * -1 );
         if ( color * -1 == BLACK ) {
             for ( l = 1; l <= last_group_nr; l++ ) {
@@ -448,6 +460,17 @@ int get_valid_move_list( int color, int valid_moves[][4] )
                     valid_moves[k][3]++;
                 }
             }
+        }
+        */
+        atari_groups_player_after   = get_group_count_atari(color);
+        atari_groups_opponent_after = get_group_count_atari( color * -1 );
+        // Check if move gives atari:
+        if ( atari_groups_opponent_after > atari_groups_opponent_before ) {
+            valid_moves[k][3]++;
+        }
+        // Check if move avoids atari:
+        if ( atari_groups_player_after < atari_groups_player_before ) {
+            valid_moves[k][3]++;
         }
 
         value = evaluate_position();

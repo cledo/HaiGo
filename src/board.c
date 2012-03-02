@@ -940,6 +940,38 @@ int get_nr_of_liberties( int group_nr )
 }
 
 /**
+ * @brief       Returns number of groups in atari.
+ *
+ * Returns the number of groups being in atari for a given color.
+ *
+ * @param[in]   color   Color of groups in atari.
+ * @return      Number of groups in atari.
+ */
+int get_group_count_atari( int color )
+{
+    int group_nr;
+    int count = 0;
+    int last_group_nr = get_last_group_nr(color);
+
+    if ( color == BLACK ) {
+        for ( group_nr = 1; group_nr <= last_group_nr; group_nr++ ) {
+            if ( get_nr_of_liberties(group_nr) == 1 ) {
+                count++;
+            }
+        }
+    }
+    else {
+        for ( group_nr = -1; group_nr >= last_group_nr; group_nr-- ) {
+            if ( get_nr_of_liberties(group_nr) == 1 ) {
+                count++;
+            }
+        }
+    }
+    
+    return count;
+}
+
+/**
  * @brief       Returns number and vertexes of currently captured stones.
  *
  * The number of currently captured stones is returned. The list of vertexes
