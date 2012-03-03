@@ -137,6 +137,14 @@ int brain_avg_liberties(void)
     count_liberties_black = get_group_count_liberties(BLACK);
     count_liberties_white = get_group_count_liberties(WHITE);
 
+    if ( count_groups_black == 0 ) {
+        count_groups_black = 1;
+    }
+    if ( count_groups_white == 0 ) {
+        count_groups_white = 1;
+    }
+
+
     value = ( count_liberties_black / count_groups_black ) - ( count_liberties_white / count_groups_white );
 
     return value;
