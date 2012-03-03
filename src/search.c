@@ -57,7 +57,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     // Index variables:
     int k;
     int l;
-    //int m;   //DEBUG
+    int m;   //DEBUG
     int i, j;
 
     // Variables for search tree:
@@ -169,7 +169,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
-        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -177,7 +176,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
             printf( "%s%s (%d,%d), ", x, y, valid_moves[m][2], valid_moves[m][3] );
         }
         printf("\n");
-        */
 
         if ( nr_of_valid_moves_cut / 2 > 5 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
@@ -193,7 +191,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "# Level:       %d\n", search_level );
     printf( "# Duration:    %ld\n", stop - start );
@@ -203,7 +200,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "# Beta break:  %d\n", beta_break );
     printf( "# Q-Search:    %d\n", count_quiet_search );
     printf( "# Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -241,7 +237,8 @@ int add_node( int color, int tree_level, int alpha, int beta )
     int  tactic_move = 0;
     int  qsearch = MAX_QSEARCH_DEPTH;
     //unsigned hash_id;
-    int value_list[4];
+    int value_list[5] = { 1, 2, 3, 4, 5 };
+
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
     if ( ! ( ( search_level + MAX_QSEARCH_DEPTH ) % 2 ) ) {
@@ -324,7 +321,9 @@ int add_node( int color, int tree_level, int alpha, int beta )
             for ( l = 1; l <= tree_level; l++ ) {
                 strcat( indent, "\t" );
             }
-            fprintf( log_file, "%s%s%s (%d) (T: %d)\n", indent, x, y, valid_moves[k][2], valid_moves[k][3] );
+            fprintf( log_file, "%s%s%s (%d) (T: %d) (%d,%d,%d,%d,%d)\n", indent, x, y
+                , valid_moves[k][2], valid_moves[k][3], value_list[0],
+                value_list[1], value_list[2], value_list[3], value_list[4] );
         }
 
         undo_move();

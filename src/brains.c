@@ -171,25 +171,25 @@ int brain_kosumi(void)
             if ( get_vertex( i, j ) == BLACK ) {
                 // North-east:
                 if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i+1, j+1 ) == BLACK ) {
+                    if ( get_vertex( i+1, j+1 ) == BLACK &&  get_vertex( i, j+1 ) == EMPTY && get_vertex( i+1, j ) == EMPTY ) {
                         count_kosumi_black++;
                     }
                 }
                 // South-east:
                 if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i+1, j-1 ) == BLACK ) {
+                    if ( get_vertex( i+1, j-1 ) == BLACK && get_vertex( i, j-1 ) == EMPTY && get_vertex( i+1, j ) == EMPTY ) {
                         count_kosumi_black++;
                     }
                 }
                 // South-west:
                 if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i-1, j-1 ) == BLACK ) {
+                    if ( get_vertex( i-1, j-1 ) == BLACK && get_vertex( i, j-1 ) == EMPTY && get_vertex( i-1, j ) == EMPTY ) {
                         count_kosumi_black++;
                     }
                 }
                 // North-west:
                 if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i-1, j+1 ) == BLACK ) {
+                    if ( get_vertex( i-1, j+1 ) == BLACK && get_vertex( i, j+1 ) == EMPTY && get_vertex( i-1, j ) == EMPTY ) {
                         count_kosumi_black++;
                     }
                 }
@@ -197,25 +197,25 @@ int brain_kosumi(void)
             else if ( get_vertex( i, j ) == WHITE ) {
                 // North-east:
                 if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i+1, j+1 ) == BLACK ) {
+                    if ( get_vertex( i+1, j+1 ) == BLACK && get_vertex( i, j+1 ) == EMPTY && get_vertex( i+1, j ) == EMPTY ) {
                         count_kosumi_white++;
                     }
                 }
                 // South-east:
                 if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i+1, j-1 ) == BLACK ) {
+                    if ( get_vertex( i+1, j-1 ) == BLACK && get_vertex( i, j-1 ) == EMPTY && get_vertex( i+1, j ) == EMPTY ) {
                         count_kosumi_white++;
                     }
                 }
                 // South-west:
                 if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i-1, j-1 ) == BLACK ) {
+                    if ( get_vertex( i-1, j-1 ) == BLACK && get_vertex( i, j-1 ) == EMPTY && get_vertex( i-1, j ) == EMPTY ) {
                         count_kosumi_white++;
                     }
                 }
                 // North-west:
                 if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i-1, j+1 ) == BLACK ) {
+                    if ( get_vertex( i-1, j+1 ) == BLACK && get_vertex( i, j+1 ) == EMPTY && get_vertex( i-1, j ) == EMPTY ) {
                         count_kosumi_white++;
                     }
                 }

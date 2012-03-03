@@ -7,10 +7,11 @@ int evaluate_position( int value_list[] )
 {
     int value  = 0;
 
-    value_list[0] = brain_capture()       * 78;
+    value_list[0] = brain_capture()       * 83;
     value_list[1] = brain_atari()         * 15;
     value_list[2] = brain_avg_liberties() * 1;
-    value_list[3] = 0;
+    value_list[3] = brain_kosumi()        * 1;
+    value_list[4] = brain_edge_stones()   * 1;
     //value += brain_kosumi()        * 1;
     /*
     if ( kosumi > 0 ) {
@@ -23,7 +24,7 @@ int evaluate_position( int value_list[] )
     //value += brain_edge_stones()   * 3;
     //value += brain_hoshi_stones();
 
-    value = value_list[0] + value_list[1] + value_list[2] + value_list[3];
+    value = value_list[0] + value_list[1] + value_list[2] + value_list[3] + value_list[4];
 
     return value;
 }
