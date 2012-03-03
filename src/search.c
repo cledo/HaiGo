@@ -57,7 +57,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     // Index variables:
     int k;
     int l;
-    //int m;   //DEBUG
+    int m;   //DEBUG
     int i, j;
 
     // Variables for search tree:
@@ -169,7 +169,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         }
 
         // DEBUG:
-        /*
         printf( "# Level: %d (%d) - ", l, nr_of_valid_moves_cut );
         for ( m = 0; m < nr_of_valid_moves_cut; m++ ) {
             i_to_x( valid_moves[m][0], x );
@@ -177,7 +176,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
             printf( "%s%s (%d,%d), ", x, y, valid_moves[m][2], valid_moves[m][3] );
         }
         printf("\n");
-        */
 
         if ( nr_of_valid_moves_cut / 2 > 5 ) {
             nr_of_valid_moves_cut = nr_of_valid_moves_cut / 2;
@@ -193,7 +191,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "# Level:       %d\n", search_level );
     printf( "# Duration:    %ld\n", stop - start );
@@ -203,7 +200,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "# Beta break:  %d\n", beta_break );
     printf( "# Q-Search:    %d\n", count_quiet_search );
     printf( "# Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -239,9 +235,13 @@ int add_node( int color, int tree_level, int alpha, int beta )
     char y[3];
     char indent[10];
     int  tactic_move = 0;
+    int  qsearch = MAX_QSEARCH_DEPTH;
     //unsigned hash_id;
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
+    if ( ! ( ( search_level + MAX_QSEARCH_DEPTH ) % 2 ) ) {
+        qsearch++;
+    }
 
     tree_level++;
 
@@ -284,7 +284,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
         }
         else {
             //insert_hash_table( hash_id, best_value );
-            if ( tactic_move && tree_level < search_level +  MAX_QSEARCH_DEPTH ) {
+            if ( tactic_move && tree_level < search_level + qsearch ) {
                 valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
                 count_quiet_search++;
             }

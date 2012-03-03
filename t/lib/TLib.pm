@@ -50,9 +50,6 @@ sub ok_command {
     $output = get_output($stdout);
     $test->is_eq( $output, $fail . $return . "\n\n", $name );
 
-    #print {$stdin} "showboard\n";
-    #$test->note( get_output($stdout) );
-
     return;
 }
 
@@ -67,6 +64,7 @@ sub get_output {
         alarm $time_out;
         while (1) {
             $line    = <$pipe>;
+            next if $line =~ m{^#};
             last if not defined $line;
             $output .= $line;
             last if $line eq qq{\n};
