@@ -237,6 +237,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
     int  tactic_move = 0;
     int  qsearch = MAX_QSEARCH_DEPTH;
     //unsigned hash_id;
+    int value_list[4];
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
     if ( ! ( ( search_level + MAX_QSEARCH_DEPTH ) % 2 ) ) {
@@ -250,7 +251,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
     // PASS if no valid move is possible:
     if ( nr_of_valid_moves == 0 ) {
         make_move( color, INVALID, INVALID );
-        best_value = evaluate_position();
+        best_value = evaluate_position(value_list);
         undo_move();
     }
 
@@ -289,7 +290,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
                 count_quiet_search++;
             }
             else {
-                valid_moves[k][2] = evaluate_position();
+                valid_moves[k][2] = evaluate_position(value_list);
             }
         }
 

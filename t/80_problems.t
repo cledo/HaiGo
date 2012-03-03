@@ -29,7 +29,7 @@ plan tests => ( scalar @problem * 2 ) + 3;
 
 set_timeout(300);
 
-ok_command( 'level 1' );
+ok_command( 'level 0' );
 
 foreach my $p (@problem) {
     my $file     = $p->[0];

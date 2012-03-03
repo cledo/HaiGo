@@ -115,3 +115,107 @@ int brain_hoshi_stones(void)
     return value;
 }
 
+/**
+ * @brief       returns value depending on average liberties per group.
+ *
+ * The number of liberties is divided by the number of groups for black and
+ * white. The average for black minus the average for white is the returned
+ * value.
+ *
+ * @return      Black average minus white average.
+ */
+int brain_avg_liberties(void)
+{
+    int value;
+    int count_groups_black;
+    int count_groups_white;
+    int count_liberties_black;
+    int count_liberties_white;
+
+    count_groups_black = get_last_group_nr(BLACK);
+    count_groups_white = get_last_group_nr(WHITE) * -1;
+    count_liberties_black = get_group_count_liberties(BLACK);
+    count_liberties_white = get_group_count_liberties(WHITE);
+
+    value = ( count_liberties_black / count_groups_black ) - ( count_liberties_white / count_groups_white );
+
+    return value;
+}
+
+/**
+ * @brief       Returns value based on number of kosumis.
+ *
+ * The number of kosumis for black and white are counted. The returned value
+ * is number of black kosumis minus number of white kosumis.
+ *
+ * @return      Difference in number of kosumis
+ */
+int brain_kosumi(void)
+{
+    int value;
+    int i, j;
+    int count_kosumi_black = 0;
+    int count_kosumi_white = 0;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++) {
+            if ( get_vertex( i, j ) == BLACK ) {
+                // North-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i+1, j+1 ) == BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+                // South-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i+1, j-1 ) == BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+                // South-west:
+                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i-1, j-1 ) == BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+                // North-west:
+                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i-1, j+1 ) == BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+            }
+            else if ( get_vertex( i, j ) == WHITE ) {
+                // North-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i+1, j+1 ) == BLACK ) {
+                        count_kosumi_white++;
+                    }
+                }
+                // South-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i+1, j-1 ) == BLACK ) {
+                        count_kosumi_white++;
+                    }
+                }
+                // South-west:
+                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i-1, j-1 ) == BLACK ) {
+                        count_kosumi_white++;
+                    }
+                }
+                // North-west:
+                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i-1, j+1 ) == BLACK ) {
+                        count_kosumi_white++;
+                    }
+                }
+            }
+        }
+    }
+
+    value = ( count_kosumi_black / 2 ) - ( count_kosumi_white / 2 );
+
+    return value;
+}

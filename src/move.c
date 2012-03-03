@@ -406,6 +406,8 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     //int  count_liberties_player_after;
     int  count_liberties_opponent_after;
 
+    int value_list[4];
+
     valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
@@ -485,7 +487,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
             temp_moves[k][3]++;
         }
 
-        value = evaluate_position();
+        value = evaluate_position(value_list);
 
         // Undo move:
         nr_of_removed_stones = get_captured_now(captured_now);
