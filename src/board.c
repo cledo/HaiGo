@@ -52,13 +52,18 @@ static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of vert
 static int black_last_group_nr;     //!< Stores the last used group number for black.
 static int white_last_group_nr;     //!< Stores the last used group number for white.
 
+static int black_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for black.
+static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for white.
+static int black_last_chain_nr;     //!< Stored highest current chain number for black.
+static int white_last_chain_nr;     //!< Stored highest current chain number for white.
+
 static void init_hash_board(void);
 static void set_group( int i, int j );
 static void get_label_x( int i, char x[] );
 static void get_label_y_left( int i, char x[] );
 static void get_label_y_right( int j, char y[] );
 
-
+static void set_chain_nr( int group_nr1, int group_nr2 );
 
 /**
  *  @brief Allocates memory for all board data structures.
@@ -137,7 +142,7 @@ void init_board( int wanted_board_size )
             break;
     }
 
-    // Initialise liberty lists, group size lists, and captured_now list:
+    // Initialise liberty lists, group size lists, captured_now list, chain lists:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
         black_liberties[i]  = INVALID;
         white_liberties[i]  = INVALID;
@@ -145,7 +150,11 @@ void init_board( int wanted_board_size )
         white_group_size[i] = 0;
         captured_now[i][0]  = INVALID;
         captured_now[i][1]  = INVALID;
+        black_group_chain[i] = 0;
+        white_group_chain[i] = 0;
     }
+    black_last_chain_nr = 0;
+    white_last_chain_nr = 0;
 
     init_hash_board();
 
@@ -511,6 +520,8 @@ void create_groups(void)
 
     }
 
+    // TEST:
+    create_group_chains();
 
     return;
 }
@@ -1420,5 +1431,193 @@ bool exists_hash_id( unsigned id )
     }
 
     return is_valid;
+}
+
+/**
+ * @brief       Creates group chains.
+ *
+ * Still missing!
+ * Writes the calculated data into black_last_chain_nr, white_last_chain_nr,
+ * black_group_chain[] and white_group_chain[].
+ *
+ * @return      Nothing
+ * @warning     create_groups() must have been called before.
+ * @todo        Detailed description missing!
+ */
+void create_group_chains(void)
+{
+    int i, j;
+    int I, J;
+    int k;
+    int color;
+    int group_nr1, group_nr2;
+    int board_size = get_board_size();
+
+    black_last_chain_nr = 0;
+    white_last_chain_nr = 0;
+
+    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
+        black_group_chain[k] = 0;
+        white_group_chain[k] = 0;
+    }
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            if ( ( color = get_vertex( i, j ) ) != EMPTY ) {
+                group_nr1 = get_group_nr( i, j );
+                // North-east:
+                I = i + 1;
+                J = j + 1;
+                if ( I < board_size && J < board_size ) {
+                    if ( color == get_vertex( I, J ) && group_nr1 != ( group_nr2 = get_group_nr( I, J ) ) ) {
+                        set_chain_nr( group_nr1, group_nr2 );
+                    }
+                }
+                // South-east:
+                I = i + 1;
+                J = j - 1;
+                if ( I < board_size && J >= 0 ) {
+                    if ( color == get_vertex( I, J ) && group_nr1 != ( group_nr2 = get_group_nr( I, J ) ) ) {
+                        set_chain_nr( group_nr1, group_nr2 );
+                    }
+                }
+                // South-west:
+                I = i - 1;
+                J = j - 1;
+                if ( I >= 0 && J >= 0 ) {
+                    if ( color == get_vertex( I, J ) && group_nr1 != ( group_nr2 = get_group_nr( I, J ) ) ) {
+                        set_chain_nr( group_nr1, group_nr2 );
+                    }
+                }
+                // North-west:
+                I = i - 1;
+                J = j + 1;
+                if ( I >= 0 && J < board_size ) {
+                    if ( color == get_vertex( I, J ) && group_nr1 != ( group_nr2 = get_group_nr( I, J ) ) ) {
+                        set_chain_nr( group_nr1, group_nr2 );
+                    }
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Sets chain number for two given group numbers.
+ *
+ * For two given group numbers the appropriate chain number is calculated.
+ *
+ * @param[in]   group_nr1   First group number.
+ * @param[in]   group_nr2   Second group number.
+ * @return      Nothing
+ */
+void set_chain_nr( int group_nr1, int group_nr2 )
+{
+    int k;
+    int chain_nr1, chain_nr2;
+    int chain_nr_min, chain_nr_max;
+    int color;
+
+    if ( group_nr1 > 0 && group_nr2 > 0 ) {
+        color = BLACK;
+    }
+    else if ( group_nr1 < 0 && group_nr2 < 0 ) {
+        color = WHITE;
+    }
+    else {
+        //DEBUG:
+        fprintf( stderr, "Cannot determine color: group_nr1 = %d group_nr2 = %d\n", group_nr1, group_nr2 );
+        exit(1);
+    }
+
+    chain_nr1 = ( color == BLACK ) ? black_group_chain[group_nr1] : white_group_chain[group_nr1 * -1];
+    chain_nr2 = ( color == BLACK ) ? black_group_chain[group_nr2] : white_group_chain[group_nr2 * -1];
+
+    // Both groups have no chain number:
+    if ( chain_nr1 == 0 && chain_nr2 == 0 ) {
+        if ( color == BLACK ) {
+            black_last_chain_nr++;
+            black_group_chain[group_nr1] = black_last_chain_nr;
+            black_group_chain[group_nr2] = black_last_chain_nr;
+        }
+        else {
+            white_last_chain_nr++;
+            white_group_chain[group_nr1 * -1] = white_last_chain_nr;
+            white_group_chain[group_nr2 * -1] = white_last_chain_nr;
+        }
+    }
+    // First group has no chain number:
+    else if ( chain_nr1 == 0 && chain_nr2 > 0 ) {
+        if ( color == BLACK ) {
+            black_group_chain[group_nr1] = black_group_chain[group_nr2];
+        }
+        else {
+            white_group_chain[group_nr1 * -1] = white_group_chain[group_nr2 * -1];
+        }
+    }
+    // Second group has no chain number:
+    else if ( chain_nr1 > 0 && chain_nr2 == 0 ) {
+        if ( color == BLACK ) {
+            black_group_chain[group_nr2] = black_group_chain[group_nr1];
+        }
+        else {
+            white_group_chain[group_nr2 * -1] = white_group_chain[group_nr1 * -1];
+        }
+    }
+    // Both groups have a chain number:
+    else {
+        chain_nr_min = ( chain_nr1 < chain_nr2 ) ? chain_nr1 : chain_nr2;
+        chain_nr_max = ( chain_nr1 > chain_nr2 ) ? chain_nr1 : chain_nr2;
+        if ( color == BLACK ) {
+            black_group_chain[group_nr1] = chain_nr_min;
+            black_group_chain[group_nr2] = chain_nr_min;
+            for ( k = 1; k <= black_last_chain_nr; k++ ) {
+                if ( black_group_chain[k] == chain_nr_max ) {
+                    black_group_chain[k] = chain_nr_min;
+                }
+                if ( black_group_chain[k] > chain_nr_max ) {
+                    black_last_chain_nr = --black_group_chain[k];
+                }
+            }
+        }
+        else {
+            white_group_chain[group_nr1 * -1] = chain_nr_min;
+            white_group_chain[group_nr2 * -1] = chain_nr_min;
+            for ( k = 1; k <= white_last_chain_nr; k++ ) {
+                if ( white_group_chain[k] == chain_nr_max ) {
+                    white_group_chain[k] = chain_nr_min;
+                }
+                if ( white_group_chain[k] > chain_nr_max ) {
+                    white_last_chain_nr = --white_group_chain[k];
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Returns last used chain number for given color.
+ *
+ * Returns the highest chain number for either black or white.
+ *
+ * @param[in]   color   Color of chains.
+ * @return      Highest chain number.
+ */
+int get_last_chain_nr( int color )
+{
+    int chain_nr;
+
+    if ( color == BLACK ) {
+        chain_nr = black_last_chain_nr;
+    }
+    else {
+        chain_nr = white_last_chain_nr;
+    }
+
+    return chain_nr;
 }
 

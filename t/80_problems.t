@@ -17,6 +17,7 @@ my @problem;
 while (<$fh>) {
     next if m{File\s+Player\s+Solution};
     next if m{^\s*$};
+    next if m{^\s*#$};
     push @problem, [ ( split qr{\s+}, $_ )[1,2,3] ];
 }
 close $fh

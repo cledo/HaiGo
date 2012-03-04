@@ -9,12 +9,14 @@ use IPC::Open3;
 
 use Test::More tests => 3;
 
-use TLib qw( get_output );
+use TLib qw( get_output set_timeout );
 
 $|++;
 
 my ( $stdin, $stdout, $stderr );
 my $output;
+
+set_timeout(6);
 
 my $pid = open3( $stdin, $stdout, $stderr, './src/haigo' );
 

@@ -127,6 +127,8 @@ int brain_hoshi_stones(void)
 int brain_avg_liberties(void)
 {
     int value;
+    int value_black;
+    int value_white;
     int count_groups_black;
     int count_groups_white;
     int count_liberties_black;
@@ -144,8 +146,17 @@ int brain_avg_liberties(void)
         count_groups_white = 1;
     }
 
+    value_black = count_liberties_black / count_groups_black;
+    value_white = count_liberties_white / count_groups_white;
 
-    value = ( count_liberties_black / count_groups_black ) - ( count_liberties_white / count_groups_white );
+    if ( value_black > 4 ) {
+        value_black = 4;
+    }
+    if ( value_white > 4 ) {
+        value_white = 4;
+    }
+
+    value = value_black - value_white;
 
     return value;
 }

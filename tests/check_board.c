@@ -656,6 +656,106 @@ START_TEST (test_atari_1)
 }
 END_TEST
 
+START_TEST (test_chains_1)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( BLACK, 0, 2 );
+    set_vertex( BLACK, 2, 0 );
+    set_vertex( BLACK, 2, 2 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(BLACK) == 0
+        , "no black chains found (%d)", get_last_chain_nr(BLACK) );
+
+    set_vertex( BLACK, 1, 1 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(BLACK) == 1
+        , "one black chain found (%d)", get_last_chain_nr(BLACK) );
+
+    set_vertex( WHITE, 0, 0 );
+    set_vertex( WHITE, 0, 2 );
+    set_vertex( WHITE, 2, 0 );
+    set_vertex( WHITE, 2, 2 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(WHITE) == 0
+        , "no white chains found (%d)", get_last_chain_nr(WHITE) );
+
+    set_vertex( WHITE, 1, 1 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(WHITE) == 1
+        , "one white chain found (%d)", get_last_chain_nr(WHITE) );
+}
+END_TEST
+
+START_TEST (test_chains_2)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 0, 1 );
+    set_vertex( BLACK, 1, 0 );
+    set_vertex( BLACK, 2, 1 );
+    set_vertex( BLACK, 1, 2 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(BLACK) == 1
+        , "one black chain found (%d)", get_last_chain_nr(BLACK) );
+
+    set_vertex( BLACK, 1, 1 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(BLACK) == 0
+        , "no black chain found (%d)", get_last_chain_nr(BLACK) );
+
+    set_vertex( WHITE, 0, 1 );
+    set_vertex( WHITE, 1, 0 );
+    set_vertex( WHITE, 2, 1 );
+    set_vertex( WHITE, 2, 1 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(WHITE) == 1
+        , "one white chain found (%d)", get_last_chain_nr(WHITE) );
+
+    set_vertex( WHITE, 1, 1 );
+
+    create_groups();
+    set_groups_size();
+    count_liberties();
+
+    fail_unless( get_last_chain_nr(WHITE) == 0
+        , "no white chain found (%d)", get_last_chain_nr(WHITE) );
+}
+END_TEST
+
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Run");
     TCase *tc_init_board          = tcase_create("init_board");
@@ -666,6 +766,7 @@ Suite * board_suite(void) {
     TCase *tc_liberties           = tcase_create("liberties");
     TCase *tc_remove_stones       = tcase_create("remove");
     TCase *tc_atari_groups        = tcase_create("atari");
+    TCase *tc_chains              = tcase_create("chains");
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
@@ -676,6 +777,8 @@ Suite * board_suite(void) {
     tcase_add_test( tc_liberties,     test_count_liberties_1 );
     tcase_add_test( tc_remove_stones, test_remove_stones_1   );
     tcase_add_test( tc_atari_groups,  test_atari_1           );
+    tcase_add_test( tc_chains,        test_chains_1          );
+    tcase_add_test( tc_chains,        test_chains_2          );
 
     suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
@@ -685,6 +788,7 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_liberties           );
     suite_add_tcase( s, tc_remove_stones       );
     suite_add_tcase( s, tc_atari_groups        );
+    suite_add_tcase( s, tc_chains              );
 
     return s;
 }

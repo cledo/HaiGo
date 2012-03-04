@@ -31,6 +31,7 @@ void free_board(void);
 
 //@{
 void create_groups(void);
+void create_group_chains(void);
 void count_liberties(void);
 int  has_neighbour( int i, int j, int neighbour[][2] );
 int  get_free_group_nr( int color );
@@ -41,6 +42,7 @@ void set_groups_size(void);
 int  get_size_of_group( int group_nr );
 int  get_group_count_atari( int color );
 int  get_group_count_liberties( int color );
+int  get_last_chain_nr( int color );
 //@}
 
 /**

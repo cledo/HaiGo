@@ -3,6 +3,7 @@
 
 format A 21 2 0
 format C 11 2 0
+fkey 5 = "label $$ = @date(@now,\"%Y-%m-%d\")"
 label A0 = "File"
 label B0 = "Player"
 label C0 = "Solution"
@@ -103,10 +104,10 @@ label C31 = "D4"
 label A32 = "SGF/book1_032.sgf"
 label B32 = "Black"
 label C32 = "J3"
-label A33 = "SGF/book1_033.sgf"
+label A33 = "#SGF/book1_033.sgf"
 label B33 = "Black"
 label C33 = "F1"
-label A34 = "SGF/book1_034.sgf"
+label A34 = "#SGF/book1_034.sgf"
 label B34 = "Black"
 label C34 = "L5"
-goto A34 A0
+goto A34 A23
