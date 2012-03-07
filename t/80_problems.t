@@ -26,7 +26,7 @@ close $fh
 
 my $pid = get_pid();
 
-plan tests => ( scalar @problem * 2 ) + 4;
+plan tests => ( scalar @problem * 2 ) + 6;
 
 set_timeout(300);
 

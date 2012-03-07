@@ -119,8 +119,8 @@ label A36 = "SGF/book1_036.sgf"
 label B36 = "Black"
 label C36 = "D7"
 label D36 = "wE8"
-label A37 = "SGF/book1_036.sgf"
+label A37 = "SGF/book1_037.sgf"
 label B37 = "Black"
 label C37 = "E1"
 label D37 = "wG2"
-goto C37 A13
+goto A37 A13
