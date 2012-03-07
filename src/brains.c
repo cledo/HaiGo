@@ -239,6 +239,14 @@ int brain_kosumi(void)
     return value;
 }
 
+/**
+ * @brief       Returns a value depending on chains.
+ *
+ * A positional value is returned that depends on the number of chains, and
+ * the number of groups not part of a chain per color.
+ *
+ * @return      Value depending on chains.
+ */
 int brain_chains(void)
 {
     int value = 0;
