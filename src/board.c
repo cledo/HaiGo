@@ -218,8 +218,8 @@ void get_board_as_string( char board_output[] )
 {
     int i;      // Index for x-axis
     int j;      // Index for y-axis
-    char x[3];  // Label for x-axis
-    char y[2];  // Label for y-axis
+    char x[2];  // Label for x-axis
+    char y[3];  // Label for y-axis
 
     char buffer[128];
 

@@ -1034,7 +1034,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int k;
     int color;
     //int nr_of_valid_moves;
-    int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][3];
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
@@ -1056,10 +1055,12 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     // Initialise valid_moves:
+    /*
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         valid_moves[k][0] = INVALID;
         valid_moves[k][1] = INVALID;
     }
+    */
 
     // Check if color is valid:
     if ( ! is_color_valid( gtp_argv[0], &color ) ) {
@@ -1498,7 +1499,7 @@ static void gtp_undo( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int  move_number;
     int  color;
     int  i, j;
-    bool is_pass;
+    //bool is_pass;
     int  count_stones;
     int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
     int  k;
@@ -1515,7 +1516,7 @@ static void gtp_undo( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     color        = get_last_move_color();
     i            = get_last_move_i();
     j            = get_last_move_j();
-    is_pass      = get_last_move_pass();
+    //is_pass      = get_last_move_pass();
     count_stones = get_last_move_count_stones();
 
     set_vertex( EMPTY, i, j );

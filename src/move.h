@@ -43,7 +43,6 @@ int  get_move_last_color(void);
 bool is_move_ko( int color, int i, int j );
 int  get_pseudo_valid_move_list( int color, int valid_moves[][4] );
 int  get_valid_move_list( int color, int valid_moves[][4] );
-int  get_capture_moves( int color, int capture_moves_count, int capture_moves[][3] );
 
 int  get_move_number(void);
 int  get_last_move_number(void);
