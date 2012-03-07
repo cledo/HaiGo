@@ -772,10 +772,12 @@ void count_liberties(void)
     int white_group_nr_min = get_last_group_nr(WHITE);
 
     // Initialise liberty lists:
-    for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
+    /*
+    for ( i = 0; i <= board_size * board_size; i++ ) {
         black_liberties[i] = INVALID;
         white_liberties[i] = INVALID;
     }
+    */
 
     for ( i = 0; i <= black_group_nr_max; i++ ) {
         is_liberty_black[i] = false;
@@ -788,9 +790,10 @@ void count_liberties(void)
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
-            if ( get_vertex( i, j ) == EMPTY ) {
+            if ( board[i][j] == EMPTY ) {
                 // North:
-                if ( j + 1 < board_size && ( group_nr = get_group_nr( i, j+1 ) ) ) {
+                if ( j+1 < board_size && group[i][j+1] ) {
+                    group_nr = group[i][j+1];
                     if ( group_nr > 0 ) {
                         is_liberty_black[group_nr] = true;
                     }
@@ -799,7 +802,8 @@ void count_liberties(void)
                     }
                 }
                 // South:
-                if ( j - 1 >= 0 && ( group_nr = get_group_nr( i, j-1 ) ) ) {
+                if ( j-1 >= 0 && group[i][j-1] ) {
+                    group_nr = group[i][j-1];
                     if ( group_nr > 0 ) {
                         is_liberty_black[group_nr] = true;
                     }
@@ -808,7 +812,8 @@ void count_liberties(void)
                     }
                 }
                 // East:
-                if ( i + 1 < board_size && ( group_nr = get_group_nr( i+1, j ) ) ) {
+                if ( i+1 < board_size && group[i+1][j] ) {
+                    group_nr = group[i+1][j];
                     if ( group_nr > 0 ) {
                         is_liberty_black[group_nr] = true;
                     }
@@ -817,7 +822,8 @@ void count_liberties(void)
                     }
                 }
                 // West:
-                if ( i - 1 >= 0 && ( group_nr = get_group_nr( i-1, j ) ) ) {
+                if ( i-1 >= 0 && group[i-1][j] ) {
+                    group_nr = group[i-1][j];
                     if ( group_nr > 0 ) {
                         is_liberty_black[group_nr] = true;
                     }
@@ -1621,3 +1627,34 @@ int get_last_chain_nr( int color )
     return chain_nr;
 }
 
+/**
+ * @brief       Returns number of groups without chain.
+ *
+ * Returns the number of groups that are not part of a chain for a given
+ * color.
+ *
+ * @param[in]   color   Color of groups.
+ * @return      Number of groups without chain.
+ */
+int get_nr_groups_no_chain( int color )
+{
+    int k;
+    int nr_groups_no_chain = 0;
+
+    if ( color == BLACK ) {
+        for ( k = 1; k <= black_last_chain_nr; k++ ) {
+            if ( black_group_chain[k] == 0 ) {
+                nr_groups_no_chain++;
+            }
+        }
+    }
+    else {
+        for ( k = 1; k <= white_last_chain_nr; k++ ) {
+            if ( white_group_chain[k] == 0 ) {
+                nr_groups_no_chain++;
+            }
+        }
+    }
+
+    return nr_groups_no_chain;
+}

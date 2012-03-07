@@ -154,7 +154,8 @@ void search_tree( int color, int *i_selected, int *j_selected )
             if ( do_log ) {
                 i_to_x( i, x );
                 j_to_y( j, y );
-                fprintf( log_file, "%s%s (%d)\n", x, y, valid_moves[k][2] );
+                fprintf( log_file, "%s%s (%d) (a: %d, b: %d)\n"
+                    , x, y, valid_moves[k][2], alpha, beta );
             }
 
             undo_move();
@@ -193,7 +194,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    /*
     printf( "#### Node count: %llu ####\n", node_count );
     printf( "# Level:       %d\n", search_level );
     printf( "# Duration:    %ld\n", stop - start );
@@ -203,7 +203,6 @@ void search_tree( int color, int *i_selected, int *j_selected )
     printf( "# Beta break:  %d\n", beta_break );
     printf( "# Q-Search:    %d\n", count_quiet_search );
     printf( "# Value: (%d)\n", valid_moves[0][2] );
-    */
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -325,10 +324,12 @@ int add_node( int color, int tree_level, int alpha, int beta )
             for ( l = 1; l <= tree_level; l++ ) {
                 strcat( indent, "\t" );
             }
-            fprintf( log_file, "%s%s%s (%d) (T: %d) (%d,%d,%d,%d,%d,%d,%d)\n", indent, x, y
+            fprintf( log_file, "%s%s%s (%d) (T: %d) (%d,%d,%d,%d,%d,%d,%d) (a: %d, b: %d)\n"
+                , indent, x, y
                 , valid_moves[k][2], valid_moves[k][3], value_list[0], value_list[1]
                 , value_list[2], value_list[3], value_list[4], value_list[5]
-                , value_list[6] );
+                , value_list[6]
+                , alpha, beta );
         }
 
         undo_move();

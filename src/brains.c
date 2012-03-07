@@ -238,3 +238,29 @@ int brain_kosumi(void)
 
     return value;
 }
+
+int brain_chains(void)
+{
+    int value = 0;
+    int count_black_chains   = get_last_chain_nr(BLACK);
+    int count_white_chains   = get_last_chain_nr(WHITE);
+    int count_black_no_chain = get_nr_groups_no_chain(BLACK);
+    int count_white_no_chain = get_nr_groups_no_chain(WHITE);
+
+    value -= count_black_no_chain;
+    if ( count_black_chains == 0 ) {
+        value -= 10;
+    }
+    else {
+        value += 10 / count_black_chains;
+    }
+    value += count_white_no_chain;
+    if ( count_white_chains == 0 ) {
+        value += 10;
+    }
+    else {
+        value -= 10 / count_white_chains;
+    }
+
+    return value;
+}

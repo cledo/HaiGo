@@ -14,5 +14,6 @@ int brain_avg_liberties(void);
 int brain_edge_stones(void);
 int brain_hoshi_stones(void);
 int brain_kosumi(void);
+int brain_chains(void);
 
 #endif
