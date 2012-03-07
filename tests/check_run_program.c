@@ -167,15 +167,18 @@ START_TEST (test_select_command_9)
 {
     struct command command_data;
 
+    init_board(BOARD_SIZE_MIN);
+    init_known_commands();
+
     command_data.id = 0;
     my_strcpy( command_data.name, "genmove", MAX_TOKEN_LENGTH );
     my_strcpy( command_data.gtp_argv[0], "BLACK", MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 1;
 
-    init_board(BOARD_SIZE_MIN);
-    init_known_commands();
     select_command(&command_data);
     fail_unless( get_output_error() == false, "genmove command identified" );
+
+    free_board();
 }
 END_TEST
 
@@ -280,6 +283,8 @@ START_TEST (test_select_command_15)
 
     select_command(&command_data);
     fail_unless( get_output_error() == false, "undo command identified" );
+
+    free_board();
 }
 END_TEST
 
@@ -296,6 +301,7 @@ START_TEST (test_select_command_16)
     select_command(&command_data);
     fail_unless( get_output_error() == false, "showboard command identified" );
 
+    free_board();
 }
 END_TEST
 
@@ -444,6 +450,8 @@ START_TEST (test_fixed_handicap_1)
     init_known_commands();
     select_command(&command_data);
     fail_unless( get_output_error() == false, "fixed_handicap 9 set" );
+
+    free_board();
 }
 END_TEST
 
@@ -486,7 +494,7 @@ Suite * run_program_suite(void) {
     suite_add_tcase( s, tc_core );
     suite_add_tcase( s, tc_gtp  );
 
-    tcase_set_timeout( tc_gtp, 20 );
+    tcase_set_timeout( tc_gtp, 120 );
 
     return s;
 }
@@ -496,6 +504,9 @@ int main(void) {
 
     Suite *s    = run_program_suite();
     SRunner *sr = srunner_create(s);
+
+    // DEBUG:
+    //srunner_set_fork_status ( sr, CK_NOFORK );
 
     srunner_run_all( sr, CK_NORMAL );
     number_failed = srunner_ntests_failed(sr);
