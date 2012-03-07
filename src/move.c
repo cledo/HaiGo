@@ -366,6 +366,8 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][4] )
     }
     valid_moves[count][0] = INVALID;
     valid_moves[count][1] = INVALID;
+    valid_moves[count][2] = 0;
+    valid_moves[count][3] = 0;
 
     return count;
 }
@@ -406,7 +408,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     //int  count_liberties_player_after;
     int  count_liberties_opponent_after;
 
-    int value_list[4];
+    int value_list[7];
 
     valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
