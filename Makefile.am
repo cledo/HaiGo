@@ -24,9 +24,6 @@ cover-clean: FORCE
 	@rm -f src/*.gcov
 	@rm -f src/*.gcda
 	@rm -f src/*.gcno
-	@rm -f src/brains/*.gcov
-	@rm -f src/brains/*.gcda
-	@rm -f src/brains/*.gcno
 	@rm -f tests/*.gcov
 	@rm -f tests/.*.gcov
 	@rm -f tests/*.gcda

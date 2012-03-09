@@ -475,7 +475,6 @@ END_TEST
 
 START_TEST (test_get_valid_move_list)
 {
-    int k, l;
     int s = 2;
     int color;
 
