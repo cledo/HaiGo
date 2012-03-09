@@ -1,7 +1,27 @@
 #include "brains.h"
 #include "evaluate.h"
 
+/**
+ * @file    evaluate.c
+ *
+ * @brief   Wraps all the different evaluating functions.
+ *
+ * [Multi-line
+ * description still missing ...]
+ *
+ * @todo Maybe this should be put into brain.c.
+ *
+ */
 
+/**
+ * @brief       Evaluates a position.
+ *
+ * Evaluates a position on the board by calling all the different brain_*
+ * functions and returns a single value.
+ *
+ * @param[out]  value_list  List of different value parts (necessary for * debugging).
+ * @return      Value of position
+ */
 int evaluate_position( int value_list[] )
 {
     int value = 0;

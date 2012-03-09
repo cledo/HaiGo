@@ -29,8 +29,6 @@ static void add_value( struct property_st *property_st, char *property_value );
  *
  * @param[in]   file_content    SGF string as read from file
  * @return      Pointer to SGF tree
- * @todo        Should this function write into the move_history or build an
- *              SGF tree?
  */
 struct node_st * parse_sgf( char *file_content )
 {
@@ -235,7 +233,6 @@ void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, in
  * @param[in]   sgf_tree        Pointer to SGF tree
  * @param[out]  property_name   Name of property to add
  * @return      Nothing
- * @todo        malloc needs free ...
  */
 void add_property( struct node_st *sgf_tree, char property_name[] )
 {
@@ -243,20 +240,17 @@ void add_property( struct node_st *sgf_tree, char property_name[] )
 
     int property_count = sgf_tree->property_count;
 
-    // ... where to free() this stuff ... ??
     property = malloc( sizeof( struct property_st ) );
     if ( property == NULL ) {
         fprintf( stderr, "malloc for property failed\n" );
         exit(1);
     }
-    //printf("Prop: %p\n", property );
 
     property->name = malloc( strlen(property_name) + 1 );
     if ( property->name == NULL ) {
         fprintf( stderr, "malloc for property->name failed\n" );
         exit(1);
     }
-    //printf("PropName: %p\n", property->name );
 
     my_strcpy( property->name, property_name, (int) strlen(property_name) + 1 );
 

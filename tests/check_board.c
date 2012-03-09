@@ -757,7 +757,7 @@ START_TEST (test_chains_2)
 END_TEST
 
 Suite * board_suite(void) {
-    Suite *s                      = suite_create("Run");
+    Suite *s                      = suite_create("Board");
     TCase *tc_init_board          = tcase_create("init_board");
     TCase *tc_get_board_as_string = tcase_create("get_board_as_string");
     TCase *tc_groups              = tcase_create("groups");

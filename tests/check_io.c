@@ -426,7 +426,7 @@ END_TEST
 
 
 Suite * io_suite(void) {
-    Suite *s = suite_create("Run");
+    Suite *s = suite_create("IO");
 
     TCase *tc_drop_comment    = tcase_create("drop_comment");
     TCase *tc_trim            = tcase_create("trim");

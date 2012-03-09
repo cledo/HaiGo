@@ -74,13 +74,18 @@ static void set_chain_nr( int group_nr1, int group_nr2 );
  *
  *  @param[in]  wanted_board_size  Integer of intended board size
  *  @return     nothing
- *  @sa         [n/a]
  *
- *  @todo   A size check has to be implemented probably.
  */
 void init_board( int wanted_board_size )
 {
     int i, j;
+
+    // Check intended board size:
+    if ( wanted_board_size < BOARD_SIZE_MIN || wanted_board_size > BOARD_SIZE_MAX ) {
+        fprintf( stderr, "Invalid boardsize given to init_board(): %d\n"
+            , wanted_board_size );
+        exit(1);
+    }
 
     black_captured = 0;
     white_captured = 0;
@@ -392,7 +397,6 @@ void get_label_y_right( int j, char y[] )
  * @sa          init_board()
  * @note        Currently only for the default board sizes (9x9, 13x13, 19x19)
  *              hoshi points are defined in init_board().
- * @todo        This function may be needed as extern later.
  */
 bool is_hoshi( int i, int j )
 {
@@ -427,11 +431,18 @@ int get_board_size(void)
  * @param[in]   j       vertical coordinate
  * @return      nothing
  * @note        Remember that this function may set a stone or delete a stone.
- * @todo        Maybe a coordinate check should be done here ...
  */
 void set_vertex( int color, int i, int j )
 {
-    int old_color = get_vertex( i, j );
+    int old_color;
+
+    // This should be removed later, because of performance reasons:
+    if ( i < 0 || i >= board_size || j < 0 || j >= board_size ) {
+        fprintf( stderr, "Invalid vertex: i: %d, j: %d\n", i, j );
+        exit(1);
+    }
+
+    old_color = get_vertex( i, j );
 
     if ( old_color == BLACK ) {
         hash_id ^= hash_board[i][j][BLACK_HASH];
@@ -460,12 +471,18 @@ void set_vertex( int color, int i, int j )
  * @param[in]   i   horizontal coordinate
  * @param[in]   j   vertex coordinate
  * @return      BLACK|WHITE|EMPTY
- * @sa          set_vertex()
- * @todo        Maybe a coordinate check should be done here ...
  */
 int get_vertex( int i, int j )
 {
-    int color = board[i][j];
+    int color;
+
+    // This should be removed later, because of performance reasons:
+    if ( i < 0 || i >= board_size || j < 0 || j >= board_size ) {
+        fprintf( stderr, "Invalid vertex: i: %d, j: %d\n", i, j );
+        exit(1);
+    }
+
+    color = board[i][j];
 
     return color;
 }
@@ -1026,8 +1043,6 @@ int get_group_count_liberties( int color )
  *
  * @param[out]  captured    List of vertexes
  * @return      Number of captured stones
- * @todo        Maybe a pointer to captured_now[][2] would be enough instead
- *              of performing a copy.
  */
 int get_captured_now( int captured[][2] )
 {
@@ -1442,13 +1457,14 @@ bool exists_hash_id( unsigned id )
 /**
  * @brief       Creates group chains.
  *
- * Still missing!
+ * Determines which groups are part of which group chain.
  * Writes the calculated data into black_last_chain_nr, white_last_chain_nr,
  * black_group_chain[] and white_group_chain[].
  *
  * @return      Nothing
  * @warning     create_groups() must have been called before.
- * @todo        Detailed description missing!
+ * @note        Currently groups that are separated diagonally are part of a
+ *              chain.
  */
 void create_group_chains(void)
 {

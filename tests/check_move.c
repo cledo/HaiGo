@@ -554,7 +554,7 @@ END_TEST
 
 
 Suite * move_suite(void) {
-    Suite *s                    = suite_create("Run");
+    Suite *s = suite_create("Move");
 
     TCase *tc_init_move_history        = tcase_create("init_move_history"       );
     TCase *tc_create_next_move         = tcase_create("create_next_move"        );

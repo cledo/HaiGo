@@ -23,6 +23,16 @@ void free_board(void);
 //@}
 
 /**
+ * @name Vertex related functions
+ *
+ */
+//@{
+void set_vertex( int color, int i, int j );
+int  get_vertex( int i, int j );
+bool is_hoshi( int i, int j );
+//@}
+
+/**
  * @name Group related functions
  *
  * Functions that create and retrieve data according to groups.
@@ -102,9 +112,6 @@ bool     exists_hash_id( unsigned id );
 //@{
 void get_board_as_string( char board_output[] );
 int  get_board_size(void);
-void set_vertex( int color, int i, int j );
-int  get_vertex( int i, int j );
-bool is_hoshi( int i, int j );
 int  get_stone_count( int color );
 //@}
 

@@ -16,10 +16,11 @@
  *
  * @brief   Engine for building the move tree.
  *
- * [Multi-line
- * description still missing ...]
+ * With the function search_tree() a tree of moves is build from the current
+ * position for the given position. Depending on the evaluation of the moves
+ * the move with the best value is returned. For black the best move has the
+ * highest number for white the lowest number.
  *
- * @todo Description still missing!
  *
  */
 

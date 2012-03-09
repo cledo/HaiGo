@@ -37,7 +37,6 @@ with the command line argument -h.\n";
 static int quit_program = 0;
 
 //! @brief Connects one given command name with proper function pointer.
-//! @todo Check if function declaration needs parameters!
 struct command_func {
     char command[MAX_TOKEN_LENGTH]; //!< Sets the name of the GTP command.
     void (*function)();             //!< Sets the pointer to the function for GTP command.
@@ -178,9 +177,6 @@ void set_quit_program(void)
  *  @param[in]  argv    Array of arguments (same as for main())
  *  @return     nothing
  *  @sa         man 3 getopt
- *  @todo       The call to free_board() under the default switch should
- *              probably be subsituted by a more sophisticated clean_up()
- *              function.
  */
 void read_opts( int argc, char **argv )
 {
@@ -197,7 +193,7 @@ void read_opts( int argc, char **argv )
                 set_quit_program();
                 break;
             default:
-                free_board();   // See @todo above.
+                free_board();
                 exit(EXIT_FAILURE);
         }
     }
@@ -543,8 +539,6 @@ void gtp_boardsize( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  *  @sa     Go Text Protokol version 2, 6.3.2 Setup Commands
  * 
  *  @ingroup GTP_Setup_Commands
- *
- * @todo    Set number of captured stones to zero; clear move history.
  */
 void gtp_clear_board( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
@@ -780,12 +774,11 @@ void add_handicap( int i, int j, char output[] )
 /// @ingroup GTP_Commands
 
 /**
- *  @brief Description missing!
+ *  @brief Performs the given move on the board.
  * 
- *  gtp_play() Description missing!
+ *  Implements the GTP command 'play', which performs the given move on the
+ *  board.
  *
- *  @todo Description is missing!
- * 
  *  @param[in]  gtp_argc    Number of arguments of GTP command
  *  @param[in]  gtp_argv    Array of all arguments for GTP command
  *  @return     nothing
@@ -1026,9 +1019,7 @@ void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  * @param[in]   gtp_argv    Array of all arguments for GTP command
  * @return      Nothing
  * @sa          Go Text Protokol version 2, 6.3.3 Core Play Commands
- * @todo        Must also update captured stones.
- * @todo        Move must be added to move history.
- * @todo        Must be able to output "pass" or "resign"!
+ * @todo        Must be able to output "pass" and "resign"!
  *
  * @ingroup GTP_Core_Play_Commands
  */
@@ -1036,7 +1027,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     int k;
     int color;
-    //int nr_of_valid_moves;
     int i, j;
     int nr_of_removed_stones;
     int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
@@ -1056,14 +1046,6 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
         captured_now[k][0] = INVALID;
         captured_now[k][1] = INVALID;
     }
-
-    // Initialise valid_moves:
-    /*
-    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        valid_moves[k][0] = INVALID;
-        valid_moves[k][1] = INVALID;
-    }
-    */
 
     // Check if color is valid:
     if ( ! is_color_valid( gtp_argv[0], &color ) ) {
@@ -1118,12 +1100,15 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     push_move();
 
     // Create vertex for output:
+    /*
     if ( i >= 8 ) {
         i++;
     }
     i += 65;
     x[0] = (char) i;
     x[1] = '\0';
+    */
+    i_to_x( i, x );
 
     j++;
     y[0] = (char)(int)( j / 10 + 48 );

@@ -143,6 +143,7 @@ START_TEST (test_select_command_7)
     my_strcpy( command_data.name, "clear_board", MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 0;
 
+    init_board(2);
     init_known_commands();
     select_command(&command_data);
     fail_unless( get_output_error() == false, "clear_board command identified" );
