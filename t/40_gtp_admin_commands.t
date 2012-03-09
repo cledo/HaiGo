@@ -32,6 +32,7 @@ my @known_commands = qw{
     undo
     loadsgf
     hg-log
+    hg-stats
     showgroups
 };
 

@@ -83,6 +83,7 @@ static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 /* Debug commands */
 static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
 /* SGF parsing commands */
@@ -286,6 +287,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_loadsgf);
     my_strcpy( known_commands[i].command, "hg-log", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_hg_log);
+    my_strcpy( known_commands[i].command, "hg-stats", MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_hg_stats);
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
@@ -1560,6 +1563,47 @@ void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     else {
         add_output("log off");
     }
+
+    return;
+}
+
+/**
+ * @brief       Shows search tree information about last generated move.
+ *
+ * Shows some statistical data of the search tree of the last generated move.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ */
+void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    char temp_str[100];
+    struct search_stats_st stats = get_search_stats();
+
+    add_output("");
+    snprintf( temp_str, 100, "# Color:     %s",   stats.color         );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Move:      %s",   stats.move          );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Level:     %d",   stats.level         );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Duration:  %lu",  stats.duration      );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Nodes:     %llu", stats.node_count    );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Nodes/sec: %llu", stats.nodes_per_sec );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Q-Search:  %d",   stats.qsearch_count );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Hash-Hit:  %d",   stats.hash_hit      );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Alpha-Cut: %d",   stats.alpha_cut     );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Beta-Cut:  %d",   stats.beta_cut      );
+    add_output(temp_str);
+    snprintf( temp_str, 100, "# Value:     %d",   stats.value         );
+    add_output(temp_str);
 
     return;
 }

@@ -10,7 +10,7 @@
  *
  */
 
-#define COUNT_KNOWN_COMMANDS 18 //!< Defines the number of known GTP commands.
+#define COUNT_KNOWN_COMMANDS 19 //!< Defines the number of known GTP commands.
 
 void init_known_commands(void);
 void select_command( struct command *command_data );

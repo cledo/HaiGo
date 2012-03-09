@@ -36,6 +36,10 @@ static bool do_log = false;                     //!< Defines if logging is turne
 static unsigned long long int node_count;       //!< Counts the number of nodes in move tree.
 static FILE *log_file = NULL;                   //!< Log file handler
 
+static struct search_stats_st search_stats;     //!< Information about last generated move.
+
+static void init_search_stats(void);
+
 static int  add_node( int color, int tree_level, int alpha, int beta );
 static void make_move( int color, int i, int j );
 static void undo_move(void);
@@ -90,6 +94,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     search_level_incr = 0;
     count_quiet_search = 0;
 
+    init_search_stats();
     init_hash_table();
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
@@ -194,15 +199,28 @@ void search_tree( int color, int *i_selected, int *j_selected )
         diff_time = 1;
     }
 
-    printf( "#### Node count: %llu ####\n", node_count );
-    printf( "# Level:       %d\n", search_level );
-    printf( "# Duration:    %ld\n", stop - start );
-    printf( "# Nodes/sec.:  %llu\n", node_count / diff_time );
-    printf( "# HashHit:     %u\n", hash_hit );
-    printf( "# Alpha break: %d\n", alpha_break );
-    printf( "# Beta break:  %d\n", beta_break );
-    printf( "# Q-Search:    %d\n", count_quiet_search );
-    printf( "# Value: (%d)\n", valid_moves[0][2] );
+    // Save some stats about this search:
+    search_stats.color[0] = '\0';
+    if ( color == BLACK ) {
+        my_strcpy( search_stats.color, "Black", 6 );
+    }
+    else {
+        my_strcpy( search_stats.color, "White", 6 );
+    }
+    i_to_x( valid_moves[0][0], x );
+    j_to_y( valid_moves[0][1], y );
+    search_stats.move[0] = '\0';
+    strcat( search_stats.move, x );
+    strcat( search_stats.move, y );
+    search_stats.level         = search_level;
+    search_stats.duration      = stop - start;
+    search_stats.node_count    = node_count;
+    search_stats.nodes_per_sec = node_count / diff_time;
+    search_stats.qsearch_count = count_quiet_search;
+    search_stats.hash_hit      = hash_hit;
+    search_stats.alpha_cut     = alpha_break;
+    search_stats.beta_cut      = beta_break;
+    search_stats.value         = valid_moves[0][2];
 
     *i_selected = valid_moves[0][0];
     *j_selected = valid_moves[0][1];
@@ -563,3 +581,38 @@ void set_do_log(void)
     return;
 }
 
+/**
+ * @brief       Returns search statistics of last generated move.
+ *
+ * Returns a data structure with information about the last generated move.
+ *
+ * @return      Struct of search statistics.
+ */
+struct search_stats_st get_search_stats(void)
+{
+
+    return search_stats;
+}
+
+/**
+ * @brief       Initialises the search_stats_st struct.
+ *
+ * Sets all members of the search_stats struct to zero.
+ *
+ * @return      Nothing
+ */
+void init_search_stats(void)
+{
+    search_stats.color[0]      = '\0';
+    search_stats.move[0]       = '\0';
+    search_stats.level         = 0;
+    search_stats.duration      = 0;
+    search_stats.node_count    = 0;
+    search_stats.nodes_per_sec = 0;
+    search_stats.hash_hit      = 0;
+    search_stats.alpha_cut     = 0;
+    search_stats.beta_cut      = 0;
+    search_stats.value         = 0;
+
+    return;
+}

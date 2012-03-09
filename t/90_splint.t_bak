@@ -5,10 +5,13 @@ use Carp;
 
 use Test::More;
 
-my @splint_args = qw(
-    -weak
-    -sizeofformalarray
-    -warnposix
+my @splint_args = (
+    '-weak',
+    '-sizeofformalarray',
+    '-warnposix',
+#    '+skip-posix-headers',
+#    '+skip-sys-headers',
+    '-sysdirs /usr/include:/usr/include/sys:/usr/include/linux:/usr/lib/gcc/i686-linux-gnu/4.6.1/include',
 );
 #-boolcompare
 
