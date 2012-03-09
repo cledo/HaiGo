@@ -1100,25 +1100,8 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     push_move();
 
     // Create vertex for output:
-    /*
-    if ( i >= 8 ) {
-        i++;
-    }
-    i += 65;
-    x[0] = (char) i;
-    x[1] = '\0';
-    */
     i_to_x( i, x );
-
-    j++;
-    y[0] = (char)(int)( j / 10 + 48 );
-    y[1] = (char)( j % 10 + 48 );
-    y[2] = '\0';
-    if ( y[0] == '0' ) {
-        y[0] = y[1];
-        y[1] = '\0';
-    }
-
+    j_to_y( j, y );
     strcat( vertex, x );
     strcat( vertex, y );
     add_output(vertex);

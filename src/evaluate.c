@@ -7,10 +7,7 @@
  *
  * @brief   Wraps all the different evaluating functions.
  *
- * [Multi-line
- * description still missing ...]
- *
- * @todo Maybe this should be put into brain.c.
+ * Evaluates the board position.
  *
  */
 
@@ -152,7 +149,7 @@ int brain_hoshi_stones(void)
 }
 
 /**
- * @brief       returns value depending on average liberties per group.
+ * @brief       Returns value depending on average liberties per group.
  *
  * The number of liberties is divided by the number of groups for black and
  * white. The average for black minus the average for white is the returned
