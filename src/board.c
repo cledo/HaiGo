@@ -1765,15 +1765,15 @@ void dilation(void)
     int board_size = get_board_size();
 
     for ( i = 0; i < board_size; i++ ) {
-        temp1 = temp2 = 0;
         for ( j = 0; j < board_size; j++ ) {
-           if ( bouzy_1[i][j] >= 0 && ! has_white_influence( i, j ) ) {
-               temp1 = count_black_influence( i, j );
-           }
-           if ( bouzy_1[i][j] <= 0 && ! has_black_influence( i, j ) ) {
-               temp2 = count_white_influence( i, j );
-           }
-           bouzy_2[i][j] = bouzy_1[i][j] + temp1 - temp2;
+            temp1 = temp2 = 0;
+            if ( bouzy_1[i][j] >= 0 && ! has_white_influence( i, j ) ) {
+                temp1 = count_black_influence( i, j );
+            }
+            if ( bouzy_1[i][j] <= 0 && ! has_black_influence( i, j ) ) {
+                temp2 = count_white_influence( i, j );
+            }
+            bouzy_2[i][j] = bouzy_1[i][j] + temp1 - temp2;
         }
     }
 
@@ -1924,18 +1924,20 @@ void erosion(void)
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
             if ( bouzy_1[i][j] > 0 ) {
-                bouzy_1[i][j] -= count_le_zero( i, j );
-                if ( bouzy_1[i][j] < 0 ) {
-                    bouzy_1[i][j] = 0;
+                bouzy_2[i][j] = bouzy_1[i][j] - count_le_zero( i, j );;
+                if ( bouzy_2[i][j] < 0 ) {
+                    bouzy_2[i][j] = 0;
                 }
             }
             else if ( bouzy_1[i][j] < 0 ) {
-                bouzy_1[i][j] += count_ge_zero( i, j );
-                if ( bouzy_1[i][j] > 0 ) {
-                    bouzy_1[i][j] = 0;
+                bouzy_2[i][j] = bouzy_1[i][j] + count_ge_zero( i, j );
+                if ( bouzy_2[i][j] > 0 ) {
+                    bouzy_2[i][j] = 0;
                 }
             }
-            bouzy_2[i][j] = bouzy_1[i][j];
+            else {
+                bouzy_2[i][j] = bouzy_1[i][j];
+            }
         }
     }
 
@@ -2099,11 +2101,14 @@ void init_bouzy_1(void)
  */
 void init_bouzy_2(void)
 {
-    int i;
+    int i, j;
     int board_size = get_board_size();
 
     for ( i = 0; i < board_size; i++ ) {
-        memset( bouzy_2[i], 0, board_size * sizeof(int) );
+        //memset( bouzy_2[i], 0, board_size * sizeof(int) );
+        for ( j = 0; j < board_size; j++ ) {
+            bouzy_2[i][j] = 0;
+        }
     }
 
     return;
