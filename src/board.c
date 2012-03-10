@@ -18,6 +18,7 @@
  *
  */
 
+
 #define BLACK_HASH 0    //!< Index for black stone in hash board.
 #define WHITE_HASH 1    //!< Index for white stone in hash board.
 #define KO_HASH    2    //!< Index for ko field in hash board.
@@ -25,9 +26,11 @@
 
 /* State variables */
 // As described in GTP v2.0 chapter 5.1
-static int  **board;   //!< The main board data structure.
-static int  **group;   //!< A helper board which contains group numbers.
-static bool **hoshi;   //!< A helper board which defines the star points.
+static int  **board;    //!< The main board data structure.
+static int  **group;    //!< A helper board which contains group numbers.
+static bool **hoshi;    //!< A helper board which defines the star points.
+
+static int *empty_row;  //!< Pointer to empty row pattern.
 
 static unsigned ***hash_board;  //!< Initial hash board according to Zobrist hashing.
 static unsigned hash_id;        //!< Represents the hash ID of a position on the board.
@@ -158,8 +161,16 @@ void init_board( int wanted_board_size )
         black_group_chain[i] = 0;
         white_group_chain[i] = 0;
     }
+    black_last_group_nr = 0;
+    white_last_group_nr = 0;
     black_last_chain_nr = 0;
     white_last_chain_nr = 0;
+
+    // Initialise empty row pattern:
+    empty_row = malloc( sizeof(int) * board_size );
+    for ( i = 0; i < board_size; i++ ) {
+        empty_row[i] = 0;
+    }
 
     init_hash_board();
 
@@ -189,7 +200,6 @@ void free_board(void)
     free(board);
     free(group);
     free(hoshi);
-
     board = NULL;
     group = NULL;
     hoshi = NULL;
@@ -201,8 +211,10 @@ void free_board(void)
         free( hash_board[i] );
     }
     free(hash_board);
-
     hash_board = NULL;
+
+    free(empty_row);
+    empty_row = NULL;
 
     return;
 }
@@ -386,6 +398,63 @@ void get_label_y_right( int j, char y[] )
 }
 
 /**
+ * @brief       Creates groups of stones.
+ *
+ * This function creates groups of stone and assigns numbers to them. These
+ * numbers are stored in the group data structure. Black groups have positive
+ * numbers, white groups have negative numbers. Empty fields are marked with
+ * zero.
+ *
+ * @return      nothing
+ * @note        When this function is called, the whole group board is rebuild
+ *              from scratch.
+ * @todo        Maybe a function is needed that updates the group board,
+ *              instead of rebuilding it each time again.
+ */
+void create_groups(void)
+{
+    int i, j;
+    int color;
+
+    black_last_group_nr = 0;
+    white_last_group_nr = 0;
+
+    // Reset group board:
+    for ( i = 0; i < board_size; i++ ) {
+        memset( (void *)(group[i]), 0, board_size * sizeof(int) );
+    }
+
+    for ( i = 0; i < board_size; i++ ) {
+        // Skip row if it is empty:
+        if ( ! memcmp( (void *) (board[i]), (void *) empty_row, board_size * sizeof(int) ) ) {
+            continue;
+        }
+
+        for ( j = 0; j < board_size; j++ ) {
+
+            color = get_vertex( i, j );
+
+            // Skip field if it is empty:
+            if ( color == EMPTY ) {
+                continue;
+            }
+
+            // Skip if group number is set already:
+            if ( group[i][j] ) {
+                continue;
+            }
+
+            set_group( i, j );
+        }
+    }
+
+    // TEST:
+    create_group_chains();
+
+    return;
+}
+
+/**
  * @brief   Checks if a given vertex is a star point.
  *
  * Checks if a given vertex (with its separate coordinates) is a star point
@@ -437,10 +506,12 @@ void set_vertex( int color, int i, int j )
     int old_color;
 
     // This should be removed later, because of performance reasons:
+    /*
     if ( i < 0 || i >= board_size || j < 0 || j >= board_size ) {
         fprintf( stderr, "Invalid vertex: i: %d, j: %d\n", i, j );
         exit(1);
     }
+    */
 
     old_color = get_vertex( i, j );
 
@@ -477,70 +548,16 @@ int get_vertex( int i, int j )
     int color;
 
     // This should be removed later, because of performance reasons:
+    /*
     if ( i < 0 || i >= board_size || j < 0 || j >= board_size ) {
         fprintf( stderr, "Invalid vertex: i: %d, j: %d\n", i, j );
         exit(1);
     }
+    */
 
     color = board[i][j];
 
     return color;
-}
-
-/**
- * @brief       Creates groups of stones.
- *
- * This function creates groups of stone and assigns numbers to them. These
- * numbers are stored in the group data structure. Black groups have positive
- * numbers, white groups have negative numbers. Empty fields are marked with
- * zero.
- *
- * @return      nothing
- * @note        When this function is called, the whole group board is rebuild
- *              from scratch.
- * @todo        Maybe a function is needed that updates the group board,
- *              instead of rebuilding it each time again.
- */
-void create_groups(void)
-{
-    int i, j;
-    int color;
-
-    black_last_group_nr = 0;
-    white_last_group_nr = 0;
-
-    // Reset group board:
-    for ( i = 0; i < board_size; i++ ) {
-        for ( j = 0; j < board_size; j++ ) {
-            group[i][j] = 0;
-        }
-    }
-
-    for ( i = 0; i < board_size; i++ ) {
-        for ( j = 0; j < board_size; j++ ) {
-
-            color = get_vertex( i, j );
-
-            // Skip field if it is empty:
-            if ( color == EMPTY ) {
-                continue;
-            }
-
-            // Skip if group number is set already:
-            if ( group[i][j] ) {
-                continue;
-            }
-
-            set_group( i, j );
-
-        }
-
-    }
-
-    // TEST:
-    create_group_chains();
-
-    return;
 }
 
 /**
@@ -1076,12 +1093,17 @@ void set_groups_size(void)
     int i, j;
     int group_nr;
 
-    for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
-        black_group_size[i] = 0;
-        white_group_size[i] = 0;
-    }
+    memset( (void *) black_group_size
+        , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
+    memset( (void *) white_group_size
+        , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
 
     for ( i = 0; i < board_size; i++ ) {
+        // Skip row if it is empty:
+        if ( ! memcmp( (void *) (board[i]), (void *) empty_row, board_size * sizeof(int) ) ) {
+            continue;
+        }
+
         for ( j = 0; j < board_size; j++ ) {
             group_nr = group[i][j];
             if ( group_nr == 0 ) {
@@ -1470,7 +1492,6 @@ void create_group_chains(void)
 {
     int i, j;
     int I, J;
-    int k;
     int color;
     int group_nr1, group_nr2;
     int board_size = get_board_size();
@@ -1478,10 +1499,11 @@ void create_group_chains(void)
     black_last_chain_nr = 0;
     white_last_chain_nr = 0;
 
-    for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
-        black_group_chain[k] = 0;
-        white_group_chain[k] = 0;
-    }
+    // Reset black_group_chain and white_group_chain:
+    memset( (void *) black_group_chain, 0
+        , BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
+    memset( (void *) white_group_chain, 0
+        , BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
@@ -1674,3 +1696,4 @@ int get_nr_groups_no_chain( int color )
 
     return nr_groups_no_chain;
 }
+

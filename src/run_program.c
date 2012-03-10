@@ -500,7 +500,6 @@ void gtp_list_commands( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  *  @brief Changes the current board size.
  * 
  *  gtp_boardsize() changes the current size of the board.
- *  by PROGRAM_NAME.
  * 
  *  @param[in]  gtp_argc    Number of arguments of GTP command
  *  @param[in]  gtp_argv    Array of all arguments for GTP command

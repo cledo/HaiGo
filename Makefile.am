@@ -5,16 +5,16 @@ cover: FORCE
 	@./configure CFLAGS="--coverage -g -O0"
 
 	## ---- Unit Tests ---- ##
-	## @prove t/00_make_clean.t t/01_make.t t/02_make_check.t
-	## @lcov -d tests -c -o cover/haigo.info
+	@prove t/00_make_clean.t t/01_make.t t/02_make_check.t
+	@lcov -d tests -c -o cover/haigo.info
 
 	## ---- System Tests ---- ##
 	## @prove t/00_make_clean.t t/01_make.t t/0[4-9]* t/[1-9]*
 	## @lcov -d src -c -o cover/haigo.info
 
 	## ---- Unit and System Tests ---- ##
-	@prove
-	@lcov -d src -d tests -c -o cover/haigo.info
+	## @prove
+	## @lcov -d src -d tests -c -o cover/haigo.info
 
 	@genhtml -o cover cover/haigo.info
 	@make cover-clean
