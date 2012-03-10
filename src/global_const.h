@@ -27,7 +27,7 @@
 #define MAX_TOKEN_COUNT  10
 
 //! Sets the length of the GTP output buffer.
-#define MAX_OUTPUT_LENGTH 2048
+#define MAX_OUTPUT_LENGTH 4096
 
 //! Constant for an empty field.
 #define EMPTY   0

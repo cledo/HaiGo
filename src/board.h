@@ -113,6 +113,8 @@ bool     exists_hash_id( unsigned id );
 void get_board_as_string( char board_output[] );
 int  get_board_size(void);
 int  get_stone_count( int color );
+void do_influence(void);
+void get_bouzy_as_string( char bouzy_str[] );
 //@}
 
 #endif

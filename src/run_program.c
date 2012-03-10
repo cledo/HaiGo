@@ -83,6 +83,7 @@ static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
 /* SGF parsing commands */
@@ -251,40 +252,42 @@ void init_known_commands(void)
 
     my_strcpy( known_commands[i].command, "protocol_version", MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_protocol_version);
-    my_strcpy( known_commands[i].command, "name", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "name",             MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_name);
-    my_strcpy( known_commands[i].command, "version", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "version",          MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_version);
-    my_strcpy( known_commands[i].command, "known_command", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "known_command",    MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_known_command);
-    my_strcpy( known_commands[i].command, "list_commands", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "list_commands",    MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_list_commands);
-    my_strcpy( known_commands[i].command, "quit", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "quit",             MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_quit);
-    my_strcpy( known_commands[i].command, "boardsize", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "boardsize",        MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_boardsize);
-    my_strcpy( known_commands[i].command, "clear_board", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "clear_board",      MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_clear_board);
-    my_strcpy( known_commands[i].command, "komi", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "komi",             MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_komi);
-    my_strcpy( known_commands[i].command, "fixed_handicap", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "fixed_handicap",   MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_fixed_handicap);
-    my_strcpy( known_commands[i].command, "level", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "level",            MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_level);
-    my_strcpy( known_commands[i].command, "play", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "play",             MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_play);
-    my_strcpy( known_commands[i].command, "showboard", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "showboard",        MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_showboard);
-    my_strcpy( known_commands[i].command, "genmove", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "genmove",          MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_genmove);
-    my_strcpy( known_commands[i].command, "undo", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "undo",             MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_undo);
-    my_strcpy( known_commands[i].command, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "loadsgf",          MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_loadsgf);
-    my_strcpy( known_commands[i].command, "hg-log", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "hg-log",           MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_hg_log);
-    my_strcpy( known_commands[i].command, "hg-stats", MAX_TOKEN_LENGTH );
+    my_strcpy( known_commands[i].command, "hg-stats",         MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_hg_stats);
+    my_strcpy( known_commands[i].command, "hg-bouzy",         MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_hg_bouzy);
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
@@ -1571,6 +1574,25 @@ void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     add_output(temp_str);
     snprintf( temp_str, 100, "# Value:     %d",   stats.value         );
     add_output(temp_str);
+
+    return;
+}
+
+/**
+ * @brief       Shows influence board.
+ *
+ * Prints an influence board as calculated by Bouzy 5/21.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ */
+void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    char board_output[MAX_OUTPUT_LENGTH * 10];
+
+    get_bouzy_as_string(board_output);
+    add_output(board_output);
 
     return;
 }

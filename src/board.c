@@ -30,6 +30,9 @@ static int  **board;    //!< The main board data structure.
 static int  **group;    //!< A helper board which contains group numbers.
 static bool **hoshi;    //!< A helper board which defines the star points.
 
+static int **bouzy_1;   //!< Board for calculating influence.
+static int **bouzy_2;   //!< Board for storing influence values.
+
 static int *empty_row;  //!< Pointer to empty row pattern.
 
 static unsigned ***hash_board;  //!< Initial hash board according to Zobrist hashing.
@@ -68,6 +71,17 @@ static void get_label_y_right( int j, char y[] );
 
 static void set_chain_nr( int group_nr1, int group_nr2 );
 
+static void init_bouzy_1(void);
+static void init_bouzy_2(void);
+static void dilation(void);
+static bool has_white_influence( int i, int j );
+static bool has_black_influence( int i, int j );
+static int  count_black_influence( int i, int j );
+static int  count_white_influence( int i, int j );
+static void erosion(void);
+static int  count_le_zero( int i, int j );
+static int  count_ge_zero( int i, int j );
+
 /**
  *  @brief Allocates memory for all board data structures.
  *
@@ -100,7 +114,11 @@ void init_board( int wanted_board_size )
     group = malloc( board_size * sizeof(int *) );
     hoshi = malloc( board_size * sizeof(bool *) );
 
-    if ( board == NULL || hoshi == NULL || group == NULL ) {
+    // Initialise influence boards:
+    bouzy_1 = malloc( board_size * sizeof(int *) );
+    bouzy_2 = malloc( board_size * sizeof(int *) );
+
+    if ( board == NULL || hoshi == NULL || group == NULL || bouzy_1 == NULL || bouzy_2 == NULL ) {
         fprintf( stderr, "Failed to malloc memory");
         exit(EXIT_FAILURE);
     }
@@ -109,15 +127,19 @@ void init_board( int wanted_board_size )
         board[i] = malloc( board_size * sizeof(int) );
         group[i] = malloc( board_size * sizeof(int) );
         hoshi[i] = malloc( board_size * sizeof(bool) );
-        if ( board[i] == NULL || hoshi[i] == NULL || group[i] == NULL ) {
+        bouzy_1[i] = malloc( board_size * sizeof(int) );
+        bouzy_2[i] = malloc( board_size * sizeof(int) );
+        if ( board[i] == NULL || hoshi[i] == NULL || group[i] == NULL || bouzy_1[i] == NULL || bouzy_2[i] == NULL ) {
             fprintf( stderr, "Failed to malloc memory");
             exit(EXIT_FAILURE);
         }
 
         for ( j = 0; j < board_size; j++ ) {
-            board[i][j] = EMPTY;
-            group[i][j] = EMPTY;
-            hoshi[i][j] = false;
+            board[i][j]   = EMPTY;
+            group[i][j]   = EMPTY;
+            hoshi[i][j]   = false;
+            bouzy_1[i][j] = EMPTY;
+            bouzy_2[i][j] = EMPTY;
         }
     }
 
@@ -193,16 +215,22 @@ void free_board(void)
     int i, j;
 
     for ( i = 0; i < board_size; i++ ) {
-        free( board[i] );
-        free( group[i] );
-        free( hoshi[i] );
+        free( board[i]   );
+        free( group[i]   );
+        free( hoshi[i]   );
+        free( bouzy_1[i] );
+        free( bouzy_2[i] );
     }
     free(board);
     free(group);
     free(hoshi);
-    board = NULL;
-    group = NULL;
-    hoshi = NULL;
+    free(bouzy_1);
+    free(bouzy_2);
+    board   = NULL;
+    group   = NULL;
+    hoshi   = NULL;
+    bouzy_1 = NULL;
+    bouzy_2 = NULL;
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
@@ -1506,6 +1534,11 @@ void create_group_chains(void)
         , BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
 
     for ( i = 0; i < board_size; i++ ) {
+        // Skip row if it is empty:
+        if ( ! memcmp( (void *) (board[i]), (void *) empty_row, board_size * sizeof(int) ) ) {
+            continue;
+        }
+
         for ( j = 0; j < board_size; j++ ) {
             if ( ( color = get_vertex( i, j ) ) != EMPTY ) {
                 group_nr1 = get_group_nr( i, j );
@@ -1695,5 +1728,384 @@ int get_nr_groups_no_chain( int color )
     }
 
     return nr_groups_no_chain;
+}
+
+/**
+ * @brief       Calculates influence.
+ *
+ * Calculates the influence on the board. The Bouzy 5/21 algorithm is used.
+ *
+ * @return      Nothing.
+ * @sa          Description of Bouzy 5/21: @link6
+ */
+void do_influence(void)
+{
+    int k;
+    int do_dilation = 5;
+    int do_erosion  = 21;
+
+    init_bouzy_1();
+    init_bouzy_2();
+
+    for ( k = 1; k <= do_dilation; k++ ) {
+        dilation();
+    }
+    for ( k = 1; k <= do_erosion; k++ ) {
+        erosion();
+    }
+
+    return;
+}
+
+void dilation(void)
+{
+    int i, j;
+    int **temp_ptr;
+    int temp1, temp2;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        temp1 = temp2 = 0;
+        for ( j = 0; j < board_size; j++ ) {
+           if ( bouzy_1[i][j] >= 0 && ! has_white_influence( i, j ) ) {
+               temp1 = count_black_influence( i, j );
+           }
+           if ( bouzy_1[i][j] <= 0 && ! has_black_influence( i, j ) ) {
+               temp2 = count_white_influence( i, j );
+           }
+           bouzy_2[i][j] = bouzy_1[i][j] + temp1 - temp2;
+        }
+    }
+
+    // Swap bouzy_1 and bouzy_2:
+    temp_ptr = bouzy_2;
+    bouzy_2  = bouzy_1;
+    bouzy_1  = temp_ptr;
+
+    return;
+}
+
+bool has_white_influence( int i, int j )
+{
+    int board_size = get_board_size();
+
+    // North:
+    if ( j + 1 < board_size ) {
+        if ( bouzy_1[i][j+1] < 0 ) {
+            return true;
+        }
+    }
+    // South:
+    if ( j - 1 >= 0 ) {
+        if ( bouzy_1[i][j-1] < 0 ) {
+            return true;
+        }
+    }
+    // East:
+    if ( i + 1 < board_size ) {
+        if ( bouzy_1[i+1][j] < 0 ) {
+            return true;
+        }
+    }
+    // West:
+    if ( i - 1 >= 0 ) {
+        if ( bouzy_1[i-1][j] < 0 ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool has_black_influence( int i, int j )
+{
+    int board_size = get_board_size();
+
+    // North:
+    if ( j + 1 < board_size ) {
+        if ( bouzy_1[i][j+1] > 0 ) {
+            return true;
+        }
+    }
+    // South:
+    if ( j - 1 >= 0 ) {
+        if ( bouzy_1[i][j-1] > 0 ) {
+            return true;
+        }
+    }
+    // East:
+    if ( i + 1 < board_size ) {
+        if ( bouzy_1[i+1][j] > 0 ) {
+            return true;
+        }
+    }
+    // West:
+    if ( i - 1 >= 0 ) {
+        if ( bouzy_1[i-1][j] > 0 ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int count_black_influence( int i, int j )
+{
+    int count = 0;
+    int board_size = get_board_size();
+
+    // North:
+    if ( j + 1 < board_size ) {
+        if ( bouzy_1[i][j+1] > 0 ) {
+            count++;
+        }
+    }
+    // South:
+    if ( j - 1 >= 0 ) {
+        if ( bouzy_1[i][j-1] > 0 ) {
+            count++;
+        }
+    }
+    // East:
+    if ( i + 1 < board_size ) {
+        if ( bouzy_1[i+1][j] > 0 ) {
+            count++;
+        }
+    }
+    // West:
+    if ( i - 1 >= 0 ) {
+        if ( bouzy_1[i-1][j] > 0 ) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int count_white_influence( int i, int j )
+{
+    int count = 0;
+    int board_size = get_board_size();
+
+    // North:
+    if ( j + 1 < board_size ) {
+        if ( bouzy_1[i][j+1] < 0 ) {
+            count++;
+        }
+    }
+    // South:
+    if ( j - 1 >= 0 ) {
+        if ( bouzy_1[i][j-1] < 0 ) {
+            count++;
+        }
+    }
+    // East:
+    if ( i + 1 < board_size ) {
+        if ( bouzy_1[i+1][j] < 0 ) {
+            count++;
+        }
+    }
+    // West:
+    if ( i - 1 >= 0 ) {
+        if ( bouzy_1[i-1][j] < 0 ) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+void erosion(void)
+{
+    int i, j;
+    int **temp_ptr;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            if ( bouzy_1[i][j] > 0 ) {
+                bouzy_1[i][j] -= count_le_zero( i, j );
+                if ( bouzy_1[i][j] < 0 ) {
+                    bouzy_1[i][j] = 0;
+                }
+            }
+            else if ( bouzy_1[i][j] < 0 ) {
+                bouzy_1[i][j] += count_ge_zero( i, j );
+                if ( bouzy_1[i][j] > 0 ) {
+                    bouzy_1[i][j] = 0;
+                }
+            }
+            bouzy_2[i][j] = bouzy_1[i][j];
+        }
+    }
+
+    // Swap bouzy_1 and bouzy_2:
+    temp_ptr = bouzy_2;
+    bouzy_2  = bouzy_1;
+    bouzy_1  = temp_ptr;
+
+    return;
+}
+
+int count_le_zero( int i, int j )
+{
+    int count = 0;
+    int board_size = get_board_size();
+
+    // North:
+    if ( j + 1 < board_size ) {
+        if ( bouzy_1[i][j+1] <= 0 ) {
+            count++;
+        }
+    }
+    // South:
+    if ( j - 1 >= 0 ) {
+        if ( bouzy_1[i][j-1] <= 0 ) {
+            count++;
+        }
+    }
+    // East:
+    if ( i + 1 < board_size ) {
+        if ( bouzy_1[i+1][j] <= 0 ) {
+            count++;
+        }
+    }
+    // West:
+    if ( i - 1 >= 0 ) {
+        if ( bouzy_1[i-1][j] <= 0 ) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int count_ge_zero( int i, int j )
+{
+    int count = 0;
+    int board_size = get_board_size();
+
+    // North:
+    if ( j + 1 < board_size ) {
+        if ( bouzy_1[i][j+1] >= 0 ) {
+            count++;
+        }
+    }
+    // South:
+    if ( j - 1 >= 0 ) {
+        if ( bouzy_1[i][j-1] >= 0 ) {
+            count++;
+        }
+    }
+    // East:
+    if ( i + 1 < board_size ) {
+        if ( bouzy_1[i+1][j] >= 0 ) {
+            count++;
+        }
+    }
+    // West:
+    if ( i - 1 >= 0 ) {
+        if ( bouzy_1[i-1][j] >= 0 ) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Creates string of bouzy board.
+ *
+ * Turns the bouzy board 1 into a string, which can then be printed.
+ *
+ * @param[out]  bouzy_str   String of bouzy board 1.
+ * @return      Nothing
+ * @note        This function is for debugging.
+ */
+void get_bouzy_as_string( char bouzy_str[] )
+{
+    int i, j;
+    int temp;
+    char influence[7];
+
+    do_influence();
+
+    bouzy_str[0] = '\0';
+    influence[0] = '\0';
+
+    strcat( bouzy_str, "\n" );
+    for ( j = board_size - 1; j >= 0; j-- ) {
+        strcat( bouzy_str, "  " );
+        for ( i = 0; i < board_size; i++ ) {
+            temp = bouzy_1[i][j];
+            if ( temp > 999 ) {
+                temp = 999;
+            }
+            else if ( temp < -999 ) {
+                temp = -999;
+            }
+            sprintf( influence, "%5d ", temp );
+            strcat( bouzy_str, influence );
+        }
+        strcat( bouzy_str, "\n" );
+    }
+
+    return;
+}
+
+/**
+ * @brief      Initialises the first Bouzy board.
+ *
+ * Sets the value of the first bouzy board according to the position on the
+ * board. Black stones get 128, white stones -128, empty vertexes are 0.
+ *
+ * @return      Nothing
+ * @sa          Description of Bouzy 5/21: @link6
+ */
+void init_bouzy_1(void)
+{
+    int i, j;
+    int color;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            color = get_vertex( i, j );
+            switch (color) {
+                case EMPTY:
+                    bouzy_1[i][j] = 0;
+                    break;
+                case BLACK:
+                    bouzy_1[i][j] = 128;
+                    break;
+                case WHITE:
+                    bouzy_1[i][j] = -128;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Initialises the second Bouzy board.
+ *
+ * Sets all values of the second bouzy board to zero.
+ *
+ * @return      Nothing.
+ */
+void init_bouzy_2(void)
+{
+    int i;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        memset( bouzy_2[i], 0, board_size * sizeof(int) );
+    }
+
+    return;
 }
 
