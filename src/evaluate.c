@@ -25,10 +25,13 @@ int brain_chains(void);
  * Evaluates a position on the board by calling all the different brain_*
  * functions and returns a single value.
  *
- * @param[out]  value_list  List of different value parts (necessary for * debugging).
+ * @param[out]  value_list  List of different value parts (necessary for debugging).
+ * @param[in]   do_full_eval    If true, does full evaluation.
  * @return      Value of position
+ * @note        Full evaluation (with do_eval_full set to true) should not be
+ *              done for move ordering, only at the end of the search tree.
  */
-int evaluate_position( int value_list[] )
+int evaluate_position( int value_list[], bool do_full_eval )
 {
     int value = 0;
 
@@ -41,7 +44,9 @@ int evaluate_position( int value_list[] )
     value_list[6] = 0;
 
     // TEST:
-    do_influence();
+    if ( do_full_eval ) {
+        do_influence();
+    }
 
     value = value_list[0] + value_list[1] + value_list[2]
         + value_list[3] + value_list[4] + value_list[5] + value_list[6];

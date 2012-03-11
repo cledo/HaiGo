@@ -8,6 +8,6 @@
  *
  */
 
-int evaluate_position( int value_list[] );
+int evaluate_position( int value_list[], bool do_full_eval );
 
 #endif

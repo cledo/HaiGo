@@ -39,8 +39,8 @@ sub ok_command {
     }
 
     my $name;
-    if ( length $command > 25 ) {
-        $name = substr( $command, 0, 20 ) . '... : ' . $ok;
+    if ( length $command > 30 ) {
+        $name = substr( $command, 0, 25 ) . '... : ' . $ok;
     }
     else {
         $name = $command . ': ' . $ok;

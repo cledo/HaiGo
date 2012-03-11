@@ -489,7 +489,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
             temp_moves[k][3]++;
         }
 
-        value = evaluate_position(value_list);
+        value = evaluate_position( value_list, false );
 
         // Undo move:
         nr_of_removed_stones = get_captured_now(captured_now);

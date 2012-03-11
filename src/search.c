@@ -274,7 +274,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
     // PASS if no valid move is possible:
     if ( nr_of_valid_moves == 0 ) {
         make_move( color, INVALID, INVALID );
-        best_value = evaluate_position(value_list);
+        best_value = evaluate_position( value_list, false );
         undo_move();
     }
 
@@ -313,7 +313,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
                 count_quiet_search++;
             }
             else {
-                valid_moves[k][2] = evaluate_position(value_list);
+                valid_moves[k][2] = evaluate_position( value_list, true );
             }
         }
 

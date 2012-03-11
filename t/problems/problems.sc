@@ -148,7 +148,7 @@ label C44 = "G6"
 label A45 = "SGF/book1_045a.sgf"
 label B45 = "White"
 label C45 = "G13"
-label A46 = "SGF/book1_045a.sgf"
+label A46 = "# SGF/book1_045b.sgf"
 label B46 = "White"
 label C46 = "A1"
-goto A47 A28
+goto A46 A28

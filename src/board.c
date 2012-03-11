@@ -74,10 +74,10 @@ static void set_chain_nr( int group_nr1, int group_nr2 );
 static void init_bouzy_1(void);
 static void init_bouzy_2(void);
 static void dilation(void);
-static bool has_white_influence( int i, int j );
-static bool has_black_influence( int i, int j );
-static int  count_black_influence( int i, int j );
-static int  count_white_influence( int i, int j );
+static bool has_lt_zero( int i, int j );
+static bool has_gt_zero( int i, int j );
+static int  count_gt_zero( int i, int j );
+static int  count_lt_zero( int i, int j );
 static void erosion(void);
 static int  count_le_zero( int i, int j );
 static int  count_ge_zero( int i, int j );
@@ -1757,6 +1757,15 @@ void do_influence(void)
     return;
 }
 
+/**
+ * @brief       Dilation for Bouzy 5/21
+ *
+ * This implements the dilation function for the algorithm Bouzy 5/21.
+ *
+ * @return      Nothing
+ * @sa          erosion()
+ * @sa          See explanation of Bouzy 5/21: @link6
+ */
 void dilation(void)
 {
     int i, j;
@@ -1767,11 +1776,11 @@ void dilation(void)
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
             temp1 = temp2 = 0;
-            if ( bouzy_1[i][j] >= 0 && ! has_white_influence( i, j ) ) {
-                temp1 = count_black_influence( i, j );
+            if ( bouzy_1[i][j] >= 0 && ! has_lt_zero( i, j ) ) {
+                temp1 = count_gt_zero( i, j );
             }
-            if ( bouzy_1[i][j] <= 0 && ! has_black_influence( i, j ) ) {
-                temp2 = count_white_influence( i, j );
+            if ( bouzy_1[i][j] <= 0 && ! has_gt_zero( i, j ) ) {
+                temp2 = count_lt_zero( i, j );
             }
             bouzy_2[i][j] = bouzy_1[i][j] + temp1 - temp2;
         }
@@ -1785,7 +1794,20 @@ void dilation(void)
     return;
 }
 
-bool has_white_influence( int i, int j )
+/**
+ * @brief       Checks if there is a neighbour with value below zero.
+ *
+ * Checks if the given field on the bouzy board has a neighbour with a value
+ * below zero. Returns true if there is at least one such neighbour, false
+ * otherwise.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Nothing
+ * @sa          has_gt_zero()
+ * @note        This is a helper function for dilation().
+ */
+bool has_lt_zero( int i, int j )
 {
     int board_size = get_board_size();
 
@@ -1817,7 +1839,20 @@ bool has_white_influence( int i, int j )
     return false;
 }
 
-bool has_black_influence( int i, int j )
+/**
+ * @brief       Checks if there is a neighbour with value above zero.
+ *
+ * Checks if the given field on the bouzy board has a neighbour with a value
+ * above zero. Returns true if there is at least one such neighbour, false
+ * otherwise.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Nothing
+ * @sa          has_gt_zero()
+ * @note        This is a helper function for dilation().
+ */
+bool has_gt_zero( int i, int j )
 {
     int board_size = get_board_size();
 
@@ -1849,7 +1884,19 @@ bool has_black_influence( int i, int j )
     return false;
 }
 
-int count_black_influence( int i, int j )
+/**
+ * @brief       Counts neighbour fields with values above zero.
+ *
+ * Counts the number of adjacent fields that have an influence value above
+ * zero. The number of such fields is returned.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Number of fileds with >= 0.
+ * @sa          count_lt_zero()
+ * @note        This is a helper function for dilation().
+ */
+int count_gt_zero( int i, int j )
 {
     int count = 0;
     int board_size = get_board_size();
@@ -1882,7 +1929,19 @@ int count_black_influence( int i, int j )
     return count;
 }
 
-int count_white_influence( int i, int j )
+/**
+ * @brief       Counts neighbour fields with values below zero.
+ *
+ * Counts the number of adjacent fields that have an influence value below
+ * zero. The number of such fields is returned.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Number of fileds with <= 0.
+ * @sa          count_gt_zero()
+ * @note        This is a helper function for dilation().
+ */
+int count_lt_zero( int i, int j )
 {
     int count = 0;
     int board_size = get_board_size();
@@ -1915,6 +1974,15 @@ int count_white_influence( int i, int j )
     return count;
 }
 
+/**
+ * @brief       Erosion for Bouzy 5/21
+ *
+ * This implements the erosion function for the algorithm Bouzy 5/21.
+ *
+ * @return      Nothing
+ * @sa          dilation()
+ * @sa          See explanation of Bouzy 5/21: @link6
+ */
 void erosion(void)
 {
     int i, j;
@@ -1938,6 +2006,7 @@ void erosion(void)
             else {
                 bouzy_2[i][j] = bouzy_1[i][j];
             }
+
         }
     }
 
@@ -1949,6 +2018,18 @@ void erosion(void)
     return;
 }
 
+/**
+ * @brief       Counts neighbour fields with value <= zero.
+ *
+ * Counts the number of adjacent fields with a value <= zero.
+ * The number of such fields is returned.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Number of fields with <= 0
+ * @sa          count_ge_zero()
+ * @note        This is a helper function for erosion().
+ */
 int count_le_zero( int i, int j )
 {
     int count = 0;
@@ -1982,6 +2063,18 @@ int count_le_zero( int i, int j )
     return count;
 }
 
+/**
+ * @brief       Counts neighbour fields with value >= zero.
+ *
+ * Counts the number of adjacent fields with a value >= zero.
+ * The number of such fields is returned.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Number of fields with >= 0
+ * @sa          count_le_zero()
+ * @note        This is a helper function for erosion().
+ */
 int count_ge_zero( int i, int j )
 {
     int count = 0;
