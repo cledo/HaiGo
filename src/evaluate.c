@@ -38,15 +38,15 @@ int evaluate_position( int value_list[], bool do_full_eval )
     value_list[0] = brain_capture()       * 82;
     value_list[1] = brain_atari()         * 15;
     value_list[2] = brain_avg_liberties() * 1;
-    value_list[3] = brain_kosumi()        * 1;
+    value_list[3] = brain_kosumi()        * 8;
     value_list[4] = brain_edge_stones()   * 1;
-    value_list[5] = brain_chains();
+    value_list[5] = brain_chains()        * 2;  // Should be divided with no_groups
 
     // TEST:
     if ( do_full_eval ) {
         do_influence();
     }
-    value_list[6] = get_count_influence(BLACK) - get_count_influence(WHITE);
+    value_list[6] = ( get_count_influence(BLACK) - get_count_influence(WHITE)) * 1;
     
 
     value = value_list[0] + value_list[1] + value_list[2]
@@ -299,17 +299,17 @@ int brain_chains(void)
 
     value -= count_black_no_chain;
     if ( count_black_chains == 0 ) {
-        value -= 10;
+        value -= 100;
     }
     else {
-        value += 10 / count_black_chains;
+        value += 100 / count_black_chains;
     }
     value += count_white_no_chain;
     if ( count_white_chains == 0 ) {
-        value += 10;
+        value += 100;
     }
     else {
-        value -= 10 / count_white_chains;
+        value -= 100 / count_white_chains;
     }
 
     return value;

@@ -63,13 +63,17 @@ static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection 
 static int black_last_chain_nr;     //!< Stored highest current chain number for black.
 static int white_last_chain_nr;     //!< Stored highest current chain number for white.
 
+/**
+ * @brief   Summary data that contains information about the board position.
+ *
+ **/
 typedef struct {
-    int influence_black;
-    int influence_white;
-    int influence_neutral;
+    int influence_black;    //!< Number of black influence fields.
+    int influence_white;    //!< Number of white influence fields.
+    int influence_neutral;  //!< Number of neutral influence fields.
 } board_stats_t;
 
-board_stats_t board_stats;
+board_stats_t board_stats;  //!< Contains position data.
 
 /* Functions */
 static void init_hash_board(void);
@@ -2156,6 +2160,18 @@ void get_bouzy_as_string( char bouzy_str[] )
         }
         strcat( bouzy_str, "\n" );
     }
+    
+    strcat( bouzy_str, " --------------\n" );
+    strcat( bouzy_str, " Black:   " );
+    sprintf( influence, "%d\n", get_count_influence(BLACK) );
+    strcat( bouzy_str, influence );
+    strcat( bouzy_str, " White:   " );
+    sprintf( influence, "%d\n", get_count_influence(WHITE) );
+    strcat( bouzy_str, influence );
+    strcat( bouzy_str, " Neutral: " );
+    sprintf( influence, "%d\n", get_count_influence(EMPTY) );
+    strcat( bouzy_str, influence );
+    strcat( bouzy_str, "\n" );
 
     return;
 }
