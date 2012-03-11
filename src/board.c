@@ -63,6 +63,15 @@ static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection 
 static int black_last_chain_nr;     //!< Stored highest current chain number for black.
 static int white_last_chain_nr;     //!< Stored highest current chain number for white.
 
+typedef struct {
+    int influence_black;
+    int influence_white;
+    int influence_neutral;
+} board_stats_t;
+
+board_stats_t board_stats;
+
+/* Functions */
 static void init_hash_board(void);
 static void set_group( int i, int j );
 static void get_label_x( int i, char x[] );
@@ -81,6 +90,7 @@ static int  count_lt_zero( int i, int j );
 static void erosion(void);
 static int  count_le_zero( int i, int j );
 static int  count_ge_zero( int i, int j );
+static void count_influence(void);
 
 /**
  *  @brief Allocates memory for all board data structures.
@@ -1754,6 +1764,8 @@ void do_influence(void)
         erosion();
     }
 
+    count_influence();
+
     return;
 }
 
@@ -2205,5 +2217,68 @@ void init_bouzy_2(void)
     }
 
     return;
+}
+
+/**
+ * @brief       Counts influence fields.
+ *
+ * Counts the number of fields of influence for black, white, and neutral.
+ * Black fields have a value above zero, white fields below zero, and neutral
+ * fields have a value of zero. The results are written into board_stats.
+ *
+ * @return      Nothing.
+ */
+void count_influence(void)
+{
+    int i, j;
+    int board_size = get_board_size();
+
+    // Maybe this should be done in a general init function:
+    board_stats.influence_black   = 0;
+    board_stats.influence_white   = 0;
+    board_stats.influence_neutral = 0;
+
+    for ( i = 0; i < board_size; i ++ ) {
+        for ( j = 0; j < board_size; j++ ) {
+            if ( bouzy_1[i][j] > 0 ) {
+                board_stats.influence_black++;
+            }
+            else if ( bouzy_1[i][j] < 0 ) {
+                board_stats.influence_white++;
+            }
+            else {
+                board_stats.influence_neutral++;
+            }
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Returns number of influence fields.
+ *
+ * Returns the number of influence fields for the given color or for neutral.
+ * If the given color is neither BLACK or WHITE, the number of neutral fields
+ * is returned.
+ *
+ * @param[in]   color   Color of the influence fields.
+ * @return      Number of influence fields for color or neutral.
+ */
+int get_count_influence( int color )
+{
+    int count = 0;
+
+    if ( color == BLACK ) {
+        count = board_stats.influence_black;
+    }
+    else if ( color == WHITE ) {
+        count = board_stats.influence_white;
+    }
+    else {
+        count = board_stats.influence_neutral;
+    }
+
+    return count;
 }
 

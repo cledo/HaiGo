@@ -41,12 +41,13 @@ int evaluate_position( int value_list[], bool do_full_eval )
     value_list[3] = brain_kosumi()        * 1;
     value_list[4] = brain_edge_stones()   * 1;
     value_list[5] = brain_chains();
-    value_list[6] = 0;
 
     // TEST:
     if ( do_full_eval ) {
         do_influence();
     }
+    value_list[6] = get_count_influence(BLACK) - get_count_influence(WHITE);
+    
 
     value = value_list[0] + value_list[1] + value_list[2]
         + value_list[3] + value_list[4] + value_list[5] + value_list[6];
