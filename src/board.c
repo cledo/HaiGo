@@ -51,23 +51,22 @@ static int black_captured = 0;     //!< Number of white stones captured by black
 static int white_captured = 0;     //!< Number of black stones captured by white.
 static int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per black group.
 static int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per white group.
-static int black_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
-static int white_group_size[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
 static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
-
-static int black_last_group_nr;     //!< Stores the last used group number for black.
-static int white_last_group_nr;     //!< Stores the last used group number for white.
 
 static int black_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for black.
 static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for white.
-static int black_last_chain_nr;     //!< Stored highest current chain number for black.
-static int white_last_chain_nr;     //!< Stored highest current chain number for white.
 
 /**
  * @brief   Summary data that contains information about the board position.
  *
  **/
 typedef struct {
+    int groups_black;       //!< Number of black groups.
+    int groups_white;       //!< Number of white groups.
+    int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
+    int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
+    int chains_black;       //!< Number of black chains.
+    int chains_white;       //!< Number of white chains.
     int influence_black;    //!< Number of black influence fields.
     int influence_white;    //!< Number of white influence fields.
     int influence_neutral;  //!< Number of neutral influence fields.
@@ -190,17 +189,17 @@ void init_board( int wanted_board_size )
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
         black_liberties[i]  = INVALID;
         white_liberties[i]  = INVALID;
-        black_group_size[i] = 0;
-        white_group_size[i] = 0;
+        board_stats.group_size_black[i] = 0;
+        board_stats.group_size_white[i] = 0;
         captured_now[i][0]  = INVALID;
         captured_now[i][1]  = INVALID;
         black_group_chain[i] = 0;
         white_group_chain[i] = 0;
     }
-    black_last_group_nr = 0;
-    white_last_group_nr = 0;
-    black_last_chain_nr = 0;
-    white_last_chain_nr = 0;
+    board_stats.groups_black = 0;
+    board_stats.groups_white = 0;
+    board_stats.chains_black = 0;
+    board_stats.chains_white = 0;
 
     // Initialise empty row pattern:
     empty_row = malloc( sizeof(int) * board_size );
@@ -458,8 +457,8 @@ void create_groups(void)
     int i, j;
     int color;
 
-    black_last_group_nr = 0;
-    white_last_group_nr = 0;
+    board_stats.groups_black = 0;
+    board_stats.groups_white = 0;
 
     // Reset group board:
     for ( i = 0; i < board_size; i++ ) {
@@ -646,10 +645,10 @@ void set_group( int i, int j )
             if ( group[i][j] == 0 ) {
                 //group[i][j] = get_free_group_nr(color);
                 if ( color == BLACK ) {
-                    group[i][j] = ++black_last_group_nr;
+                    group[i][j] = ++board_stats.groups_black;
                 }
                 else {
-                    group[i][j] = --white_last_group_nr;
+                    group[i][j] = --board_stats.groups_white;
                 }
             }
             break;
@@ -671,14 +670,14 @@ void set_group( int i, int j )
             if ( color == BLACK ) {
                 if ( group_nr_min == 0 || group_nr_min == INT_MAX ) {
                     //group_nr_min = get_free_group_nr(BLACK);
-                    group_nr_min = ++black_last_group_nr;
+                    group_nr_min = ++board_stats.groups_black;
                 }
                 group[i][j] = group_nr_min;
             }
             if ( color == WHITE ) {
                 if ( group_nr_max == 0 || group_nr_max == INT_MIN ) {
                     //group_nr_max = get_free_group_nr(WHITE);
-                    group_nr_max = --white_last_group_nr;
+                    group_nr_max = --board_stats.groups_white;
                 }
                 group[i][j] = group_nr_max;
             }
@@ -793,10 +792,10 @@ int get_last_group_nr( int color )
     int group_nr;
 
     if ( color == BLACK ) {
-        group_nr = black_last_group_nr;
+        group_nr = board_stats.groups_black;
     }
     else {
-        group_nr = white_last_group_nr;
+        group_nr = board_stats.groups_white;
     }
 
     return group_nr;
@@ -1124,7 +1123,7 @@ int get_captured_now( int captured[][2] )
  * @brief       Determines the size of all groups.
  *
  * Determines the size of all black and white groups and stores the results in
- * black_group_size[] and white_group_size[].
+ * board_stats.group_size_black[] and board_stats.group_size_white[i].
  *
  * @sa  get_size_of_group()
  *
@@ -1135,9 +1134,9 @@ void set_groups_size(void)
     int i, j;
     int group_nr;
 
-    memset( (void *) black_group_size
+    memset( (void *) board_stats.group_size_black
         , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
-    memset( (void *) white_group_size
+    memset( (void *) board_stats.group_size_white
         , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
 
     for ( i = 0; i < board_size; i++ ) {
@@ -1152,10 +1151,10 @@ void set_groups_size(void)
                 continue;
             }
             else if ( group_nr > 0 ) {
-                black_group_size[group_nr]++;
+                board_stats.group_size_black[group_nr]++;
             }
             else if ( group_nr < 0 ) {
-                white_group_size[group_nr * -1]++;
+                board_stats.group_size_white[group_nr * -1]++;
             }
         }
     }
@@ -1177,10 +1176,10 @@ int get_size_of_group( int group_nr )
     int group_size = 0;
 
     if ( group_nr > 0 ) {
-        group_size = black_group_size[group_nr];
+        group_size = board_stats.group_size_black[group_nr];
     }
     else if ( group_nr < 0 ) {
-        group_size = white_group_size[group_nr * -1];
+        group_size = board_stats.group_size_white[group_nr * -1];
     }
 
     return group_size;
@@ -1522,8 +1521,8 @@ bool exists_hash_id( unsigned id )
  * @brief       Creates group chains.
  *
  * Determines which groups are part of which group chain.
- * Writes the calculated data into black_last_chain_nr, white_last_chain_nr,
- * black_group_chain[] and white_group_chain[].
+ * Writes the calculated data into board_stats.chains_black,
+ * board_stats.chains_white, black_group_chain[] and white_group_chain[].
  *
  * @return      Nothing
  * @warning     create_groups() must have been called before.
@@ -1538,8 +1537,8 @@ void create_group_chains(void)
     int group_nr1, group_nr2;
     int board_size = get_board_size();
 
-    black_last_chain_nr = 0;
-    white_last_chain_nr = 0;
+    board_stats.chains_black = 0;
+    board_stats.chains_white = 0;
 
     // Reset black_group_chain and white_group_chain:
     memset( (void *) black_group_chain, 0
@@ -1629,14 +1628,14 @@ void set_chain_nr( int group_nr1, int group_nr2 )
     // Both groups have no chain number:
     if ( chain_nr1 == 0 && chain_nr2 == 0 ) {
         if ( color == BLACK ) {
-            black_last_chain_nr++;
-            black_group_chain[group_nr1] = black_last_chain_nr;
-            black_group_chain[group_nr2] = black_last_chain_nr;
+            board_stats.chains_black++;
+            black_group_chain[group_nr1] = board_stats.chains_black;
+            black_group_chain[group_nr2] = board_stats.chains_black;
         }
         else {
-            white_last_chain_nr++;
-            white_group_chain[group_nr1 * -1] = white_last_chain_nr;
-            white_group_chain[group_nr2 * -1] = white_last_chain_nr;
+            board_stats.chains_white++;
+            white_group_chain[group_nr1 * -1] = board_stats.chains_white;
+            white_group_chain[group_nr2 * -1] = board_stats.chains_white;
         }
     }
     // First group has no chain number:
@@ -1664,24 +1663,24 @@ void set_chain_nr( int group_nr1, int group_nr2 )
         if ( color == BLACK ) {
             black_group_chain[group_nr1] = chain_nr_min;
             black_group_chain[group_nr2] = chain_nr_min;
-            for ( k = 1; k <= black_last_chain_nr; k++ ) {
+            for ( k = 1; k <= board_stats.chains_black; k++ ) {
                 if ( black_group_chain[k] == chain_nr_max ) {
                     black_group_chain[k] = chain_nr_min;
                 }
                 if ( black_group_chain[k] > chain_nr_max ) {
-                    black_last_chain_nr = --black_group_chain[k];
+                    board_stats.chains_black = --black_group_chain[k];
                 }
             }
         }
         else {
             white_group_chain[group_nr1 * -1] = chain_nr_min;
             white_group_chain[group_nr2 * -1] = chain_nr_min;
-            for ( k = 1; k <= white_last_chain_nr; k++ ) {
+            for ( k = 1; k <= board_stats.chains_white; k++ ) {
                 if ( white_group_chain[k] == chain_nr_max ) {
                     white_group_chain[k] = chain_nr_min;
                 }
                 if ( white_group_chain[k] > chain_nr_max ) {
-                    white_last_chain_nr = --white_group_chain[k];
+                    board_stats.chains_white = --black_group_chain[k];
                 }
             }
         }
@@ -1703,10 +1702,10 @@ int get_last_chain_nr( int color )
     int chain_nr;
 
     if ( color == BLACK ) {
-        chain_nr = black_last_chain_nr;
+        chain_nr = board_stats.chains_black;
     }
     else {
-        chain_nr = white_last_chain_nr;
+        chain_nr = board_stats.chains_white;
     }
 
     return chain_nr;
@@ -1727,14 +1726,14 @@ int get_nr_groups_no_chain( int color )
     int nr_groups_no_chain = 0;
 
     if ( color == BLACK ) {
-        for ( k = 1; k <= black_last_chain_nr; k++ ) {
+        for ( k = 1; k <= board_stats.chains_black; k++ ) {
             if ( black_group_chain[k] == 0 ) {
                 nr_groups_no_chain++;
             }
         }
     }
     else {
-        for ( k = 1; k <= white_last_chain_nr; k++ ) {
+        for ( k = 1; k <= board_stats.chains_white; k++ ) {
             if ( white_group_chain[k] == 0 ) {
                 nr_groups_no_chain++;
             }

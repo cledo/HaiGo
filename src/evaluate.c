@@ -35,6 +35,7 @@ int evaluate_position( int value_list[], bool do_full_eval )
 {
     int value = 0;
 
+    // Original factors are 82,15,1,1,1,-,-
     value_list[0] = brain_capture()       * 82;
     value_list[1] = brain_atari()         * 15;
     value_list[2] = brain_avg_liberties() * 1;
@@ -314,3 +315,4 @@ int brain_chains(void)
 
     return value;
 }
+
