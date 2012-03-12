@@ -59,6 +59,8 @@ static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection 
  *
  **/
 typedef struct {
+    //int captured_by_black;
+    //int captured_by_white;
     int groups_black;       //!< Number of black groups.
     int groups_white;       //!< Number of white groups.
     int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per black group.
