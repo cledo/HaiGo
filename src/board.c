@@ -49,8 +49,6 @@ struct hash_pos_st hash_table[HASH_TABLE_SIZE];
 static int board_size     = 0;     //!< The size of the board.
 static int black_captured = 0;     //!< Number of white stones captured by black.
 static int white_captured = 0;     //!< Number of black stones captured by white.
-static int black_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per black group.
-static int white_liberties[BOARD_SIZE_MAX * BOARD_SIZE_MAX];   //!< List of number of liberties per white group.
 static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
 
 static int black_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for black.
@@ -63,8 +61,10 @@ static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection 
 typedef struct {
     int groups_black;       //!< Number of black groups.
     int groups_white;       //!< Number of white groups.
-    int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per black group.
-    int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of group size per white group.
+    int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per black group.
+    int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per white group.
+    int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group size per black group.
+    int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group size per white group.
     int chains_black;       //!< Number of black chains.
     int chains_white;       //!< Number of white chains.
     int influence_black;    //!< Number of black influence fields.
@@ -187,14 +187,14 @@ void init_board( int wanted_board_size )
 
     // Initialise liberty lists, group size lists, captured_now list, chain lists:
     for ( i = 0; i < BOARD_SIZE_MAX * BOARD_SIZE_MAX; i++ ) {
-        black_liberties[i]  = INVALID;
-        white_liberties[i]  = INVALID;
-        board_stats.group_size_black[i] = 0;
-        board_stats.group_size_white[i] = 0;
-        captured_now[i][0]  = INVALID;
-        captured_now[i][1]  = INVALID;
-        black_group_chain[i] = 0;
-        white_group_chain[i] = 0;
+        board_stats.group_liberties_black[i] = 0;
+        board_stats.group_liberties_white[i] = 0;
+        board_stats.group_size_black[i]      = 0;
+        board_stats.group_size_white[i]      = 0;
+        captured_now[i][0]                   = INVALID;
+        captured_now[i][1]                   = INVALID;
+        black_group_chain[i]                 = 0;
+        white_group_chain[i]                 = 0;
     }
     board_stats.groups_black = 0;
     board_stats.groups_white = 0;
@@ -831,8 +831,8 @@ void print_groups(void)
  * @brief       Counts liberties of all groups.
  *
  * This function counts the liberties of all black and white groups. The
- * results are written into the two arrays black_liberties[] and
- * white_liberties[].
+ * results are written into the two arrays board_stats.group_liberties_black[] and
+ * board_stats.group_liberties_white[].
  *
  */
 void count_liberties(void)
@@ -856,11 +856,11 @@ void count_liberties(void)
 
     for ( i = 0; i <= black_group_nr_max; i++ ) {
         is_liberty_black[i] = false;
-        black_liberties[i]  = 0;
+        board_stats.group_liberties_black[i] = 0;
     }
     for ( i = 0; i <= white_group_nr_min * -1; i++ ) {
         is_liberty_white[i] = false;
-        white_liberties[i]  = 0;
+        board_stats.group_liberties_white[i] = 0;
     }
 
     for ( i = 0; i < board_size; i++ ) {
@@ -910,13 +910,13 @@ void count_liberties(void)
                 // Count liberties:
                 for ( k = 1; k <= black_group_nr_max; k ++ ) {
                     if ( is_liberty_black[k] ) {
-                        black_liberties[k]++;
+                        board_stats.group_liberties_black[k]++;
                         is_liberty_black[k] = false;
                     }
                 }
                 for ( k = 1; k <= white_group_nr_min * -1; k ++ ) {
                     if ( is_liberty_white[k] ) {
-                        white_liberties[k]++;
+                        board_stats.group_liberties_white[k]++;
                         is_liberty_white[k] = false;
                     }
                 }
@@ -951,10 +951,10 @@ int remove_stones( int color )
 
     if ( color == WHITE ) {
         group_nr_max *= -1;
-        group_liberties = white_liberties;
+        group_liberties = board_stats.group_liberties_white;
     }
     else {
-        group_liberties = black_liberties;
+        group_liberties = board_stats.group_liberties_black;
     }
 
     // Check all groups for current color:
@@ -1022,10 +1022,10 @@ int get_nr_of_liberties( int group_nr )
     int nr_of_liberties;
 
     if ( group_nr > 0 ) {
-        nr_of_liberties = black_liberties[group_nr];
+        nr_of_liberties = board_stats.group_liberties_black[group_nr];
     }
     else {
-        nr_of_liberties = white_liberties[ group_nr * -1 ];
+        nr_of_liberties = board_stats.group_liberties_white[group_nr * -1];
     }
 
     return nr_of_liberties;
