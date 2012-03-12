@@ -63,8 +63,8 @@ typedef struct {
     int groups_white;       //!< Number of white groups.
     int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per black group.
     int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per white group.
-    int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group size per black group.
-    int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group size per white group.
+    int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per black group.
+    int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
     int chains_black;       //!< Number of black chains.
     int chains_white;       //!< Number of white chains.
     int influence_black;    //!< Number of black influence fields.
