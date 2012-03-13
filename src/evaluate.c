@@ -4,9 +4,6 @@
 #include "board.h"
 #include "evaluate.h"
 
-//! Number of brain functions.
-#define COUNT_BRAINS    8
-
 /**
  * @file    evaluate.c
  *
@@ -23,7 +20,8 @@
  **/
 typedef struct {
     int (*function)();  //!< Pointer to brain function.
-    int  factor;        //!< Multiply value to combine with barin function.
+    int factor;         //!< Multiply value to combine with barin function.
+    int limit;          //!< Sets a limit to the brain value.
 } brain_t;
 
 static brain_t brains[COUNT_BRAINS];    //!< List of all brain functions.
@@ -51,30 +49,67 @@ void init_brains(void)
     int i = 0;
 
     brains[i].function = (*brain_capture);
-    brains[i++].factor = 82;
+    brains[i].factor   = 82;
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_atari);
-    brains[i++].factor = 15;
+    brains[i].factor   = 15;
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_avg_liberties);
-    brains[i++].factor = 1;
+    brains[i].factor   = 1;
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_edge_stones);
-    brains[i++].factor = 1;
+    brains[i].factor   = 1;
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_hoshi_stones);
-    brains[i++].factor = 0;
+    brains[i].factor   = 0;
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_kosumi);
-    brains[i++].factor = 4;
+    brains[i].factor   = 1; // 4
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_chains);
-    brains[i++].factor = 1;
+    brains[i].factor   = 1; // 1
+    brains[i++].limit  = 0;
 
     brains[i].function = (*brain_influence);
-    brains[i++].factor = 0;
+    brains[i].factor   = 1;
+    brains[i++].limit  = 0;
 
     return;
+}
+
+/**
+ * @brief       Sets factor for brain function.
+ *
+ * Sets the factor for the given brain identified by index.
+ *
+ * @param[in]   index   Index of brain in brains array.
+ * @param[in]   factor  Value for the factor.
+ */
+void set_factor( int index, int factor )
+{
+    brains[index].factor = factor;
+
+    return;
+}
+
+/**
+ * @brief       Gets factor of brain function.
+ *
+ * Returns value of factor of given brain index.
+ *
+ * @param[in]   index   Index of brain in brains array.
+ * @return      Value of the factor.
+ */
+int get_factor( int index )
+{
+
+    return brains[index].factor;
 }
 
 /**
@@ -104,6 +139,15 @@ int evaluate_position( int value_list[], bool do_full_eval )
             continue;
         }
         value_list[k] = brains[k].function() * brains[k].factor;
+
+        // Limit value:
+        if ( brains[k].limit && value_list[k] > 0 && value_list[k] > brains[k].limit ) {
+            value_list[k] = brains[k].limit;
+        }
+        else if ( brains[k].limit && value_list[k] < 0 && value_list[k] < brains[k].limit * -1 ) {
+            value_list[k] = brains[k].limit * -1;
+        }
+
         value += value_list[k];
     }
 
@@ -111,7 +155,7 @@ int evaluate_position( int value_list[], bool do_full_eval )
 }
 
 /**
- * @brief       Determines value on captured stones.
+ * @brief       Determines value of captured stones.
  *
  * The returned value is determined by the difference of the number of
  * captured stones by black and white.
@@ -246,12 +290,14 @@ int brain_avg_liberties(void)
     value_black = count_liberties_black / count_groups_black;
     value_white = count_liberties_white / count_groups_white;
 
+    /*
     if ( value_black > 4 ) {
         value_black = 4;
     }
     if ( value_white > 4 ) {
         value_white = 4;
     }
+    */
 
     value = value_black - value_white;
 

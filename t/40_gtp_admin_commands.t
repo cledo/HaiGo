@@ -34,6 +34,7 @@ my @known_commands = qw{
     hg-log
     hg-stats
     hg-bouzy
+    hg-factors
     showgroups
 };
 

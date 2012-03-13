@@ -85,6 +85,7 @@ static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
+static void gtp_hg_factors( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
 /* SGF parsing commands */
@@ -290,6 +291,8 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_hg_stats);
     my_strcpy( known_commands[i].command, "hg-bouzy",         MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_hg_bouzy);
+    my_strcpy( known_commands[i].command, "hg-factors",       MAX_TOKEN_LENGTH );
+    known_commands[i++].function = (*gtp_hg_factors);
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
@@ -1595,6 +1598,44 @@ void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     get_bouzy_as_string(board_output);
     add_output(board_output);
+
+    return;
+}
+
+/**
+ * @brief       Sets or prints evaluation factors.
+ *
+ * Sets all the evaluation factors to the given values. When called without
+ * arguments, the current values are shown.
+ *
+ * @param[in]   gtp_argc    Number of arguments of GTP command
+ * @param[in]   gtp_argv    Array of all arguments for GTP command
+ * @return      Nothing
+ */
+void gtp_hg_factors( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
+{
+    int k;
+    int factor;
+    char output[ ( 4 * COUNT_BRAINS ) + 1 ];
+    char temp[4];
+
+    output[0] = '\0';
+    temp[0]   = '\0';
+
+    if ( gtp_argc == 0 ) {
+        for ( k = 0; k < COUNT_BRAINS; k++ ) {
+            snprintf( temp, 4, "%d", get_factor(k) );
+            strcat( output, temp );
+            strcat( output, " " );
+        }
+        add_output(output);
+        return;
+    }
+
+    for ( k = 0; k < gtp_argc; k++ ) {
+        factor = atoi( gtp_argv[k] );
+        set_factor( k, factor );
+    }
 
     return;
 }

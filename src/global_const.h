@@ -71,5 +71,8 @@
 //! Defines maximal quiescence search depth:
 #define MAX_QSEARCH_DEPTH   3
 
+//! Number of brain functions.
+#define COUNT_BRAINS    8
+
 #endif
 
