@@ -2313,6 +2313,8 @@ int get_count_influence( int color )
  * into the board_stats structure.
  *
  * @return      Nothing
+ * @note        So not to count each kosumi twice, only the directions
+ *              north-east and south-east are checked.
  */
 void count_kosumi(void)
 {
@@ -2336,20 +2338,6 @@ void count_kosumi(void)
                         count_kosumi_black++;
                     }
                 }
-                /*
-                // South-west:
-                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i-1, j-1 ) == BLACK && get_vertex( i, j-1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
-                        count_kosumi_black++;
-                    }
-                }
-                // North-west:
-                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size ) ) {
-                    if ( get_vertex( i-1, j+1 ) == BLACK && get_vertex( i, j+1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
-                        count_kosumi_black++;
-                    }
-                }
-                */
             }
             else if ( get_vertex( i, j ) == WHITE ) {
                 // North-east:
@@ -2364,20 +2352,6 @@ void count_kosumi(void)
                         count_kosumi_white++;
                     }
                 }
-                /*
-                // South-west:
-                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i-1, j-1 ) == WHITE && get_vertex( i, j-1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
-                        count_kosumi_white++;
-                    }
-                }
-                // North-west:
-                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size ) ) {
-                    if ( get_vertex( i-1, j+1 ) == WHITE && get_vertex( i, j+1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
-                        count_kosumi_white++;
-                    }
-                }
-                */
             }
         }
     }
