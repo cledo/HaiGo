@@ -837,6 +837,96 @@ START_TEST (test_count_kosumi_4)
 }
 END_TEST
 
+START_TEST (test_influence_1)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    do_influence();
+
+    fail_unless( get_count_influence(BLACK) == 0
+        , "zero influence for black (%d)", get_count_influence(BLACK) );
+    fail_unless( get_count_influence(WHITE) == 0
+        , "zero influence for white (%d)", get_count_influence(WHITE) );
+    fail_unless( get_count_influence(EMPTY) == board_size * board_size
+        , "9 influence for neutral (%d)", get_count_influence(EMPTY) );
+}
+END_TEST
+
+START_TEST (test_influence_2)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( WHITE, 2, 2 );
+
+    do_influence();
+
+    fail_unless( get_count_influence(BLACK) == 1
+        , "one influence for black (%d)", get_count_influence(BLACK) );
+    fail_unless( get_count_influence(WHITE) == 1
+        , "one influence for white (%d)", get_count_influence(WHITE) );
+    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 2
+        , "7 influence for neutral (%d)", get_count_influence(EMPTY) );
+}
+END_TEST
+
+START_TEST (test_influence_3)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( BLACK, 0, 1 );
+    set_vertex( WHITE, 2, 2 );
+    set_vertex( WHITE, 2, 1 );
+
+    do_influence();
+
+    fail_unless( get_count_influence(BLACK) == 2
+        , "two influence for black (%d)", get_count_influence(BLACK) );
+    fail_unless( get_count_influence(WHITE) == 2
+        , "two influence for white (%d)", get_count_influence(WHITE) );
+    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 4
+        , "5 influence for neutral (%d)", get_count_influence(EMPTY) );
+}
+END_TEST
+
+START_TEST (test_influence_4)
+{
+    int board_size = 9;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 3, 4 );
+    set_vertex( BLACK, 5, 4 );
+
+    do_influence();
+
+    fail_unless( get_count_influence(BLACK) == 5
+        , "two influence for black (%d)", get_count_influence(BLACK) );
+    fail_unless( get_count_influence(WHITE) == 0
+        , "two influence for white (%d)", get_count_influence(WHITE) );
+    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 5
+        , "5 influence for neutral (%d)", get_count_influence(EMPTY) );
+
+    set_vertex( WHITE, 4, 4);
+
+    do_influence();
+
+    fail_unless( get_count_influence(BLACK) == 2
+        , "two influence for black (%d)", get_count_influence(BLACK) );
+    fail_unless( get_count_influence(WHITE) == 1
+        , "two influence for white (%d)", get_count_influence(WHITE) );
+    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 3
+        , "5 influence for neutral (%d)", get_count_influence(EMPTY) );
+}
+END_TEST
+
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Board");
 
@@ -850,6 +940,7 @@ Suite * board_suite(void) {
     TCase *tc_atari_groups        = tcase_create("atari");
     TCase *tc_chains              = tcase_create("chains");
     TCase *tc_kosumi              = tcase_create("kosumi");
+    TCase *tc_influence           = tcase_create("influence");
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
@@ -866,6 +957,10 @@ Suite * board_suite(void) {
     tcase_add_test( tc_kosumi,        test_count_kosumi_2    );
     tcase_add_test( tc_kosumi,        test_count_kosumi_3    );
     tcase_add_test( tc_kosumi,        test_count_kosumi_4    );
+    tcase_add_test( tc_influence,     test_influence_1       );
+    tcase_add_test( tc_influence,     test_influence_2       );
+    tcase_add_test( tc_influence,     test_influence_3       );
+    tcase_add_test( tc_influence,     test_influence_4       );
 
     suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
@@ -877,6 +972,7 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_atari_groups        );
     suite_add_tcase( s, tc_chains              );
     suite_add_tcase( s, tc_kosumi              );
+    suite_add_tcase( s, tc_influence           );
 
     return s;
 }
