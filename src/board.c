@@ -46,21 +46,24 @@ struct hash_pos_st {
 //! Hash table for transpositions:
 struct hash_pos_st hash_table[HASH_TABLE_SIZE];
 
-static int board_size     = 0;     //!< The size of the board.
-static int black_captured = 0;     //!< Number of white stones captured by black.
-static int white_captured = 0;     //!< Number of black stones captured by white.
-static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];   //!< List of verteces of captured stones by current move.
+//! The size of the board.
+static int board_size = 0;
 
-static int black_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for black.
-static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< Connection list of group number and chain number for white.
+//! List of verteces of captured stones by current move.
+static int captured_now[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];
+
+//! Connection list of group number and chain number for black.
+static int black_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
+//! Connection list of group number and chain number for white.
+static int white_group_chain[BOARD_SIZE_MAX * BOARD_SIZE_MAX];
 
 /**
  * @brief   Summary data that contains information about the board position.
  *
  **/
 typedef struct {
-    //int captured_by_black;
-    //int captured_by_white;
+    int captured_by_black;  //!< Number of white stones captured by black.
+    int captured_by_white;  //!< Number of black stones captured by white.
     int groups_black;       //!< Number of black groups.
     int groups_white;       //!< Number of white groups.
     int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per black group.
@@ -74,7 +77,8 @@ typedef struct {
     int influence_neutral;  //!< Number of neutral influence fields.
 } board_stats_t;
 
-board_stats_t board_stats;  //!< Contains position data.
+//! Contains position data.
+board_stats_t board_stats;
 
 /* Functions */
 static void init_hash_board(void);
@@ -85,6 +89,7 @@ static void get_label_y_right( int j, char y[] );
 
 static void set_chain_nr( int group_nr1, int group_nr2 );
 
+/* Functions for calculating influence with Bouzy 5/21 algorithm */
 static void init_bouzy_1(void);
 static void init_bouzy_2(void);
 static void dilation(void);
@@ -119,8 +124,8 @@ void init_board( int wanted_board_size )
         exit(1);
     }
 
-    black_captured = 0;
-    white_captured = 0;
+    board_stats.captured_by_black = 0;
+    board_stats.captured_by_white = 0;
 
     board_size = wanted_board_size;
 
@@ -984,10 +989,10 @@ int remove_stones( int color )
     captured_now[k][1] = INVALID;
 
     if ( color == BLACK ) {
-        white_captured += stones_removed;
+        board_stats.captured_by_white += stones_removed;
     }
     else if ( color == WHITE ) {
-        black_captured += stones_removed;
+        board_stats.captured_by_black += stones_removed;
     }
 
 
@@ -1199,7 +1204,7 @@ int get_size_of_group( int group_nr )
 int get_black_captured(void)
 {
 
-    return black_captured;
+    return board_stats.captured_by_black;
 }
 
 /**
@@ -1214,7 +1219,7 @@ int get_black_captured(void)
 int get_white_captured(void)
 {
 
-    return white_captured;
+    return board_stats.captured_by_white;
 }
 
 /**
@@ -1228,7 +1233,7 @@ int get_white_captured(void)
  */
 void set_black_captured( int captured )
 {
-    black_captured = captured;
+    board_stats.captured_by_black = captured;
 
     return;
 }
@@ -1244,7 +1249,7 @@ void set_black_captured( int captured )
  */
 void set_white_captured( int captured )
 {
-    white_captured = captured;
+    board_stats.captured_by_white = captured;
 
     return;
 }

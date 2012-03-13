@@ -95,6 +95,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     search_level_incr = 0;
     count_quiet_search = 0;
 
+    //init_brains();
     init_search_stats();
     init_hash_table();
 
@@ -617,3 +618,4 @@ void init_search_stats(void)
 
     return;
 }
+

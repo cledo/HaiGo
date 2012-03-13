@@ -15,6 +15,7 @@
 #include "global_tools.h"
 #include "sgf.h"
 #include "search.h"
+#include "evaluate.h"
 
 /**
  * @file    run_program.c
@@ -118,6 +119,7 @@ int run( int argc, char **argv )
     init_board(BOARD_SIZE_DEFAULT);
     init_hash_table();
     init_known_commands();
+    init_brains();
     init_move_history();
 
     // STDOUT must be unbuffered:

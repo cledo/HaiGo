@@ -170,6 +170,7 @@ START_TEST (test_select_command_9)
 
     init_board(BOARD_SIZE_MIN);
     init_known_commands();
+    init_brains();
 
     command_data.id = 0;
     my_strcpy( command_data.name, "genmove", MAX_TOKEN_LENGTH );

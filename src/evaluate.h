@@ -8,6 +8,7 @@
  *
  */
 
+void init_brains(void);
 int evaluate_position( int value_list[], bool do_full_eval );
 
 #endif

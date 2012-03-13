@@ -482,6 +482,7 @@ START_TEST (test_get_valid_move_list)
     int nr_of_valid_moves;
 
     init_board(s);
+    init_brains();
 
     set_vertex( BLACK, 0, 0 );
     set_vertex( BLACK, 0, 1 );

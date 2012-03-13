@@ -410,6 +410,8 @@ int get_valid_move_list( int color, int valid_moves[][4] )
 
     int value_list[7];
 
+    //init_brains();
+
     valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
 
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {

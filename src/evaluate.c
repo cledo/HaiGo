@@ -1,6 +1,11 @@
+#include <stdlib.h> // DEBUG
+#include <stdio.h>  // DEBUG
 #include "global_const.h"
 #include "board.h"
 #include "evaluate.h"
+
+//! Number of brain functions.
+#define COUNT_BRAINS    8
 
 /**
  * @file    evaluate.c
@@ -11,6 +16,18 @@
  *
  */
 
+
+/**
+ * @brief   Struct that combines brain function with its multiply factor.
+ *
+ **/
+typedef struct {
+    int (*function)();  //!< Pointer to brain function.
+    int  factor;        //!< Multiply value to combine with barin function.
+} brain_t;
+
+static brain_t brains[COUNT_BRAINS];    //!< List of all brain functions.
+
 int brain_capture(void);
 int brain_atari(void);
 int brain_avg_liberties(void);
@@ -18,6 +35,47 @@ int brain_edge_stones(void);
 int brain_hoshi_stones(void);
 int brain_kosumi(void);
 int brain_chains(void);
+int brain_influence(void);
+
+
+/**
+ * @brief       Initialises brains data structure.
+ *
+ * Creates an array of brain_t structs, which combines brain functions with a
+ * multiply factor.
+ *
+ * @return      Nothing
+ */
+void init_brains(void)
+{
+    int i = 0;
+
+    brains[i].function = (*brain_capture);
+    brains[i++].factor = 82;
+
+    brains[i].function = (*brain_atari);
+    brains[i++].factor = 15;
+
+    brains[i].function = (*brain_avg_liberties);
+    brains[i++].factor = 1;
+
+    brains[i].function = (*brain_edge_stones);
+    brains[i++].factor = 1;
+
+    brains[i].function = (*brain_hoshi_stones);
+    brains[i++].factor = 0;
+
+    brains[i].function = (*brain_kosumi);
+    brains[i++].factor = 8;
+
+    brains[i].function = (*brain_chains);
+    brains[i++].factor = 1;
+
+    brains[i].function = (*brain_influence);
+    brains[i++].factor = 1;
+
+    return;
+}
 
 /**
  * @brief       Evaluates a position.
@@ -33,25 +91,18 @@ int brain_chains(void);
  */
 int evaluate_position( int value_list[], bool do_full_eval )
 {
+    int k;
     int value = 0;
-
-    // Original factors are 82,15,1,1,1,-,-
-    value_list[0] = brain_capture()       * 82;
-    value_list[1] = brain_atari()         * 15;
-    value_list[2] = brain_avg_liberties() * 1;
-    value_list[3] = brain_kosumi()        * 8;
-    value_list[4] = brain_edge_stones()   * 1;
-    value_list[5] = brain_chains()        * 2;  // Should be divided with no_groups
 
     // TEST:
     if ( do_full_eval ) {
         do_influence();
     }
-    value_list[6] = ( get_count_influence(BLACK) - get_count_influence(WHITE)) * 1;
-    
 
-    value = value_list[0] + value_list[1] + value_list[2]
-        + value_list[3] + value_list[4] + value_list[5] + value_list[6];
+    for ( k = 0; k < COUNT_BRAINS; k++ ) {
+        value_list[k] = brains[k].function() * brains[k].factor;
+        value += value_list[k];
+    }
 
     return value;
 }
@@ -312,6 +363,22 @@ int brain_chains(void)
     else {
         value -= 100 / count_white_chains;
     }
+
+    return value;
+}
+
+/**
+ * @brief       Creates value based on board influence.
+ *
+ * Returns a value that is based on the board influence of black and white.
+ *
+ * @return      Value of influence
+ */
+int brain_influence(void)
+{
+    int value;
+
+    value = get_count_influence(BLACK) - get_count_influence(WHITE);
 
     return value;
 }
