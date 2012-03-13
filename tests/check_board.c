@@ -779,7 +779,6 @@ END_TEST
 
 START_TEST (test_count_kosumi_2)
 {
-    char board_output[1024];
     int board_size = 3;
 
     init_board(board_size);
@@ -790,9 +789,6 @@ START_TEST (test_count_kosumi_2)
     set_vertex( WHITE, 2, 1 );
 
     count_kosumi();
-
-    get_board_as_string(board_output);
-    printf( "%s\n",  board_output );
 
     fail_unless( get_count_kosumis(BLACK) == 0
             , "4 black kosumis found (%d)", get_count_kosumis(BLACK) );
@@ -823,7 +819,6 @@ END_TEST
 
 START_TEST (test_count_kosumi_4)
 {
-    char board_output[1024];
     int board_size = 3;
 
     init_board(board_size);
@@ -834,9 +829,6 @@ START_TEST (test_count_kosumi_4)
     set_vertex( BLACK, 2, 1 );
 
     count_kosumi();
-
-    get_board_as_string(board_output);
-    printf( "%s\n",  board_output );
 
     fail_unless( get_count_kosumis(BLACK) == 4
             , "4 black kosumis found (%d)", get_count_kosumis(BLACK) );
