@@ -2336,6 +2336,7 @@ void count_kosumi(void)
                         count_kosumi_black++;
                     }
                 }
+                /*
                 // South-west:
                 if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
                     if ( get_vertex( i-1, j-1 ) == BLACK && get_vertex( i, j-1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
@@ -2348,6 +2349,7 @@ void count_kosumi(void)
                         count_kosumi_black++;
                     }
                 }
+                */
             }
             else if ( get_vertex( i, j ) == WHITE ) {
                 // North-east:
@@ -2362,6 +2364,7 @@ void count_kosumi(void)
                         count_kosumi_white++;
                     }
                 }
+                /*
                 // South-west:
                 if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
                     if ( get_vertex( i-1, j-1 ) == WHITE && get_vertex( i, j-1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
@@ -2374,12 +2377,13 @@ void count_kosumi(void)
                         count_kosumi_white++;
                     }
                 }
+                */
             }
         }
     }
 
-    board_stats.kosumis_black = count_kosumi_black / 2;
-    board_stats.kosumis_white = count_kosumi_white / 2;
+    board_stats.kosumis_black = count_kosumi_black;
+    board_stats.kosumis_white = count_kosumi_white;
 
     return;
 }
