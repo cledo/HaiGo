@@ -70,6 +70,8 @@ typedef struct {
     int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per white group.
     int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per black group.
     int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
+    int kosumis_black;      //!< Number of black kosumis.
+    int kosumis_white;      //!< Number of white kosumis.
     int chains_black;       //!< Number of black chains.
     int chains_white;       //!< Number of white chains.
     int influence_black;    //!< Number of black influence fields.
@@ -2299,6 +2301,106 @@ int get_count_influence( int color )
     }
     else {
         count = board_stats.influence_neutral;
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Counts kosumis.
+ *
+ * Counts the number of kosumis for black and white and writes the results
+ * into the board_stats structure.
+ *
+ * @return      Nothing
+ */
+void count_kosumi(void)
+{
+    int i, j;
+    int count_kosumi_black = 0;
+    int count_kosumi_white = 0;
+    int board_size = get_board_size();
+
+    for ( i = 0; i < board_size; i++ ) {
+        for ( j = 0; j < board_size; j++) {
+            if ( get_vertex( i, j ) == BLACK ) {
+                // North-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i+1, j+1 ) == BLACK &&  get_vertex( i, j+1 ) != BLACK && get_vertex( i+1, j ) != BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+                // South-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i+1, j-1 ) == BLACK && get_vertex( i, j-1 ) != BLACK && get_vertex( i+1, j ) != BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+                // South-west:
+                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i-1, j-1 ) == BLACK && get_vertex( i, j-1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+                // North-west:
+                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i-1, j+1 ) == BLACK && get_vertex( i, j+1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
+                        count_kosumi_black++;
+                    }
+                }
+            }
+            else if ( get_vertex( i, j ) == WHITE ) {
+                // North-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i+1, j+1 ) == WHITE && get_vertex( i, j+1 ) != WHITE && get_vertex( i+1, j ) != WHITE ) {
+                        count_kosumi_white++;
+                    }
+                }
+                // South-east:
+                if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i+1, j-1 ) == WHITE && get_vertex( i, j-1 ) != WHITE && get_vertex( i+1, j ) != WHITE ) {
+                        count_kosumi_white++;
+                    }
+                }
+                // South-west:
+                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
+                    if ( get_vertex( i-1, j-1 ) == WHITE && get_vertex( i, j-1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
+                        count_kosumi_white++;
+                    }
+                }
+                // North-west:
+                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
+                    if ( get_vertex( i-1, j+1 ) == WHITE && get_vertex( i, j+1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
+                        count_kosumi_white++;
+                    }
+                }
+            }
+        }
+    }
+
+    board_stats.kosumis_black = count_kosumi_black;
+    board_stats.kosumis_white = count_kosumi_white;
+
+    return;
+}
+
+/**
+ * @brief       Returns number of kosumis.
+ *
+ * Returns the number of kosumis for the given color.
+ *
+ * @param[in]   color   Color of kosumis.
+ * @return      Number of kosumis for given color.
+ */
+int get_count_kosumis( int color )
+{
+    int count;
+
+    if ( color == BLACK ) {
+        count = board_stats.kosumis_black;
+    }
+    else {
+        count = board_stats.kosumis_white;
     }
 
     return count;

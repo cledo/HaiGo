@@ -66,13 +66,13 @@ void init_brains(void)
     brains[i++].factor = 0;
 
     brains[i].function = (*brain_kosumi);
-    brains[i++].factor = 8;
+    brains[i++].factor = 4;
 
     brains[i].function = (*brain_chains);
     brains[i++].factor = 1;
 
     brains[i].function = (*brain_influence);
-    brains[i++].factor = 1;
+    brains[i++].factor = 0;
 
     return;
 }
@@ -100,6 +100,9 @@ int evaluate_position( int value_list[], bool do_full_eval )
     }
 
     for ( k = 0; k < COUNT_BRAINS; k++ ) {
+        if ( brains[k].factor == 0 ) {
+            continue;
+        }
         value_list[k] = brains[k].function() * brains[k].factor;
         value += value_list[k];
     }
@@ -266,69 +269,8 @@ int brain_avg_liberties(void)
 int brain_kosumi(void)
 {
     int value;
-    int i, j;
-    int count_kosumi_black = 0;
-    int count_kosumi_white = 0;
-    int board_size = get_board_size();
 
-    for ( i = 0; i < board_size; i++ ) {
-        for ( j = 0; j < board_size; j++) {
-            if ( get_vertex( i, j ) == BLACK ) {
-                // North-east:
-                if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i+1, j+1 ) == BLACK &&  get_vertex( i, j+1 ) != BLACK && get_vertex( i+1, j ) != BLACK ) {
-                        count_kosumi_black++;
-                    }
-                }
-                // South-east:
-                if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i+1, j-1 ) == BLACK && get_vertex( i, j-1 ) != BLACK && get_vertex( i+1, j ) != BLACK ) {
-                        count_kosumi_black++;
-                    }
-                }
-                // South-west:
-                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i-1, j-1 ) == BLACK && get_vertex( i, j-1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
-                        count_kosumi_black++;
-                    }
-                }
-                // North-west:
-                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i-1, j+1 ) == BLACK && get_vertex( i, j+1 ) != BLACK && get_vertex( i-1, j ) != BLACK ) {
-                        count_kosumi_black++;
-                    }
-                }
-            }
-            else if ( get_vertex( i, j ) == WHITE ) {
-                // North-east:
-                if ( ( i + 1 < board_size - 1 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i+1, j+1 ) == WHITE && get_vertex( i, j+1 ) != WHITE && get_vertex( i+1, j ) != WHITE ) {
-                        count_kosumi_white++;
-                    }
-                }
-                // South-east:
-                if ( ( i + 1 < board_size - 1 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i+1, j-1 ) == WHITE && get_vertex( i, j-1 ) != WHITE && get_vertex( i+1, j ) != WHITE ) {
-                        count_kosumi_white++;
-                    }
-                }
-                // South-west:
-                if ( ( i - 1 >= 0 ) && ( j - 1 >= 0 ) ) {
-                    if ( get_vertex( i-1, j-1 ) == WHITE && get_vertex( i, j-1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
-                        count_kosumi_white++;
-                    }
-                }
-                // North-west:
-                if ( ( i - 1 >= 0 ) && ( j + 1 < board_size - 1 ) ) {
-                    if ( get_vertex( i-1, j+1 ) == WHITE && get_vertex( i, j+1 ) != WHITE && get_vertex( i-1, j ) != WHITE ) {
-                        count_kosumi_white++;
-                    }
-                }
-            }
-        }
-    }
-
-    value = ( count_kosumi_black / 2 ) - ( count_kosumi_white / 2 );
+    value = get_count_kosumis(BLACK) - get_count_kosumis(WHITE);
 
     return value;
 }
