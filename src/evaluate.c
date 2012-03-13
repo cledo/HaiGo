@@ -320,6 +320,8 @@ int brain_influence(void)
 {
     int value;
 
+    count_kosumi();
+
     value = get_count_influence(BLACK) - get_count_influence(WHITE);
 
     return value;

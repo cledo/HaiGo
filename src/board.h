@@ -117,6 +117,7 @@ void do_influence(void);
 void get_bouzy_as_string( char bouzy_str[] );
 int  get_count_influence( int color );
 int  get_count_kosumis( int color );
+void count_kosumi(void);
 //@}
 
 #endif
