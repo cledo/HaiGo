@@ -439,6 +439,35 @@ START_TEST (test_select_command_23)
 }
 END_TEST
 
+START_TEST (test_select_command_24)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "level", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "level without number" );
+}
+END_TEST
+
+START_TEST (test_select_command_25)
+{
+    struct command command_data;
+
+    command_data.id = 0;
+    my_strcpy( command_data.name, "level", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], "1", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 1;
+
+    init_known_commands();
+    select_command(&command_data);
+    fail_unless( get_output_error() == false, "level withnumber" );
+}
+END_TEST
+
 START_TEST (test_fixed_handicap_1)
 {
     struct command command_data;
@@ -491,6 +520,8 @@ Suite * run_program_suite(void) {
     tcase_add_test( tc_gtp, test_select_command_21 );
     tcase_add_test( tc_gtp, test_select_command_22 );
     tcase_add_test( tc_gtp, test_select_command_23 );
+    tcase_add_test( tc_gtp, test_select_command_24 );
+    tcase_add_test( tc_gtp, test_select_command_25 );
     tcase_add_test( tc_gtp, test_fixed_handicap_1  );
 
     suite_add_tcase( s, tc_core );
