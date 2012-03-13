@@ -6,6 +6,7 @@
 #include "../src/global_const.h"
 #include "../src/board.h"
 #include "../src/move.h"
+#include "../src/evaluate.h"
 
 
 static const int board_count  = 5;
@@ -756,8 +757,97 @@ START_TEST (test_chains_2)
 }
 END_TEST
 
+START_TEST (test_count_kosumi_1)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( WHITE, 0, 0 );
+    set_vertex( WHITE, 2, 0 );
+    set_vertex( WHITE, 0, 2 );
+    set_vertex( WHITE, 2, 2 );
+
+    count_kosumi();
+
+    fail_unless( get_count_kosumis(BLACK) == 0
+            , "no black kosumis found (%d)", get_count_kosumis(BLACK) );
+    fail_unless( get_count_kosumis(WHITE) == 0
+            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
+}
+END_TEST
+
+START_TEST (test_count_kosumi_2)
+{
+    char board_output[1024];
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( WHITE, 0, 1 );
+    set_vertex( WHITE, 1, 0 );
+    set_vertex( WHITE, 1, 2 );
+    set_vertex( WHITE, 2, 1 );
+
+    count_kosumi();
+
+    get_board_as_string(board_output);
+    printf( "%s\n",  board_output );
+
+    fail_unless( get_count_kosumis(BLACK) == 0
+            , "4 black kosumis found (%d)", get_count_kosumis(BLACK) );
+    fail_unless( get_count_kosumis(WHITE) == 4
+            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
+}
+END_TEST
+
+START_TEST (test_count_kosumi_3)
+{
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( BLACK, 2, 0 );
+    set_vertex( BLACK, 0, 2 );
+    set_vertex( BLACK, 2, 2 );
+
+    count_kosumi();
+
+    fail_unless( get_count_kosumis(BLACK) == 0
+            , "no black kosumis found (%d)", get_count_kosumis(BLACK) );
+    fail_unless( get_count_kosumis(WHITE) == 0
+            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
+}
+END_TEST
+
+START_TEST (test_count_kosumi_4)
+{
+    char board_output[1024];
+    int board_size = 3;
+
+    init_board(board_size);
+
+    set_vertex( BLACK, 0, 1 );
+    set_vertex( BLACK, 1, 0 );
+    set_vertex( BLACK, 1, 2 );
+    set_vertex( BLACK, 2, 1 );
+
+    count_kosumi();
+
+    get_board_as_string(board_output);
+    printf( "%s\n",  board_output );
+
+    fail_unless( get_count_kosumis(BLACK) == 4
+            , "4 black kosumis found (%d)", get_count_kosumis(BLACK) );
+    fail_unless( get_count_kosumis(WHITE) == 0
+            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
+}
+END_TEST
+
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Board");
+
     TCase *tc_init_board          = tcase_create("init_board");
     TCase *tc_get_board_as_string = tcase_create("get_board_as_string");
     TCase *tc_groups              = tcase_create("groups");
@@ -767,6 +857,7 @@ Suite * board_suite(void) {
     TCase *tc_remove_stones       = tcase_create("remove");
     TCase *tc_atari_groups        = tcase_create("atari");
     TCase *tc_chains              = tcase_create("chains");
+    TCase *tc_kosumi              = tcase_create("kosumi");
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
@@ -779,6 +870,10 @@ Suite * board_suite(void) {
     tcase_add_test( tc_atari_groups,  test_atari_1           );
     tcase_add_test( tc_chains,        test_chains_1          );
     tcase_add_test( tc_chains,        test_chains_2          );
+    tcase_add_test( tc_kosumi,        test_count_kosumi_1    );
+    tcase_add_test( tc_kosumi,        test_count_kosumi_2    );
+    tcase_add_test( tc_kosumi,        test_count_kosumi_3    );
+    tcase_add_test( tc_kosumi,        test_count_kosumi_4    );
 
     suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
@@ -789,6 +884,7 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_remove_stones       );
     suite_add_tcase( s, tc_atari_groups        );
     suite_add_tcase( s, tc_chains              );
+    suite_add_tcase( s, tc_kosumi              );
 
     return s;
 }
