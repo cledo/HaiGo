@@ -41,7 +41,7 @@ static struct search_stats_st search_stats;     //!< Information about last gene
 
 static void init_search_stats(void);
 
-static int  add_node( int color, int tree_level, int alpha, int beta );
+static int  add_node( int color, int depth, int alpha, int beta );
 static void make_move( int color, int i, int j );
 static void undo_move(void);
 
@@ -66,7 +66,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     int i, j;
 
     // Variables for search tree:
-    int tree_level = 0;
+    int depth = 0;
     int best_value;
     int search_level_incr;
     int alpha;
@@ -137,7 +137,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
             //printf( "## %s%s\n", x, y );
 
             // Start recursion:
-            valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
+            valid_moves[k][2] = add_node( color * -1, depth, alpha, beta );
 
             if ( color  == BLACK ) {
                 // For black: remember highest value
@@ -242,12 +242,12 @@ void search_tree( int color, int *i_selected, int *j_selected )
  * recusrion is stopped.
  *
  * @param[in]   color       Color of move to set.
- * @param[in]   tree_level  Counter that shows the level in the move tree.
+ * @param[in]   depth       Counter that shows the level in the move tree.
  * @param[in]   alpha       Alpha-Beta pruning
  * @param[in]   beta        Alpha-Beta pruning
  * @return      Value of position
  */
-int add_node( int color, int tree_level, int alpha, int beta )
+int add_node( int color, int depth, int alpha, int beta )
 {
     int  k, l;
     int  i, j;
@@ -268,7 +268,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
         qsearch++;
     }
 
-    tree_level++;
+    depth++;
 
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
@@ -292,7 +292,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
         j = valid_moves[k][1];
 
         // Skip non-tactical moves in quiescense search:
-        if ( tree_level >= search_level && tactic_move > 0) {
+        if ( depth >= search_level && tactic_move > 0) {
             if ( valid_moves[k][3] == 0 ) {
                 continue;
             }
@@ -303,14 +303,14 @@ int add_node( int color, int tree_level, int alpha, int beta )
         make_move( color, i, j );
 
 
-        if ( tree_level < search_level ) {
+        if ( depth < search_level ) {
             // Start recursion:
-            valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
+            valid_moves[k][2] = add_node( color * -1, depth, alpha, beta );
         }
         else {
             //insert_hash_table( hash_id, best_value );
-            if ( tactic_move && tree_level < search_level + qsearch ) {
-                valid_moves[k][2] = add_node( color * -1, tree_level, alpha, beta );
+            if ( tactic_move && depth < search_level + qsearch ) {
+                valid_moves[k][2] = add_node( color * -1, depth, alpha, beta );
                 count_quiet_search++;
             }
             else {
@@ -341,7 +341,7 @@ int add_node( int color, int tree_level, int alpha, int beta )
             i_to_x( i, x );
             j_to_y( j, y );
             indent[0] = '\0';
-            for ( l = 1; l <= tree_level; l++ ) {
+            for ( l = 1; l <= depth; l++ ) {
                 strcat( indent, "\t" );
             }
             fprintf( log_file, "%s%s%s (%d) (T: %d) (%d,%d,%d,%d,%d,%d,%d) (a: %d, b: %d)\n"
