@@ -55,6 +55,41 @@ START_TEST (test_my_strcpy_2)
 }
 END_TEST
 
+START_TEST (test_i_to_x)
+{
+    int  i;
+    char x1[2];
+    char x2[2];
+    char x3[25] = { 'A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z' };
+
+    x1[0] = '\0';
+    x2[0] = '\0';
+
+    for ( i = 0; i < 25; i++ ) {
+        i_to_x( i, x1 );
+        x2[0] = x3[i];
+        x2[1] = '\0';
+        fail_unless( strcmp( x2, x1 ) == 0, "%d to %c (%s %s)", i, x3[i], x2, x1 );
+    }
+
+}
+END_TEST
+
+START_TEST (test_j_to_y)
+{
+    int  j;
+    char y[3];
+
+    y[0] = '\0';
+
+    for ( j = 0; j < 25; j++ ) {
+        j_to_y( j, y );
+        fail_unless( j+1 == atoi(y), "%d to %s", j, y );
+    }
+
+}
+END_TEST
+
 
 Suite *
 global_tools_suite(void)
@@ -67,6 +102,9 @@ global_tools_suite(void)
 
     tcase_add_exit_test( tc_core, test_my_strcpy_1, 1 );
     tcase_add_test( tc_core, test_my_strcpy_2 );
+
+    tcase_add_test( tc_core, test_i_to_x );
+    tcase_add_test( tc_core, test_j_to_y );
 
     suite_add_tcase( s, tc_core );
 
