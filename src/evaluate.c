@@ -136,8 +136,10 @@ int evaluate_position( int value_list[], bool do_full_eval )
 
     for ( k = 0; k < COUNT_BRAINS; k++ ) {
         if ( brains[k].factor == 0 ) {
+            value_list[k] = 0;
             continue;
         }
+
         value_list[k] = brains[k].function() * brains[k].factor;
 
         // Limit value:

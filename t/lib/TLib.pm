@@ -48,9 +48,9 @@ sub ok_command {
 
     print {$stdin} $command . "\n";
     $output = get_output($stdout);
-    $test->is_eq( $output, $fail . $return . "\n\n", $name );
+    my $is_ok = $test->is_eq( $output, $fail . $return . "\n\n", $name );
 
-    return;
+    return $is_ok;
 }
 
 sub get_output {

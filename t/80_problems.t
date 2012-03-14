@@ -10,6 +10,10 @@ use Test::More;
 
 use TLib qw( get_output ok_command get_pid set_timeout );
 
+my $plan = 100;
+
+my @factor = @ARGV;
+
 my $problems_table = './t/problems/problems.asc';
 open my $fh, q{<}, $problems_table
     or croak "Cannot open file $problems_table";
@@ -26,9 +30,14 @@ close $fh
 
 my $pid = get_pid();
 
-#plan tests => ( scalar @problem * 2 ) + 7;
-
 set_timeout(300);
+
+if ( @factor == 8 ) {
+    ok_command( 'hg-factors ' . join q{ }, @factor );
+}
+else {
+    ok( 1, 'dummy test' );
+}
 
 ok_command( 'level 0' );
 
@@ -48,10 +57,13 @@ foreach my $p (@problem) {
     }
 
     my $start_time = [ gettimeofday() ];
-    ok_command( "genmove $player", $solution );
+    my $is_ok = ok_command( "genmove $player", $solution );
 
     my $diff_time = tv_interval( $start_time );
     note sprintf "%s: %.2fs", $solution, $diff_time;
+    if ( @factor == 8 ) {
+        note sprintf "File: %s %d %.2f", $file, $is_ok, $diff_time;
+    }
 }
 
 ok_command( 'quit ' );
@@ -61,7 +73,7 @@ my $exit_status = $? >> 8;
 
 ok( $exit_status == 0, 'exit_status 0' );
 
-done_testing();
+done_testing($plan);
 
 sub parse_moves {
     my ($moves) = @_;
