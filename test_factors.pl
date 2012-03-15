@@ -13,7 +13,7 @@ my ( $stdin, $stdout, $stderr );
 #my @factor       = qw( 50 50 0 0 0 0 0 0 );
 #my @factor       = qw( 75 20 0 0 0 0 0 5 );
 #my @factor       = qw( 10 0 0 0 0 0 0 0 );
-my @factor       = qw( 0 10 0 0 0 0 0 0 );
+my @factor       = qw( 1000 0 0 0 0 0 0 0 );
 my $test_count   = 0;
 my $ok_count     = 0;
 my $not_ok_count = 0;

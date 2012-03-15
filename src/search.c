@@ -32,19 +32,41 @@ static int count_quiet_search;  //!< Counts the nodes in quiescence search.
 
 static int search_level = DEFAULT_SEARCH_LEVEL; //!< Sets depth of search tree.
 
-static bool do_log = false;                     //!< Defines if logging is turned on or off.
-
 static unsigned long long int node_count;       //!< Counts the number of nodes in move tree.
+
+static bool do_log    = false;                  //!< Defines if logging is turned on or off.
 static FILE *log_file = NULL;                   //!< Log file handler
 
 static struct search_stats_st search_stats;     //!< Information about last generated move.
 
 static void init_search_stats(void);
-
 static int  add_node( int color, int depth, int alpha, int beta );
 static void make_move( int color, int i, int j );
 static void undo_move(void);
 
+
+/**
+ * @brief       Initialises the search_stats_st struct.
+ *
+ * Sets all members of the search_stats struct to zero.
+ *
+ * @return      Nothing
+ */
+void init_search_stats(void)
+{
+    search_stats.color[0]      = '\0';
+    search_stats.move[0]       = '\0';
+    search_stats.level         = 0;
+    search_stats.duration      = 0;
+    search_stats.node_count    = 0;
+    search_stats.nodes_per_sec = 0;
+    search_stats.hash_hit      = 0;
+    search_stats.alpha_cut     = 0;
+    search_stats.beta_cut      = 0;
+    search_stats.value         = 0;
+
+    return;
+}
 
 /**
  * @brief       Builds move tree.
@@ -594,28 +616,5 @@ struct search_stats_st get_search_stats(void)
 {
 
     return search_stats;
-}
-
-/**
- * @brief       Initialises the search_stats_st struct.
- *
- * Sets all members of the search_stats struct to zero.
- *
- * @return      Nothing
- */
-void init_search_stats(void)
-{
-    search_stats.color[0]      = '\0';
-    search_stats.move[0]       = '\0';
-    search_stats.level         = 0;
-    search_stats.duration      = 0;
-    search_stats.node_count    = 0;
-    search_stats.nodes_per_sec = 0;
-    search_stats.hash_hit      = 0;
-    search_stats.alpha_cut     = 0;
-    search_stats.beta_cut      = 0;
-    search_stats.value         = 0;
-
-    return;
 }
 
