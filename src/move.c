@@ -279,14 +279,14 @@ void pop_move(void)
     move_history[move_number].ko[1]  = INVALID;
     move_history[move_number].i      = INVALID;
     move_history[move_number].j      = INVALID;
+    /*
     for ( k = 0; k < BOARD_SIZE_MAX * BOARD_SIZE_MAX; k++ ) {
         move_history[move_number].stones[k][0] = INVALID;
         move_history[move_number].stones[k][1] = INVALID;
     }
-    /*
+    */
     move_history[move_number].stones[0][0] = INVALID;
     move_history[move_number].stones[0][1] = INVALID;
-    */
     move_history[move_number].count_stones = INVALID;
 
     move_number--;
