@@ -58,8 +58,10 @@
 //! Defines the maximum length of a file name.
 #define MAX_FILENAME_LENGTH 256
 
-//! Defines default level of depth for serch tree.
-#define DEFAULT_SEARCH_LEVEL    1
+//! Defines default level of depth for search tree.
+#define DEFAULT_SEARCH_DEPTH    1
+//! Defines the maximum level of depth for search tree.
+#define MAX_SEARCH_DEPTH    9
 
 //! Defines name of log file for search tree.
 #define LOG_FILE    "haigo.log"

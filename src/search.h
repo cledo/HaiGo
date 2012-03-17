@@ -31,8 +31,8 @@ typedef struct {
 
 void search_tree( int color, int *i, int *j );
 
-void set_search_level( int level );
-int  get_search_level(void);
+void set_search_depth( int depth );
+int  get_search_depth(void);
 
 bool get_do_log(void);
 void set_do_log(void);
@@ -40,6 +40,7 @@ void set_do_log(void);
 int compare_value_black( const void *move1, const void *move2 );
 int compare_value_white( const void *move1, const void *move2 );
 
+void init_search_stats(void);
 search_stats_t get_search_stats(void);
 
 #endif

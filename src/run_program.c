@@ -732,7 +732,7 @@ void gtp_level( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     char output[2];
 
     if ( gtp_argc == 0 ) {
-        snprintf( output, 2, "%d", get_search_level() );
+        snprintf( output, 2, "%d", get_search_depth() );
         add_output(output);
 
         return;
@@ -740,14 +740,14 @@ void gtp_level( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     level = atoi( gtp_argv[0] );
 
-    if ( level < 0 || level > 9 ) {
+    if ( level < 0 || level > MAX_SEARCH_DEPTH ) {
         set_output_error();
         add_output("invalid level");
 
         return;
     }
 
-    set_search_level(level);
+    set_search_depth(level);
 
     return;
 }

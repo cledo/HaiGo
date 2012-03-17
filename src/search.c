@@ -30,7 +30,7 @@ static int beta_break;      //!< Count beta breaks.
 
 static int count_quiet_search;  //!< Counts the nodes in quiescence search.
 
-static int search_level = DEFAULT_SEARCH_LEVEL; //!< Sets depth of search tree.
+static int search_depth = DEFAULT_SEARCH_DEPTH; //!< Sets depth of search tree.
 
 static unsigned long long int node_count;       //!< Counts the number of nodes in move tree.
 
@@ -39,7 +39,6 @@ static FILE *log_file = NULL;                   //!< Log file handler
 
 static search_stats_t search_stats;             //!< Information about last generated move.
 
-static void init_search_stats(void);
 static int  add_node( int color, int depth, int alpha, int beta );
 static void make_move( int color, int i, int j );
 static void undo_move(void);
@@ -83,7 +82,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
 {
     // Index variables:
     int k;
-    int l;
+    int d;
     //int m;   //DEBUG
     int i, j;
 
@@ -139,9 +138,9 @@ void search_tree( int color, int *i_selected, int *j_selected )
     nr_of_valid_moves_cut = nr_of_valid_moves;
 
     // Loop start:
-    search_level_incr = get_search_level();
-    for ( l = 0; l <= search_level_incr; l++ ) {
-        set_search_level(l);
+    search_level_incr = get_search_depth();
+    for ( d = 0; d <= search_level_incr; d++ ) {
+        set_search_depth(d);
         //set_search_level(search_level_incr);
         //l = search_level_incr;
 
@@ -236,7 +235,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
     search_stats.move[0] = '\0';
     strcat( search_stats.move, x );
     strcat( search_stats.move, y );
-    search_stats.level         = search_level;
+    search_stats.level         = search_depth;
     search_stats.duration      = stop - start;
     search_stats.node_count    = node_count;
     search_stats.nodes_per_sec = node_count / diff_time;
@@ -286,7 +285,7 @@ int add_node( int color, int depth, int alpha, int beta )
 
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
-    if ( ! ( ( search_level + MAX_QSEARCH_DEPTH ) % 2 ) ) {
+    if ( ! ( ( search_depth + MAX_QSEARCH_DEPTH ) % 2 ) ) {
         qsearch++;
     }
 
@@ -314,7 +313,7 @@ int add_node( int color, int depth, int alpha, int beta )
         j = valid_moves[k][1];
 
         // Skip non-tactical moves in quiescense search:
-        if ( depth >= search_level && tactic_move > 0) {
+        if ( depth >= search_depth && tactic_move > 0) {
             if ( valid_moves[k][3] == 0 ) {
                 continue;
             }
@@ -325,13 +324,13 @@ int add_node( int color, int depth, int alpha, int beta )
         make_move( color, i, j );
 
 
-        if ( depth < search_level ) {
+        if ( depth < search_depth ) {
             // Start recursion:
             valid_moves[k][2] = add_node( color * -1, depth, alpha, beta );
         }
         else {
             //insert_hash_table( hash_id, best_value );
-            if ( tactic_move && depth < search_level + qsearch ) {
+            if ( tactic_move && depth < search_depth + qsearch ) {
                 valid_moves[k][2] = add_node( color * -1, depth, alpha, beta );
                 count_quiet_search++;
             }
@@ -503,13 +502,13 @@ void undo_move(void)
  *
  * Determines the maximum level of the search depth.
  *
- * @param[in]   level   Search tree depth
+ * @param[in]   depth   Search tree depth
  * @return      Nothing
  */
-void set_search_level( int level )
+void set_search_depth( int depth )
 {
 
-    search_level = level;
+    search_depth = depth;
 
     return;
 }
@@ -521,10 +520,10 @@ void set_search_level( int level )
  *
  * @return      Level of search tree
  */
-int get_search_level(void)
+int get_search_depth(void)
 {
 
-    return search_level;
+    return search_depth;
 }
 
 /**
