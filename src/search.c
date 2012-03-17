@@ -281,7 +281,7 @@ int add_node( int color, int depth, int alpha, int beta )
     int  tactic_move = 0;
     int  qsearch = MAX_QSEARCH_DEPTH;
     //unsigned hash_id;
-    int value_list[7] = { 1, 2, 3, 4, 5, 6, 7 };
+    int value_list[COUNT_BRAINS] = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;

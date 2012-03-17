@@ -388,7 +388,7 @@ int get_pseudo_valid_move_list( int color, int valid_moves[][4] )
  */
 int get_valid_move_list( int color, int valid_moves[][4] )
 {
-    int  count = 0;
+    int  count;
     int  i, j;
     int  k, l;
     int  nr_of_removed_stones;
@@ -408,7 +408,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     //int  count_liberties_player_after;
     int  count_liberties_opponent_after;
 
-    int value_list[7];
+    int value_list[COUNT_BRAINS];
 
     //init_brains();
 
@@ -421,6 +421,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         temp_moves[k][3] = 0;           // Number of captured stones and atari ...
     }
 
+    count = 0;
     for ( k = 0; k < valid_moves_count; k++ ) {
         is_valid = false;
         i = valid_moves[k][0];
