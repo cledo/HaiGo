@@ -1,0 +1,47 @@
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    143
+Nodes:   5903642
+Nodes/s: 41284
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0
+
+Board:   5
+Color:   Black
+Move:    A1
+Level:   3
+Time:    934
+Nodes:   26627175
+Nodes/s: 28508
+QSearch: 3862179
+A-Cut:   0
+B-Cut:   0
+Value:   0
+
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    67
+Nodes:   5903642
+Nodes/s: 88114
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0
+
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    68
+Nodes:   5903642
+Nodes/s: 86818
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0

@@ -45,6 +45,7 @@ int main( int argc, char *argv[] )
 
     s = get_search_stats();
 
+    printf( "Board:   %d\n", board_size            );
     printf( "Color:   %s\n", s.color               );
     printf( "Move:    %s\n", s.move                );
     printf( "Level:   %d\n", s.level               );
