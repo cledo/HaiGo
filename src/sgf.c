@@ -18,9 +18,9 @@
  *
  */
 
-static void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
-static void add_property( struct node_st *sgf_tree, char property_name[] );
-static void add_value( struct property_st *property_st, char *property_value );
+static void add_node( node_t *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line );
+static void add_property( node_t *sgf_tree, char property_name[] );
+static void add_value( property_t *property, char *property_value );
 
 /**
  * @brief       Parses an SGF string
@@ -30,7 +30,7 @@ static void add_value( struct property_st *property_st, char *property_value );
  * @param[in]   file_content    SGF string as read from file
  * @return      Pointer to SGF tree
  */
-struct node_st * parse_sgf( char *file_content )
+node_t * parse_sgf( char *file_content )
 {
     int  k = 0;
     int  l = 0;
@@ -48,8 +48,8 @@ struct node_st * parse_sgf( char *file_content )
     int  value_count    = 0;
 
     int    node_count = 0;
-    struct node_st *sgf_tree;
-    struct node_st *sgf_tree_start;
+    node_t *sgf_tree;
+    node_t *sgf_tree_start;
     bool   is_main_line = true;
 
 
@@ -66,7 +66,7 @@ struct node_st * parse_sgf( char *file_content )
     property_name  = malloc( sizeof(char) * content_size );
     property_value = malloc( sizeof(char) * content_size );
 
-    sgf_tree = malloc( sizeof( struct node_st ) * ( node_count + 1 ) );
+    sgf_tree = malloc( sizeof( node_t ) * ( node_count + 1 ) );
 
     sgf_tree_start = sgf_tree;
 
@@ -191,10 +191,10 @@ struct node_st * parse_sgf( char *file_content )
  * @note        game_tree_nr and game_tree_level are important to determine
  *              the node's parent.
  */
-void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line )
+void add_node( node_t *sgf_tree_start, int node_nr, int game_tree_nr, int game_tree_level, bool is_main_line )
 {
     int m;
-    struct node_st *new_node;
+    node_t *new_node;
 
     new_node = sgf_tree_start + node_nr;
 
@@ -234,13 +234,13 @@ void add_node( struct node_st *sgf_tree_start, int node_nr, int game_tree_nr, in
  * @param[out]  property_name   Name of property to add
  * @return      Nothing
  */
-void add_property( struct node_st *sgf_tree, char property_name[] )
+void add_property( node_t *sgf_tree, char property_name[] )
 {
-    struct property_st *property;
+    property_t *property;
 
     int property_count = sgf_tree->property_count;
 
-    property = malloc( sizeof( struct property_st ) );
+    property = malloc( sizeof(property_t) );
     if ( property == NULL ) {
         fprintf( stderr, "malloc for property failed\n" );
         exit(1);
@@ -257,10 +257,10 @@ void add_property( struct node_st *sgf_tree, char property_name[] )
     property->number = property_count;
 
     if ( property_count == 1 ) {
-        sgf_tree->property = malloc( sizeof( struct property_st ) );
+        sgf_tree->property = malloc( sizeof(property_t) );
     }
     else if ( property_count > 1 ) {
-        sgf_tree->property = realloc( sgf_tree->property, sizeof( struct property_st ) * property_count );
+        sgf_tree->property = realloc( sgf_tree->property, sizeof(property_t) * property_count );
     }
     *(sgf_tree->property + property_count - 1 ) = *property;
 
@@ -279,7 +279,7 @@ void add_property( struct node_st *sgf_tree, char property_name[] )
  * @param[in]   value       String of value to add
  * @return      Nothing
  */
-void add_value( struct property_st *property, char *value )
+void add_value( property_t *property, char *value )
 {
     int value_count = property->value_count;
 
@@ -305,14 +305,14 @@ void add_value( struct property_st *property, char *value )
  * @param[in]   sgf_tree    Pointer to SGF tree
  * @return      Nothing
  */
-void free_sgf_tree( struct node_st *sgf_tree )
+void free_sgf_tree( node_t *sgf_tree )
 {
     int k, l, m;
     int count_nodes      = 0;
     int count_properties = 0;
     int count_values     = 0;
 
-    struct node_st *sgf_tree_start = sgf_tree;
+    node_t *sgf_tree_start = sgf_tree;
 
     // Count nodes:
     while ( sgf_tree->number != -1 ) {

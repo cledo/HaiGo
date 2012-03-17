@@ -37,7 +37,7 @@ static unsigned long long int node_count;       //!< Counts the number of nodes 
 static bool do_log    = false;                  //!< Defines if logging is turned on or off.
 static FILE *log_file = NULL;                   //!< Log file handler
 
-static struct search_stats_st search_stats;     //!< Information about last generated move.
+static search_stats_t search_stats;             //!< Information about last generated move.
 
 static void init_search_stats(void);
 static int  add_node( int color, int depth, int alpha, int beta );
@@ -612,7 +612,7 @@ void set_do_log(void)
  *
  * @return      Struct of search statistics.
  */
-struct search_stats_st get_search_stats(void)
+search_stats_t get_search_stats(void)
 {
 
     return search_stats;

@@ -15,7 +15,7 @@
  * @brief   Structure that stores information about last generated move.
  *
  **/
-struct search_stats_st {
+typedef struct {
     char   color[6];                        //!< String representation of color of last move.
     char   move[4];                         //!< String representation of last generated move.
     int    level;                           //!< Search level of last generated move.
@@ -27,7 +27,7 @@ struct search_stats_st {
     int alpha_cut;                          //!< Number of alpha cut-offs;
     int beta_cut;                           //!< Number of beta cut-offs;
     int value;                              //!< Value of move;
-};
+} search_stats_t;
 
 void search_tree( int color, int *i, int *j );
 
@@ -40,7 +40,7 @@ void set_do_log(void);
 int compare_value_black( const void *move1, const void *move2 );
 int compare_value_white( const void *move1, const void *move2 );
 
-struct search_stats_st get_search_stats(void);
+search_stats_t get_search_stats(void);
 
 #endif
 

@@ -1140,8 +1140,8 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     int  k = 0;
     //int  m = 0;
 
-    struct node_st     *sgf_tree;
-    struct node_st     *sgf_tree_start;
+    node_t     *sgf_tree;
+    node_t     *sgf_tree_start;
     struct property_st *property;
     //char *value;
     int property_count;
@@ -1554,7 +1554,7 @@ void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     char temp_str[100];
-    struct search_stats_st stats = get_search_stats();
+    search_stats_t stats = get_search_stats();
 
     add_output("");
     snprintf( temp_str, 100, "# Color:     %s",   stats.color         );

@@ -15,7 +15,7 @@
  * @brief   Structure that represents a move.
  *
  **/
-struct move_st {
+typedef struct {
     int  number;    //!< The number of the move in the move history.
     int  color;     //!< Color of the current stone.
     bool pass;      //!< Indicates whether this move is a pass or not.
@@ -25,9 +25,9 @@ struct move_st {
     int  stones[BOARD_SIZE_MAX * BOARD_SIZE_MAX][2];    //!< List of captured stones; In move zero: List of handicap stones.
     int  count_stones;  //!< Number of captured stones
     int  value;         //!< Value of move will be stored here
-};
+} move_t;
 
-struct move_st next_move;    //!< Structure to store next move in move history.
+move_t next_move;    //!< Structure to store next move in move history.
 
 
 void init_move_history(void);
