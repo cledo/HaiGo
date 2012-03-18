@@ -28,6 +28,7 @@
 // As described in GTP v2.0 chapter 5.1
 static int  **board;    //!< The main board data structure.
 static int  **group;    //!< A helper board which contains group numbers.
+static int  **empty;    //!< A helper board which contains groups of empty fields.
 static bool **hoshi;    //!< A helper board which defines the star points.
 
 static int **bouzy_1;   //!< Board for calculating influence.
@@ -66,6 +67,7 @@ typedef struct {
     int captured_by_white;  //!< Number of black stones captured by white.
     int groups_black;       //!< Number of black groups.
     int groups_white;       //!< Number of white groups.
+    int groups_empty;       //!< Number of empty spaces groups.
     int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per black group.
     int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per white group.
     int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per black group.
@@ -134,13 +136,14 @@ void init_board( int wanted_board_size )
     // Initialise board, group, and hoshi:
     board = malloc( board_size * sizeof(int *) );
     group = malloc( board_size * sizeof(int *) );
+    empty = malloc( board_size * sizeof(int *) );
     hoshi = malloc( board_size * sizeof(bool *) );
 
     // Initialise influence boards:
     bouzy_1 = malloc( board_size * sizeof(int *) );
     bouzy_2 = malloc( board_size * sizeof(int *) );
 
-    if ( board == NULL || hoshi == NULL || group == NULL || bouzy_1 == NULL || bouzy_2 == NULL ) {
+    if ( board == NULL || hoshi == NULL || group == NULL || empty == NULL || bouzy_1 == NULL || bouzy_2 == NULL ) {
         fprintf( stderr, "Failed to malloc memory");
         exit(EXIT_FAILURE);
     }
@@ -148,10 +151,11 @@ void init_board( int wanted_board_size )
     for ( i = 0; i < board_size; i++ ) {
         board[i] = malloc( board_size * sizeof(int) );
         group[i] = malloc( board_size * sizeof(int) );
+        empty[i] = malloc( board_size * sizeof(int) );
         hoshi[i] = malloc( board_size * sizeof(bool) );
         bouzy_1[i] = malloc( board_size * sizeof(int) );
         bouzy_2[i] = malloc( board_size * sizeof(int) );
-        if ( board[i] == NULL || hoshi[i] == NULL || group[i] == NULL || bouzy_1[i] == NULL || bouzy_2[i] == NULL ) {
+        if ( board[i] == NULL || hoshi[i] == NULL || group[i] == NULL || empty[i] == NULL || bouzy_1[i] == NULL || bouzy_2[i] == NULL ) {
             fprintf( stderr, "Failed to malloc memory");
             exit(EXIT_FAILURE);
         }
@@ -159,6 +163,7 @@ void init_board( int wanted_board_size )
         for ( j = 0; j < board_size; j++ ) {
             board[i][j]   = EMPTY;
             group[i][j]   = EMPTY;
+            empty[i][j]   = 1;
             hoshi[i][j]   = false;
             bouzy_1[i][j] = EMPTY;
             bouzy_2[i][j] = EMPTY;
@@ -207,6 +212,7 @@ void init_board( int wanted_board_size )
     }
     board_stats.groups_black = 0;
     board_stats.groups_white = 0;
+    board_stats.groups_empty = 0;
     board_stats.chains_black = 0;
     board_stats.chains_white = 0;
 
@@ -239,17 +245,20 @@ void free_board(void)
     for ( i = 0; i < board_size; i++ ) {
         free( board[i]   );
         free( group[i]   );
+        free( empty[i]   );
         free( hoshi[i]   );
         free( bouzy_1[i] );
         free( bouzy_2[i] );
     }
     free(board);
     free(group);
+    free(empty);
     free(hoshi);
     free(bouzy_1);
     free(bouzy_2);
     board   = NULL;
     group   = NULL;
+    empty   = NULL;
     hoshi   = NULL;
     bouzy_1 = NULL;
     bouzy_2 = NULL;
@@ -464,33 +473,39 @@ void get_label_y_right( int j, char y[] )
 void create_groups(void)
 {
     int i, j;
-    int color;
+    //int color;
 
     board_stats.groups_black = 0;
     board_stats.groups_white = 0;
+    board_stats.groups_empty = 0;
 
-    // Reset group board:
+    // Reset group board and empty board:
     for ( i = 0; i < board_size; i++ ) {
         memset( (void *)(group[i]), 0, board_size * sizeof(int) );
+        memset( (void *)(empty[i]), 0, board_size * sizeof(int) );
     }
 
     for ( i = 0; i < board_size; i++ ) {
         // Skip row if it is empty:
+        /*
         if ( ! memcmp( (void *) (board[i]), (void *) empty_row, board_size * sizeof(int) ) ) {
             continue;
         }
+        */
 
         for ( j = 0; j < board_size; j++ ) {
 
-            color = get_vertex( i, j );
+            //color = get_vertex( i, j );
 
             // Skip field if it is empty:
+            /*
             if ( color == EMPTY ) {
                 continue;
             }
+            */
 
-            // Skip if group number is set already:
-            if ( group[i][j] ) {
+            // Skip if group number or empty number is set already:
+            if ( group[i][j] || empty[i][j]) {
                 continue;
             }
 
@@ -631,6 +646,8 @@ void set_group( int i, int j )
     int group_nr     = 0;
     int group_nr_min = INT_MAX;
     int group_nr_max = INT_MIN;
+    int empty_nr     = 0;
+    int empty_nr_min = INT_MAX;
     int neighbour[4][2];
     int neighbour_group;
 
@@ -651,13 +668,20 @@ void set_group( int i, int j )
         case 0:
             // Single stone (no neighbours), that has no group number,
             // gets next free group number.
-            if ( group[i][j] == 0 ) {
-                //group[i][j] = get_free_group_nr(color);
-                if ( color == BLACK ) {
-                    group[i][j] = ++board_stats.groups_black;
+            if ( color != EMPTY ) {
+                if ( group[i][j] == 0 ) {
+                    //group[i][j] = get_free_group_nr(color);
+                    if ( color == BLACK ) {
+                        group[i][j] = ++board_stats.groups_black;
+                    }
+                    else {
+                        group[i][j] = --board_stats.groups_white;
+                    }
                 }
-                else {
-                    group[i][j] = --board_stats.groups_white;
+            }
+            else {
+                if ( empty[i][j] == 0 ) {
+                    empty[i][j] = ++board_stats.groups_empty;
                 }
             }
             break;
@@ -666,14 +690,23 @@ void set_group( int i, int j )
             // (for WHITE) group number of all neighbours. This is
             // then the group number for the current stone. If this
             // number is still zero, get the next free group number
-            // (like case above).
+            // (like case above). Groups of empty spaces get the lowest
+            // positive number, too.
             for ( k = 0; k < count; k++ ) {
-                group_nr = group[ neighbour[k][0] ][ neighbour[k][1] ];
-                if ( group_nr_min > group_nr && group_nr > 0 ) {
-                    group_nr_min = group_nr;
+                if ( color != EMPTY ) {
+                    group_nr = group[ neighbour[k][0] ][ neighbour[k][1] ];
+                    if ( group_nr_min > group_nr && group_nr > 0 ) {
+                        group_nr_min = group_nr;
+                    }
+                    if ( group_nr_max < group_nr && group_nr < 0 ) {
+                        group_nr_max = group_nr;
+                    }
                 }
-                if ( group_nr_max < group_nr && group_nr < 0 ) {
-                    group_nr_max = group_nr;
+                else {
+                    empty_nr = empty[ neighbour[k][0] ][ neighbour[k][1] ];
+                    if ( empty_nr_min > empty_nr && empty_nr > 0 ) {
+                        empty_nr_min = empty_nr;
+                    }
                 }
             }
             if ( color == BLACK ) {
@@ -690,13 +723,27 @@ void set_group( int i, int j )
                 }
                 group[i][j] = group_nr_max;
             }
+            if ( color == EMPTY ) {
+                if ( empty_nr_min == 0 || empty_nr_min == INT_MAX ) {
+                    empty_nr_min = ++board_stats.groups_empty;
+                }
+                empty[i][j] = empty_nr_min;
+            }
 
             // Call function recursively for all other neighbours which have a
             // different group number.
             for ( k = 0; k < count; k++ ) {
-                neighbour_group = group[ neighbour[k][0] ][ neighbour[k][1] ];
-                if ( neighbour_group != group[i][j] ) {
-                    set_group( neighbour[k][0], neighbour[k][1] );
+                if ( color != EMPTY ) {
+                    neighbour_group = group[ neighbour[k][0] ][ neighbour[k][1] ];
+                    if ( neighbour_group != group[i][j] ) {
+                        set_group( neighbour[k][0], neighbour[k][1] );
+                    }
+                }
+                else {
+                    neighbour_group = empty[ neighbour[k][0] ][ neighbour[k][1] ];
+                    if ( neighbour_group != empty[i][j] ) {
+                        set_group( neighbour[k][0], neighbour[k][1] );
+                    }
                 }
             }
 
@@ -710,7 +757,8 @@ void set_group( int i, int j )
  * @brief       Checks number of neighbours for given stone.
  *
  * For a given vertex, the number of neighbours is returned, and there
- * coordinates are written into the neighbour data structure.
+ * coordinates are written into the neighbour data structure. If color
+ * is EMPTY the number of empty fields is returned.
  *
  * @param[in]   i           Horizontal coordinate
  * @param[in]   j           Vertical coordinate
@@ -722,10 +770,12 @@ int has_neighbour( int i, int j, int neighbour[][2] )
     int k     = 0;
     int color = get_vertex( i, j );
 
+    /*
     if ( color == EMPTY ) {
         fprintf( stderr, "invalid color found in group\n" );
         exit(EXIT_FAILURE);
     }
+    */
 
     if ( j + 1 < board_size && board[i][j+1] == color ) {
         neighbour[k][0] = i;
@@ -831,7 +881,16 @@ void print_groups(void)
         }
         printf("\n");
     }
+    printf("----\n");
+    for ( j = board_size - 1; j >= 0; j-- ) {
+        for ( i = 0; i < board_size; i++ ) {
+            printf( "%4d", empty[i][j] );
+        }
+        printf("\n");
+    }
     printf("\n");
+
+
 
     return;
 }
