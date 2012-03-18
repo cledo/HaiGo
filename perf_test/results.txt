@@ -70,3 +70,39 @@ A-Cut:   0
 B-Cut:   0
 Value:   0
 
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    138
+Nodes:   5903642
+Nodes/s: 42780
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0
+
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    138
+Nodes:   5903642
+Nodes/s: 42780
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0
+
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    198
+Nodes:   5903642
+Nodes/s: 29816
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0
+

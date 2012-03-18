@@ -72,6 +72,8 @@ typedef struct {
     int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per white group.
     int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per black group.
     int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
+    int empty_to_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
+    int empty_to_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
     int kosumis_black;      //!< Number of black kosumis.
     int kosumis_white;      //!< Number of white kosumis.
     int chains_black;       //!< Number of black chains.
@@ -205,6 +207,10 @@ void init_board( int wanted_board_size )
         board_stats.group_liberties_white[i] = 0;
         board_stats.group_size_black[i]      = 0;
         board_stats.group_size_white[i]      = 0;
+        for ( j = 0; j < BOARD_SIZE_MAX * BOARD_SIZE_MAX; j++ ) {
+            board_stats.empty_to_black[i][j] = 0;
+            board_stats.empty_to_white[i][j] = 0;
+        }
         captured_now[i][0]                   = INVALID;
         captured_now[i][1]                   = INVALID;
         black_group_chain[i]                 = 0;
@@ -473,7 +479,6 @@ void get_label_y_right( int j, char y[] )
 void create_groups(void)
 {
     int i, j;
-    //int color;
 
     board_stats.groups_black = 0;
     board_stats.groups_white = 0;
@@ -486,29 +491,11 @@ void create_groups(void)
     }
 
     for ( i = 0; i < board_size; i++ ) {
-        // Skip row if it is empty:
-        /*
-        if ( ! memcmp( (void *) (board[i]), (void *) empty_row, board_size * sizeof(int) ) ) {
-            continue;
-        }
-        */
-
         for ( j = 0; j < board_size; j++ ) {
-
-            //color = get_vertex( i, j );
-
-            // Skip field if it is empty:
-            /*
-            if ( color == EMPTY ) {
-                continue;
-            }
-            */
-
             // Skip if group number or empty number is set already:
             if ( group[i][j] || empty[i][j]) {
                 continue;
             }
-
             set_group( i, j );
         }
     }
@@ -669,7 +656,7 @@ void set_group( int i, int j )
             // Single stone (no neighbours), that has no group number,
             // gets next free group number.
             if ( color != EMPTY ) {
-                if ( group[i][j] == 0 ) {
+                //if ( group[i][j] == 0 ) {
                     //group[i][j] = get_free_group_nr(color);
                     if ( color == BLACK ) {
                         group[i][j] = ++board_stats.groups_black;
@@ -677,11 +664,46 @@ void set_group( int i, int j )
                     else {
                         group[i][j] = --board_stats.groups_white;
                     }
+                //}
+            }
+            else {
+                //if ( empty[i][j] == 0 ) {
+                    empty[i][j] = ++board_stats.groups_empty;
+                //}
+            }
+            break;
+        case 1:
+            // Current stone has only one neighbour:
+            if ( color != EMPTY ) {
+                if ( group[i][j] == 0 ) {
+                    group_nr = group[ neighbour[0][0] ][ neighbour[0][1] ];
+                    if ( group_nr != 0 ) {
+                        // Neighbour stone has group number already:
+                        group[i][j] = group_nr;
+                    }
+                    else {
+                        // Neighbour stone is also without group number:
+                        if ( color == BLACK ) {
+                            group[i][j] = ++board_stats.groups_black;
+                            set_group( neighbour[0][0], neighbour[0][1] );
+                        }
+                        else {
+                            group[i][j] = --board_stats.groups_white;
+                            set_group( neighbour[0][0], neighbour[0][1] );
+                        }
+                    }
                 }
             }
             else {
                 if ( empty[i][j] == 0 ) {
-                    empty[i][j] = ++board_stats.groups_empty;
+                    empty_nr = empty[ neighbour[0][0] ][ neighbour[0][1] ];
+                    if ( empty_nr != 0 ) {
+                        empty[i][j] = empty_nr;
+                    }
+                    else {
+                        empty[i][j] = ++board_stats.groups_empty;
+                        set_group( neighbour[0][0], neighbour[0][1] );
+                    }
                 }
             }
             break;
@@ -915,12 +937,14 @@ void count_liberties(void)
     int white_group_nr_min = get_last_group_nr(WHITE);
 
     // Initialise liberty lists:
-    /*
     for ( i = 0; i <= board_size * board_size; i++ ) {
-        black_liberties[i] = INVALID;
-        white_liberties[i] = INVALID;
+        //black_liberties[i] = INVALID;
+        //white_liberties[i] = INVALID;
+        memset( (void *) board_stats.empty_to_black[i]
+            , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
+        memset( (void *) board_stats.empty_to_white[i]
+            , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
     }
-    */
 
     for ( i = 0; i <= black_group_nr_max; i++ ) {
         is_liberty_black[i] = false;
@@ -933,60 +957,69 @@ void count_liberties(void)
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
-            if ( board[i][j] == EMPTY ) {
-                // North:
-                if ( j+1 < board_size && group[i][j+1] ) {
-                    group_nr = group[i][j+1];
-                    if ( group_nr > 0 ) {
-                        is_liberty_black[group_nr] = true;
-                    }
-                    else {
-                        is_liberty_white[group_nr * -1] = true;
-                    }
+            if ( board[i][j] != EMPTY ) {
+                continue;
+            }
+            // North:
+            if ( j+1 < board_size && group[i][j+1] ) {
+                group_nr = group[i][j+1];
+                if ( group_nr > 0 ) {
+                    is_liberty_black[group_nr] = true;
+                    board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
                 }
-                // South:
-                if ( j-1 >= 0 && group[i][j-1] ) {
-                    group_nr = group[i][j-1];
-                    if ( group_nr > 0 ) {
-                        is_liberty_black[group_nr] = true;
-                    }
-                    else {
-                        is_liberty_white[group_nr * -1] = true;
-                    }
+                else {
+                    is_liberty_white[group_nr * -1] = true;
+                    board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
                 }
-                // East:
-                if ( i+1 < board_size && group[i+1][j] ) {
-                    group_nr = group[i+1][j];
-                    if ( group_nr > 0 ) {
-                        is_liberty_black[group_nr] = true;
-                    }
-                    else {
-                        is_liberty_white[group_nr * -1] = true;
-                    }
+            }
+            // South:
+            if ( j-1 >= 0 && group[i][j-1] ) {
+                group_nr = group[i][j-1];
+                if ( group_nr > 0 ) {
+                    is_liberty_black[group_nr] = true;
+                    board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
                 }
-                // West:
-                if ( i-1 >= 0 && group[i-1][j] ) {
-                    group_nr = group[i-1][j];
-                    if ( group_nr > 0 ) {
-                        is_liberty_black[group_nr] = true;
-                    }
-                    else {
-                        is_liberty_white[group_nr * -1] = true;
-                    }
+                else {
+                    is_liberty_white[group_nr * -1] = true;
+                    board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
                 }
+            }
+            // East:
+            if ( i+1 < board_size && group[i+1][j] ) {
+                group_nr = group[i+1][j];
+                if ( group_nr > 0 ) {
+                    is_liberty_black[group_nr] = true;
+                    board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
+                }
+                else {
+                    is_liberty_white[group_nr * -1] = true;
+                    board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
+                }
+            }
+            // West:
+            if ( i-1 >= 0 && group[i-1][j] ) {
+                group_nr = group[i-1][j];
+                if ( group_nr > 0 ) {
+                    is_liberty_black[group_nr] = true;
+                    board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
+                }
+                else {
+                    is_liberty_white[group_nr * -1] = true;
+                    board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
+                }
+            }
 
-                // Count liberties:
-                for ( k = 1; k <= black_group_nr_max; k ++ ) {
-                    if ( is_liberty_black[k] ) {
-                        board_stats.group_liberties_black[k]++;
-                        is_liberty_black[k] = false;
-                    }
+            // Count liberties:
+            for ( k = 1; k <= black_group_nr_max; k ++ ) {
+                if ( is_liberty_black[k] ) {
+                    board_stats.group_liberties_black[k]++;
+                    is_liberty_black[k] = false;
                 }
-                for ( k = 1; k <= white_group_nr_min * -1; k ++ ) {
-                    if ( is_liberty_white[k] ) {
-                        board_stats.group_liberties_white[k]++;
-                        is_liberty_white[k] = false;
-                    }
+            }
+            for ( k = 1; k <= white_group_nr_min * -1; k ++ ) {
+                if ( is_liberty_white[k] ) {
+                    board_stats.group_liberties_white[k]++;
+                    is_liberty_white[k] = false;
                 }
             }
         }
