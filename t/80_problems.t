@@ -10,7 +10,7 @@ use Test::More;
 
 use TLib qw( get_output ok_command get_pid set_timeout );
 
-my $plan = 100;
+my $plan = 110;
 
 my @factor = @ARGV;
 

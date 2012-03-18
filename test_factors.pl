@@ -18,6 +18,7 @@ my ( $stdin, $stdout, $stderr );
 
 #my @factor       = qw( 80 20 1 1 1 1 1 1 );
 my @factor       = qw( 800 200 100 1 1 1 3 1 );
+#my @factor       = qw( 800 200 100 1 10 1 3 1 );
 #my @factor       = qw( 50 50 0 0 0 0 0 0 );
 #my @factor       = qw( 75 20 0 0 0 0 0 5 );
 #my @factor       = qw( 100 0 0 0 0 0 0 0 );
@@ -41,8 +42,8 @@ while ( my $line = <$stdout> ) {
         print "File $1: $2 ($3s)\n";
         my $column = $sc->get_column_name( $count + 5 );
         $sc->set_cell( $column . $row, " $2 ($3)", 'leftstring' );
-        #$sc->set_format( $column, '21 2 0' );
-        #$sc->set_cell( $column . '0' , $1, 'label' );
+        $sc->set_format( $column, '21 2 0' );
+        $sc->set_cell( $column . '0' , $1, 'label' );
 
         $count++;
         if ($2) {

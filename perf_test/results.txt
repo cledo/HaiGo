@@ -46,3 +46,14 @@ A-Cut:   0
 B-Cut:   0
 Value:   0
 
+Board:   4
+Color:   Black
+Move:    A1
+Level:   3
+Time:    64
+Nodes:   5903642
+Nodes/s: 92244
+QSearch: 1116854
+A-Cut:   0
+B-Cut:   0
+Value:   0

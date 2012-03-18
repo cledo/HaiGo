@@ -2019,26 +2019,28 @@ void erosion(void)
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
-            //if ( bouzy_1[i][j] > 0 ) {
-                /*
+            if ( bouzy_1[i][j] > 0 ) {
                 bouzy_2[i][j] = bouzy_1[i][j] - count_le_zero( i, j );
                 if ( bouzy_2[i][j] < 0 ) {
                     bouzy_2[i][j] = 0;
                 }
-                */
+            }
+            /*
             if ( bouzy_1[i][j] > 0 && ( bouzy_1[i][j] - count_le_zero( i, j ) ) < 0 ) {
                     bouzy_2[i][j] = 0;
             }
-            //else if ( bouzy_1[i][j] < 0 ) {
-                /*
+            */
+            else if ( bouzy_1[i][j] < 0 ) {
                 bouzy_2[i][j] = bouzy_1[i][j] + count_ge_zero( i, j );
                 if ( bouzy_2[i][j] > 0 ) {
                     bouzy_2[i][j] = 0;
                 }
-                */
+            }
+            /*
             else if ( bouzy_1[i][j] < 0 && ( bouzy_1[i][j] + count_ge_zero( i, j ) ) > 0 ) {
                     bouzy_2[i][j] = 0;
             }
+            */
             else {
                 bouzy_2[i][j] = bouzy_1[i][j];
             }

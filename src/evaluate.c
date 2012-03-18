@@ -49,15 +49,15 @@ void init_brains(void)
     int i = 0;
 
     brains[i].function = (*brain_capture);
-    brains[i].factor   = 82;
+    brains[i].factor   = 800;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_atari);
-    brains[i].factor   = 15;
+    brains[i].factor   = 200;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_avg_liberties);
-    brains[i].factor   = 1;
+    brains[i].factor   = 100;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_edge_stones);
@@ -65,7 +65,7 @@ void init_brains(void)
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_hoshi_stones);
-    brains[i].factor   = 0;
+    brains[i].factor   = 1;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_kosumi);
@@ -73,7 +73,7 @@ void init_brains(void)
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_chains);
-    brains[i].factor   = 1; // 1
+    brains[i].factor   = 3; // 1
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_influence);
