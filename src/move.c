@@ -270,7 +270,7 @@ void push_move(void)
  */
 void pop_move(void)
 {
-    int k;
+    //int k;
 
     move_history[move_number].number = INVALID;
     move_history[move_number].color  = EMPTY;

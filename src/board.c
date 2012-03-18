@@ -1881,10 +1881,15 @@ bool has_gt_zero( int i, int j )
     int board_size = get_board_size();
 
     // North:
+    /*
     if ( j + 1 < board_size ) {
         if ( bouzy_1[i][j+1] > 0 ) {
             return true;
         }
+    }
+    */
+    if ( j + 1 < board_size && bouzy_1[i][j+1] > 0 ) {
+        return true;
     }
     // South:
     if ( j - 1 >= 0 ) {
@@ -1892,17 +1897,32 @@ bool has_gt_zero( int i, int j )
             return true;
         }
     }
+    /*
+    if ( j - 1 >= 0 && bouzy_1[i][j-1] > 0 ) {
+        return true;
+    }
+    */
     // East:
+    /*
     if ( i + 1 < board_size ) {
         if ( bouzy_1[i+1][j] > 0 ) {
             return true;
         }
     }
+    */
+    if ( i + 1 < board_size && bouzy_1[i+1][j] > 0 ) {
+        return true;
+    }
     // West:
+    /*
     if ( i - 1 >= 0 ) {
         if ( bouzy_1[i-1][j] > 0 ) {
             return true;
         }
+    }
+    */
+    if ( i - 1 >= 0 && bouzy_1[i-1][j] > 0 ) {
+        return true;
     }
 
     return false;
@@ -1926,28 +1946,20 @@ int count_gt_zero( int i, int j )
     int board_size = get_board_size();
 
     // North:
-    if ( j + 1 < board_size ) {
-        if ( bouzy_1[i][j+1] > 0 ) {
-            count++;
-        }
+    if ( j + 1 < board_size && bouzy_1[i][j+1] > 0 ) {
+        count++;
     }
     // South:
-    if ( j - 1 >= 0 ) {
-        if ( bouzy_1[i][j-1] > 0 ) {
-            count++;
-        }
+    if ( j - 1 >= 0 && bouzy_1[i][j-1] > 0 ) {
+        count++;
     }
     // East:
-    if ( i + 1 < board_size ) {
-        if ( bouzy_1[i+1][j] > 0 ) {
-            count++;
-        }
+    if ( i + 1 < board_size && bouzy_1[i+1][j] > 0 ) {
+        count++;
     }
     // West:
-    if ( i - 1 >= 0 ) {
-        if ( bouzy_1[i-1][j] > 0 ) {
-            count++;
-        }
+    if ( i - 1 >= 0 && bouzy_1[i-1][j] > 0 ) {
+        count++;
     }
 
     return count;
@@ -1971,28 +1983,20 @@ int count_lt_zero( int i, int j )
     int board_size = get_board_size();
 
     // North:
-    if ( j + 1 < board_size ) {
-        if ( bouzy_1[i][j+1] < 0 ) {
-            count++;
-        }
+    if ( j + 1 < board_size && bouzy_1[i][j+1] < 0 ) {
+        count++;
     }
     // South:
-    if ( j - 1 >= 0 ) {
-        if ( bouzy_1[i][j-1] < 0 ) {
-            count++;
-        }
+    if ( j - 1 >= 0 && bouzy_1[i][j-1] < 0 ) {
+        count++;
     }
     // East:
-    if ( i + 1 < board_size ) {
-        if ( bouzy_1[i+1][j] < 0 ) {
-            count++;
-        }
+    if ( i + 1 < board_size && bouzy_1[i+1][j] < 0 ) {
+        count++;
     }
     // West:
-    if ( i - 1 >= 0 ) {
-        if ( bouzy_1[i-1][j] < 0 ) {
-            count++;
-        }
+    if ( i - 1 >= 0 && bouzy_1[i-1][j] < 0 ) {
+        count++;
     }
 
     return count;
@@ -2015,17 +2019,25 @@ void erosion(void)
 
     for ( i = 0; i < board_size; i++ ) {
         for ( j = 0; j < board_size; j++ ) {
-            if ( bouzy_1[i][j] > 0 ) {
-                bouzy_2[i][j] = bouzy_1[i][j] - count_le_zero( i, j );;
+            //if ( bouzy_1[i][j] > 0 ) {
+                /*
+                bouzy_2[i][j] = bouzy_1[i][j] - count_le_zero( i, j );
                 if ( bouzy_2[i][j] < 0 ) {
                     bouzy_2[i][j] = 0;
                 }
+                */
+            if ( bouzy_1[i][j] > 0 && ( bouzy_1[i][j] - count_le_zero( i, j ) ) < 0 ) {
+                    bouzy_2[i][j] = 0;
             }
-            else if ( bouzy_1[i][j] < 0 ) {
+            //else if ( bouzy_1[i][j] < 0 ) {
+                /*
                 bouzy_2[i][j] = bouzy_1[i][j] + count_ge_zero( i, j );
                 if ( bouzy_2[i][j] > 0 ) {
                     bouzy_2[i][j] = 0;
                 }
+                */
+            else if ( bouzy_1[i][j] < 0 && ( bouzy_1[i][j] + count_ge_zero( i, j ) ) > 0 ) {
+                    bouzy_2[i][j] = 0;
             }
             else {
                 bouzy_2[i][j] = bouzy_1[i][j];
@@ -2060,28 +2072,20 @@ int count_le_zero( int i, int j )
     int board_size = get_board_size();
 
     // North:
-    if ( j + 1 < board_size ) {
-        if ( bouzy_1[i][j+1] <= 0 ) {
-            count++;
-        }
+    if ( j + 1 < board_size && bouzy_1[i][j+1] <= 0 ) {
+        count++;
     }
     // South:
-    if ( j - 1 >= 0 ) {
-        if ( bouzy_1[i][j-1] <= 0 ) {
-            count++;
-        }
+    if ( j - 1 >= 0 && bouzy_1[i][j-1] <= 0 ) {
+        count++;
     }
     // East:
-    if ( i + 1 < board_size ) {
-        if ( bouzy_1[i+1][j] <= 0 ) {
-            count++;
-        }
+    if ( i + 1 < board_size && bouzy_1[i+1][j] <= 0 ) {
+        count++;
     }
     // West:
-    if ( i - 1 >= 0 ) {
-        if ( bouzy_1[i-1][j] <= 0 ) {
-            count++;
-        }
+    if ( i - 1 >= 0 && bouzy_1[i-1][j] <= 0 ) {
+        count++;
     }
 
     return count;
@@ -2105,28 +2109,19 @@ int count_ge_zero( int i, int j )
     int board_size = get_board_size();
 
     // North:
-    if ( j + 1 < board_size ) {
-        if ( bouzy_1[i][j+1] >= 0 ) {
-            count++;
-        }
+    if ( j + 1 < board_size && bouzy_1[i][j+1] >= 0 ) {
+        count++;
     }
     // South:
-    if ( j - 1 >= 0 ) {
-        if ( bouzy_1[i][j-1] >= 0 ) {
-            count++;
-        }
+    if ( j - 1 >= 0 && bouzy_1[i][j-1] >= 0 ) {
+        count++;
     }
     // East:
-    if ( i + 1 < board_size ) {
-        if ( bouzy_1[i+1][j] >= 0 ) {
-            count++;
-        }
+    if ( i + 1 < board_size && bouzy_1[i+1][j] >= 0 ) {
+        count++;
     }
-    // West:
-    if ( i - 1 >= 0 ) {
-        if ( bouzy_1[i-1][j] >= 0 ) {
-            count++;
-        }
+    if ( i - 1 >= 0 && bouzy_1[i-1][j] >= 0 ) {
+        count++;
     }
 
     return count;
