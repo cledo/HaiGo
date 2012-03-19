@@ -936,7 +936,7 @@ void count_liberties(void)
     int black_group_nr_max = get_last_group_nr(BLACK);
     int white_group_nr_min = get_last_group_nr(WHITE);
 
-    // Initialise liberty lists:
+    // Initialise empty_to_<color> lists:
     for ( i = 0; i <= board_size * board_size; i++ ) {
         //black_liberties[i] = INVALID;
         //white_liberties[i] = INVALID;
