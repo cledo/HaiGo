@@ -74,8 +74,8 @@ typedef struct {
     int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
     int empty_to_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
     int empty_to_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
-    int empty_owned_black[BOARD_SIZE_MAX];  //!< Empty space groups that are owned by black groups.
-    int empty_owned_white[BOARD_SIZE_MAX];  //!< Empty space groups that are owned by white groups.
+    //int empty_owned_black[BOARD_SIZE_MAX];  //!< Empty space groups that are owned by black groups.
+    //int empty_owned_white[BOARD_SIZE_MAX];  //!< Empty space groups that are owned by white groups.
     int kosumis_black;      //!< Number of black kosumis.
     int kosumis_white;      //!< Number of white kosumis.
     int chains_black;       //!< Number of black chains.
@@ -213,8 +213,8 @@ void init_board( int wanted_board_size )
             board_stats.empty_to_black[i][j] = 0;
             board_stats.empty_to_white[i][j] = 0;
         }
-        board_stats.empty_owned_black[i]     = 0;
-        board_stats.empty_owned_white[i]     = 0;
+        //board_stats.empty_owned_black[i]     = 0;
+        //board_stats.empty_owned_white[i]     = 0;
         captured_now[i][0]                   = INVALID;
         captured_now[i][1]                   = INVALID;
         black_group_chain[i]                 = 0;
@@ -943,7 +943,7 @@ void count_liberties(void)
 
     int black_group_nr_max = get_last_group_nr(BLACK);
     int white_group_nr_min = get_last_group_nr(WHITE);
-    int empty_group_nr_max = get_last_group_nr(EMPTY);
+    //int empty_group_nr_max = get_last_group_nr(EMPTY);
 
     // Initialise empty_to_<color> lists:
     for ( i = 0; i <= board_size * board_size; i++ ) {
@@ -956,10 +956,12 @@ void count_liberties(void)
     }
 
     // Initialise empty_owned_<color> lists:
+    /*
     memset( (void *) board_stats.empty_owned_black
-            , 0, BOARD_SIZE_MAX * sizeof(in) );
+            , 0, BOARD_SIZE_MAX * sizeof(int) );
     memset( (void *) board_stats.empty_owned_white
-            , 0, BOARD_SIZE_MAX * sizeof(in) );
+            , 0, BOARD_SIZE_MAX * sizeof(int) );
+    */
 
     for ( i = 0; i <= black_group_nr_max; i++ ) {
         is_liberty_black[i] = false;
@@ -1036,11 +1038,6 @@ void count_liberties(void)
                     board_stats.group_liberties_white[k]++;
                     is_liberty_white[k] = false;
                 }
-            }
-
-            // Count single owned groups:
-            for ( k = 1; <= empty_group_nr_max; k++ ) {
-                // TODO: What to do here exactly?
             }
         }
     }

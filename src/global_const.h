@@ -74,7 +74,7 @@
 #define MAX_QSEARCH_DEPTH   3
 
 //! Number of brain functions.
-#define COUNT_BRAINS    8
+#define COUNT_BRAINS    9
 
 #endif
 
