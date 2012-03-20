@@ -390,7 +390,9 @@ int brain_influence(void)
  */
 int brain_has_eye(void)
 {
-    int value = 0;
+    int value;
+
+    value = get_one_eye_groups(BLACK) - get_one_eye_groups(WHITE);
 
     return value;
 }

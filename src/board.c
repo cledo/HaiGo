@@ -2510,26 +2510,28 @@ int get_one_eye_groups( int color )
     memset( (void *)white_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
 
     if ( color == BLACK ) {
-        for ( k = 1; k <= group_empty; k++ ) {
-            for ( l = 1; l <= group_black; l++ ) {
-                if ( board_stats.empty_to_black[k][l] > 0 ) {
-                    // ESG k has BG l as neighbour
-                    black_temp[l]++;
+        for ( k = 1; k <= group_black; k++ ) {
+            for ( l = 1; l <= group_empty; l++ ) {
+                if ( board_stats.black_to_empty[k][l] > 0 ) {
+                    // BG k has ESG l as neighbour
+                    black_temp[k]++;    // BG k has that many ESG neighbours
                 }
             }
         }
 
     }
     else {
-        for ( k = 1; k <= group_empty; k++ ) {
-            for ( l = 1; l <= group_white; l++ ) {
-                if ( board_stats.empty_to_white[k][l] > 0 ) {
-                    // ESG k has WG k as neighbour
-                    white_temp[l]++;
+        for ( k = 1; k <= group_white; k++ ) {
+            for ( l = 1; l <= group_empty; l++ ) {
+                if ( board_stats.white_to_empty[k][l] > 0 ) {
+                    // WG k has ESG l as neighbour
+                    white_temp[k]++;    // WG k has that many ESG neighbours
                 }
             }
         }
     }
+
+    // Go through black_temp or white_temp to see which k has 1 ...
 
     return count;
 }

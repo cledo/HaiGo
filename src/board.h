@@ -54,6 +54,7 @@ int  get_group_count_atari( int color );
 int  get_group_count_liberties( int color );
 int  get_last_chain_nr( int color );
 int  get_nr_groups_no_chain( int color );
+int  get_one_eye_groups( int color );
 //@}
 
 /**
