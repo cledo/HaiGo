@@ -74,8 +74,8 @@ typedef struct {
     int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
     int empty_to_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
     int empty_to_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
-    //int empty_owned_black[BOARD_SIZE_MAX];  //!< Empty space groups that are owned by black groups.
-    //int empty_owned_white[BOARD_SIZE_MAX];  //!< Empty space groups that are owned by white groups.
+    int black_to_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];
+    int white_to_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];
     int kosumis_black;      //!< Number of black kosumis.
     int kosumis_white;      //!< Number of white kosumis.
     int chains_black;       //!< Number of black chains.
@@ -212,9 +212,9 @@ void init_board( int wanted_board_size )
         for ( j = 0; j < BOARD_SIZE_MAX * BOARD_SIZE_MAX; j++ ) {
             board_stats.empty_to_black[i][j] = 0;
             board_stats.empty_to_white[i][j] = 0;
+            board_stats.black_to_empty[i][j] = 0;
+            board_stats.white_to_empty[i][j] = 0;
         }
-        //board_stats.empty_owned_black[i]     = 0;
-        //board_stats.empty_owned_white[i]     = 0;
         captured_now[i][0]                   = INVALID;
         captured_now[i][1]                   = INVALID;
         black_group_chain[i]                 = 0;
@@ -953,15 +953,11 @@ void count_liberties(void)
             , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
         memset( (void *) board_stats.empty_to_white[i]
             , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
+        memset( (void *) board_stats.black_to_empty[i]
+            , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
+        memset( (void *) board_stats.white_to_empty[i]
+            , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
     }
-
-    // Initialise empty_owned_<color> lists:
-    /*
-    memset( (void *) board_stats.empty_owned_black
-            , 0, BOARD_SIZE_MAX * sizeof(int) );
-    memset( (void *) board_stats.empty_owned_white
-            , 0, BOARD_SIZE_MAX * sizeof(int) );
-    */
 
     for ( i = 0; i <= black_group_nr_max; i++ ) {
         is_liberty_black[i] = false;
@@ -983,10 +979,12 @@ void count_liberties(void)
                 if ( group_nr > 0 ) {
                     is_liberty_black[group_nr] = true;
                     board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
+                    board_stats.black_to_empty[ group_nr ][ empty[i][j] ]++;
                 }
                 else {
                     is_liberty_white[group_nr * -1] = true;
                     board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
+                    board_stats.white_to_empty[ group_nr * -1 ][ empty[i][j] ]++;
                 }
             }
             // South:
@@ -995,10 +993,12 @@ void count_liberties(void)
                 if ( group_nr > 0 ) {
                     is_liberty_black[group_nr] = true;
                     board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
+                    board_stats.black_to_empty[ group_nr ][ empty[i][j] ]++;
                 }
                 else {
                     is_liberty_white[group_nr * -1] = true;
                     board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
+                    board_stats.white_to_empty[ group_nr * -1 ][ empty[i][j] ]++;
                 }
             }
             // East:
@@ -1007,10 +1007,12 @@ void count_liberties(void)
                 if ( group_nr > 0 ) {
                     is_liberty_black[group_nr] = true;
                     board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
+                    board_stats.black_to_empty[ group_nr ][ empty[i][j] ]++;
                 }
                 else {
                     is_liberty_white[group_nr * -1] = true;
                     board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
+                    board_stats.white_to_empty[ group_nr * -1 ][ empty[i][j] ]++;
                 }
             }
             // West:
@@ -1019,10 +1021,12 @@ void count_liberties(void)
                 if ( group_nr > 0 ) {
                     is_liberty_black[group_nr] = true;
                     board_stats.empty_to_black[ empty[i][j] ][ group_nr ]++;
+                    board_stats.black_to_empty[ group_nr ][ empty[i][j] ]++;
                 }
                 else {
                     is_liberty_white[group_nr * -1] = true;
                     board_stats.empty_to_white[ empty[i][j] ][ group_nr * -1 ]++;
+                    board_stats.white_to_empty[ group_nr * -1 ][ empty[i][j] ]++;
                 }
             }
 
@@ -2485,6 +2489,46 @@ int get_count_kosumis( int color )
     }
     else {
         count = board_stats.kosumis_white;
+    }
+
+    return count;
+}
+
+int get_one_eye_groups( int color )
+{
+    int k, l;
+    int count = 0;
+
+    int black_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1];
+    int white_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1];
+
+    int group_empty = board_stats.groups_empty;
+    int group_black = board_stats.groups_black;
+    int group_white = board_stats.groups_white * -1;
+
+    memset( (void *)black_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
+    memset( (void *)white_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
+
+    if ( color == BLACK ) {
+        for ( k = 1; k <= group_empty; k++ ) {
+            for ( l = 1; l <= group_black; l++ ) {
+                if ( board_stats.empty_to_black[k][l] > 0 ) {
+                    // ESG k has BG l as neighbour
+                    black_temp[l]++;
+                }
+            }
+        }
+
+    }
+    else {
+        for ( k = 1; k <= group_empty; k++ ) {
+            for ( l = 1; l <= group_white; l++ ) {
+                if ( board_stats.empty_to_white[k][l] > 0 ) {
+                    // ESG k has WG k as neighbour
+                    white_temp[l]++;
+                }
+            }
+        }
     }
 
     return count;
