@@ -365,11 +365,11 @@ int add_node( int color, int depth, int alpha, int beta )
             for ( l = 1; l <= depth; l++ ) {
                 strcat( indent, "\t" );
             }
-            fprintf( log_file, "%s%s%s (%d) (T: %d) (%d,%d,%d,%d,%d,%d,%d) (a: %d, b: %d)\n"
+            fprintf( log_file, "%s%s%s (%d) (T: %d) (%d,%d,%d,%d,%d,%d,%d,%d) (a: %d, b: %d)\n"
                 , indent, x, y
                 , valid_moves[k][2], valid_moves[k][3], value_list[0], value_list[1]
                 , value_list[2], value_list[3], value_list[4], value_list[5]
-                , value_list[6]
+                , value_list[6], value_list[7]
                 , alpha, beta );
         }
 

@@ -2499,12 +2499,19 @@ int get_one_eye_groups( int color )
     int k, l;
     int count = 0;
 
-    int black_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1];
-    int white_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1];
+    int black_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
+    int white_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
+    int empty_b_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
+    int empty_w_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
 
     int group_empty = board_stats.groups_empty;
     int group_black = board_stats.groups_black;
     int group_white = board_stats.groups_white * -1;
+
+    black_temp[1]   = 0;
+    white_temp[1]   = 0;
+    empty_b_temp[1] = 0;
+    empty_w_temp[1] = 0;
 
     memset( (void *)black_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
     memset( (void *)white_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
@@ -2515,10 +2522,11 @@ int get_one_eye_groups( int color )
                 if ( board_stats.black_to_empty[k][l] > 0 ) {
                     // BG k has ESG l as neighbour
                     black_temp[k]++;    // BG k has that many ESG neighbours
+                    empty_b_temp[l]++;  // ESG l has that many BG neighbours
                 }
             }
         }
-
+        count = black_temp[1];
     }
     else {
         for ( k = 1; k <= group_white; k++ ) {
@@ -2526,12 +2534,32 @@ int get_one_eye_groups( int color )
                 if ( board_stats.white_to_empty[k][l] > 0 ) {
                     // WG k has ESG l as neighbour
                     white_temp[k]++;    // WG k has that many ESG neighbours
+                    empty_w_temp[l]++;  // ESG l has that many WG neighbours
+                }
+            }
+        }
+        count = white_temp[1];
+    }
+
+    // Go through black_temp or white_temp to see which k has 1 ...
+    if ( color == BLACK ) {
+        for ( k = 1; k <= group_black; k++ ) {
+            if ( black_temp[k] == 1 ) {
+                // BG k has one ESG neighbour
+                for ( l = 1; l <= group_empty; l ++ ) {
+                    if ( board_stats.black_to_empty[k][l] > 0 ) {
+                        // ESG neighbour is l
+                    }
                 }
             }
         }
     }
-
-    // Go through black_temp or white_temp to see which k has 1 ...
+    else {
+        for ( k = 1; k <= group_white; k++ ) {
+            if ( white_temp[k] == 1 ) {
+            }
+        }
+    }
 
     return count;
 }
