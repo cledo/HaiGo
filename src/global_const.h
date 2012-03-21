@@ -24,7 +24,7 @@
 //! Defines the maximum length of any given GTP token, either command or argument.
 #define MAX_TOKEN_LENGTH 20
 //! Defines the maximum number of given GTP tokens for any command plus arguments.
-#define MAX_TOKEN_COUNT  10
+#define MAX_TOKEN_COUNT  15
 
 //! Sets the length of the GTP output buffer.
 #define MAX_OUTPUT_LENGTH 4096

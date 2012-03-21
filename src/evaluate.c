@@ -392,7 +392,7 @@ int brain_has_eye(void)
 {
     int value;
 
-    value = get_one_eye_groups(BLACK) - get_one_eye_groups(WHITE);
+    value = get_one_eye_groups(WHITE) - get_one_eye_groups(BLACK);
 
     return value;
 }

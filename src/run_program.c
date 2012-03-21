@@ -1579,7 +1579,7 @@ void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     add_output(temp_str);
     snprintf( temp_str, 100, "# Value:     %d",   stats.value         );
     add_output(temp_str);
-    snprintf( temp_str, 100, "# Gr-Em:     %d",   get_one_eye_groups(WHITE)         );
+    snprintf( temp_str, 100, "# Gr-Em:     %d",   ( get_one_eye_groups(WHITE) - get_one_eye_groups(BLACK) ) * 500 );
     add_output(temp_str);
 
     return;

@@ -2499,6 +2499,9 @@ int get_one_eye_groups( int color )
     int k, l;
     int count = 0;
 
+    int black_one_eye = 0;
+    int white_one_eye = 0;
+
     int black_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
     int white_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
     int empty_b_temp[ BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ];
@@ -2516,6 +2519,7 @@ int get_one_eye_groups( int color )
     memset( (void *)black_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
     memset( (void *)white_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
 
+    // Set up black_temp, empty_b_temp, white_temp, empty_w_temp:
     if ( color == BLACK ) {
         for ( k = 1; k <= group_black; k++ ) {
             for ( l = 1; l <= group_empty; l++ ) {
@@ -2549,16 +2553,36 @@ int get_one_eye_groups( int color )
                 for ( l = 1; l <= group_empty; l ++ ) {
                     if ( board_stats.black_to_empty[k][l] > 0 ) {
                         // ESG neighbour is l
+                        if ( empty_w_temp[l] == 0 ) {
+                            // BG k has only one eye
+                            black_one_eye++;
+                        }
+                        break;
                     }
                 }
             }
         }
+        
+        count = black_one_eye;
     }
     else {
         for ( k = 1; k <= group_white; k++ ) {
             if ( white_temp[k] == 1 ) {
+                // WG k has one ESG neighbour
+                for ( l = 1; l <= group_empty; l++ ) {
+                    if ( board_stats.white_to_empty[k][l] > 0 ) {
+                        // ESG neighbour is l
+                        if ( empty_b_temp[l] == 0 ) {
+                            // WG k has only one eye
+                            white_one_eye++;
+                        }
+                        break;
+                    }
+                }
             }
         }
+        
+        count = white_one_eye;
     }
 
     return count;
