@@ -60,6 +60,30 @@ START_TEST (test_board_size_3)
 }
 END_TEST
 
+START_TEST (test_vertex)
+{
+    int i, j;
+    bsize_t s;
+
+    for ( s = BOARD_SIZE_MIN; s <= BOARD_SIZE_MAX; s++ ) {
+        init_board(s);
+
+        for ( i = 0; i < s; i++ ) {
+            for ( j = 0; j < s; j++ ) {
+                set_vertex( BLACK, i, j );
+                fail_unless( get_vertex( i, j ) == BLACK );
+                set_vertex( EMPTY, i, j );
+                fail_unless( get_vertex( i, j ) == EMPTY );
+                set_vertex( WHITE, i, j );
+                fail_unless( get_vertex( i, j ) == WHITE );
+            }
+        }
+
+        free_board();
+    }
+
+}
+END_TEST
 
 
 Suite * board_suite(void)
@@ -68,6 +92,7 @@ Suite * board_suite(void)
 
     TCase *tc_init_board = tcase_create("init_board");
     TCase *tc_board_size = tcase_create("board_size");
+    TCase *tc_vertex     = tcase_create("vertex");
 
     tcase_add_exit_test( tc_init_board, test_init_board_1, EXIT_SUCCESS );
     tcase_add_exit_test( tc_init_board, test_init_board_2, EXIT_FAILURE );
@@ -77,8 +102,11 @@ Suite * board_suite(void)
     tcase_add_exit_test( tc_board_size, test_board_size_2, EXIT_FAILURE );
     tcase_add_exit_test( tc_board_size, test_board_size_3, EXIT_FAILURE );
 
+    tcase_add_test( tc_vertex, test_vertex );
+
     suite_add_tcase( s, tc_init_board );
     suite_add_tcase( s, tc_board_size );
+    suite_add_tcase( s, tc_vertex     );
 
     return s;
 }
