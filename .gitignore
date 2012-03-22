@@ -13,6 +13,7 @@ tests/check_run_program
 tests/check_move
 tests/check_global_tools
 tests/check_search
+tests/check_new_board
 cover/*
 doc/html/
 doc/latex/

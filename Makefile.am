@@ -1,4 +1,4 @@
-SUBDIRS = src tests
+SUBDIRS = src tests new_src
 
 cover: FORCE
 	@mkdir -p cover

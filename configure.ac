@@ -24,6 +24,7 @@ AC_CHECK_HEADERS([stdio.h stdlib.h stdbool.h time.h])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 new_src/Makefile
                  tests/Makefile])
 
 AC_OUTPUT
