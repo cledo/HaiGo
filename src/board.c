@@ -70,6 +70,7 @@ typedef struct {
     int groups_empty;       //!< Number of empty spaces groups.
     int group_size_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per black group.
     int group_size_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per white group.
+    int group_size_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per empty group.
     int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per black group.
     int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
     int empty_to_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
@@ -209,6 +210,7 @@ void init_board( int wanted_board_size )
         board_stats.group_liberties_white[i] = 0;
         board_stats.group_size_black[i]      = 0;
         board_stats.group_size_white[i]      = 0;
+        board_stats.group_size_empty[i]      = 0;
         for ( j = 0; j < BOARD_SIZE_MAX * BOARD_SIZE_MAX; j++ ) {
             board_stats.empty_to_black[i][j] = 0;
             board_stats.empty_to_white[i][j] = 0;
@@ -1245,7 +1247,8 @@ int get_captured_now( int captured[][2] )
  * @brief       Determines the size of all groups.
  *
  * Determines the size of all black and white groups and stores the results in
- * board_stats.group_size_black[] and board_stats.group_size_white[i].
+ * board_stats.group_size_black[] and board_stats.group_size_white[]. The
+ * size of empty groups is stored in board_stats.group_size_empty[].
  *
  * @sa  get_size_of_group()
  *
@@ -1260,17 +1263,21 @@ void set_groups_size(void)
         , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
     memset( (void *) board_stats.group_size_white
         , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
+    memset( (void *) board_stats.group_size_empty
+        , 0, BOARD_SIZE_MAX * BOARD_SIZE_MAX * sizeof(int) );
 
     for ( i = 0; i < board_size; i++ ) {
         // Skip row if it is empty:
+        /*
         if ( ! memcmp( (void *) (board[i]), (void *) empty_row, board_size * sizeof(int) ) ) {
             continue;
         }
+        */
 
         for ( j = 0; j < board_size; j++ ) {
             group_nr = group[i][j];
             if ( group_nr == 0 ) {
-                continue;
+                board_stats.group_size_empty[ empty[i][j] ]++;
             }
             else if ( group_nr > 0 ) {
                 board_stats.group_size_black[group_nr]++;
@@ -1303,6 +1310,25 @@ int get_size_of_group( int group_nr )
     else if ( group_nr < 0 ) {
         group_size = board_stats.group_size_white[group_nr * -1];
     }
+
+    return group_size;
+}
+
+/**
+ * @brief       Returns the size of a given empty group.
+ *
+ * Returns the size, that is the number of stones, for a given empty group,
+ * determined by group number.
+ *
+ * @param[in]   group_nr    Number of empty group.
+ * @return      group_size  Size of empty group.
+ * @sa          get_size_of_group()
+ */
+int get_size_of_empty_group( int group_nr )
+{
+    int group_size = 0;
+
+    group_size = board_stats.group_size_empty[group_nr];
 
     return group_size;
 }
@@ -2516,6 +2542,7 @@ int get_one_eye_groups( int color )
     empty_b_temp[1] = 0;
     empty_w_temp[1] = 0;
 
+    // Maybe this is unnecessary ...
     memset( (void *)black_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
     memset( (void *)white_temp, 0, ( BOARD_SIZE_MAX * BOARD_SIZE_MAX + 1 ) * sizeof(int) );
 
@@ -2545,43 +2572,36 @@ int get_one_eye_groups( int color )
         count = white_temp[1];
     }
 
-    // Go through black_temp or white_temp to see which k has 1 ...
     if ( color == BLACK ) {
-        for ( k = 1; k <= group_black; k++ ) {
-            if ( black_temp[k] == 1 ) {
-                // BG k has one ESG neighbour
-                for ( l = 1; l <= group_empty; l ++ ) {
-                    if ( board_stats.black_to_empty[k][l] > 0 ) {
-                        // ESG neighbour is l
-                        if ( empty_w_temp[l] == 0 ) {
-                            // BG k has only one eye
+        for ( k = 1; k <= group_empty; k++ ) {
+            if ( empty_b_temp[k] == 1 && empty_w_temp[k] == 0 && get_size_of_empty_group(k) < 7 ) {
+                // ESG k has one BG as neighbour
+                for ( l = 1; l <= group_black; l++ ) {
+                    if ( board_stats.empty_to_black[k][l] > 0 ) {
+                        // BG l is neighbor of ESG k
+                        if ( black_temp[l] == 1 ) {
                             black_one_eye++;
                         }
-                        break;
                     }
                 }
             }
         }
-        
         count = black_one_eye;
     }
     else {
-        for ( k = 1; k <= group_white; k++ ) {
-            if ( white_temp[k] == 1 ) {
-                // WG k has one ESG neighbour
-                for ( l = 1; l <= group_empty; l++ ) {
-                    if ( board_stats.white_to_empty[k][l] > 0 ) {
-                        // ESG neighbour is l
-                        if ( empty_b_temp[l] == 0 ) {
-                            // WG k has only one eye
+        for ( k = 1; k <= group_empty; k++ ) {
+            if ( empty_w_temp[k] == 1 && empty_b_temp[k] == 0 && get_size_of_empty_group(k) < 7 ) {
+                // ESG k has one WG as neighbour
+                for ( l = 1; l <= group_white; l++ ) {
+                    if ( board_stats.empty_to_white[k][l] > 0 ) {
+                        // WG l is neighbour of ESG k
+                        if ( white_temp[l] == 1 ) {
                             white_one_eye++;
                         }
-                        break;
                     }
                 }
             }
         }
-        
         count = white_one_eye;
     }
 

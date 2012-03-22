@@ -128,6 +128,8 @@ int get_factor( int index )
  * @return      Value of position
  * @note        Full evaluation (with do_eval_full set to true) should not be
  *              done for move ordering, only at the end of the search tree.
+ * @todo        Make sure that do_full_eval == false does not evaluate all
+ *              functions!
  */
 int evaluate_position( int value_list[], bool do_full_eval )
 {
