@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <check.h>
 #include "../src/global_const.h"
 #include "../new_src/new_board.h"
@@ -12,6 +13,7 @@ START_TEST (test_init_board_1)
     for ( s = BOARD_SIZE_MIN; s <= BOARD_SIZE_MAX; s++ ) {
         init_board(s);
         free_board();
+        fail_unless( is_board_null(), "boards set to NULL" );
     }
 }
 END_TEST
@@ -60,6 +62,107 @@ START_TEST (test_board_size_3)
 }
 END_TEST
 
+START_TEST (test_on_board_1)
+{
+    int i, j;
+    int board_size;
+
+    for ( board_size = BOARD_SIZE_MIN; board_size <= BOARD_SIZE_MAX; board_size++ ) {
+        init_board(board_size);
+
+        for ( i = -1; i <= board_size; i++ ) {
+            for ( j = -1; j <= board_size; j++ ) {
+                if ( i < 0 || i >= board_size || j < 0 || j >= board_size ) {
+                    fail_unless( ! is_on_board( i, j ), "%d,%d off board", i, j );
+                }
+                else {
+                    fail_unless( is_on_board( i, j ), "%d,%d on board", i, j );
+                }
+            }
+        }
+
+        free_board();
+    }
+
+}
+END_TEST
+
+START_TEST (test_hoshi_1)
+{
+    int i;
+
+    bsize_t board_size = 9;
+
+    int hoshi[] = {
+        2,2,
+        2,6,
+        6,2,
+        6,6,
+        4,4,
+    };
+
+    init_board(board_size);
+
+    for ( i = 0; i < 10; i += 2 ) {
+        fail_unless( is_hoshi( hoshi[i], hoshi[i+1] ), "%d,%d is hoshi", hoshi[i], hoshi[i+1] );
+    }
+
+    free_board();
+}
+END_TEST
+
+START_TEST (test_hoshi_2)
+{
+    int i;
+
+    bsize_t board_size = 13;
+
+    int hoshi[] = {
+        3,3,
+        3,9,
+        9,3,
+        9,9,
+        6,6,
+    };
+
+    init_board(board_size);
+
+    for ( i = 0; i < 10; i += 2 ) {
+        fail_unless( is_hoshi( hoshi[i], hoshi[i+1] ), "%d,%d is hoshi", hoshi[i], hoshi[i+1] );
+    }
+
+    free_board();
+}
+END_TEST
+
+START_TEST (test_hoshi_3)
+{
+    int i;
+
+    bsize_t board_size = 19;
+
+    int hoshi[] = {
+        3,3,
+        3,9,
+        3,15,
+        9,3,
+        9,9,
+        9,15,
+        15,3,
+        15,9,
+        15,15,
+    };
+
+    init_board(board_size);
+
+    for ( i = 0; i < 10; i += 2 ) {
+        fail_unless( is_hoshi( hoshi[i], hoshi[i+1] ), "%d,%d is hoshi", hoshi[i], hoshi[i+1] );
+    }
+
+    free_board();
+}
+END_TEST
+
 START_TEST (test_vertex)
 {
     int i, j;
@@ -92,6 +195,7 @@ Suite * board_suite(void)
 
     TCase *tc_init_board = tcase_create("init_board");
     TCase *tc_board_size = tcase_create("board_size");
+    TCase *tc_hoshi      = tcase_create("hoshi");
     TCase *tc_vertex     = tcase_create("vertex");
 
     tcase_add_exit_test( tc_init_board, test_init_board_1, EXIT_SUCCESS );
@@ -101,11 +205,17 @@ Suite * board_suite(void)
     tcase_add_test( tc_board_size, test_board_size_1 );
     tcase_add_exit_test( tc_board_size, test_board_size_2, EXIT_FAILURE );
     tcase_add_exit_test( tc_board_size, test_board_size_3, EXIT_FAILURE );
+    tcase_add_test( tc_board_size, test_on_board_1 );
+
+    tcase_add_test( tc_hoshi, test_hoshi_1 );
+    tcase_add_test( tc_hoshi, test_hoshi_2 );
+    tcase_add_test( tc_hoshi, test_hoshi_3 );
 
     tcase_add_test( tc_vertex, test_vertex );
 
     suite_add_tcase( s, tc_init_board );
     suite_add_tcase( s, tc_board_size );
+    suite_add_tcase( s, tc_hoshi      );
     suite_add_tcase( s, tc_vertex     );
 
     return s;

@@ -18,6 +18,8 @@ cover: FORCE
 
 	@genhtml -o cover cover/haigo.info
 	@make cover-clean
+	@make clean
+	@./configure
 
 cover-clean: FORCE
 	@lcov -d src/ -d tests/ -z

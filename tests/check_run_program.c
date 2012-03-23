@@ -6,6 +6,7 @@
 #include "../src/io.h"
 #include "../src/global_tools.h"
 #include "../src/board.h"
+#include "../src/evaluate.h"
 
 
 /*

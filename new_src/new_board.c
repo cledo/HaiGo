@@ -6,15 +6,37 @@
 #include "new_board.h"
 #include "new_board_intern.h"
 
-typedef unsigned long row_t;
 
-bsize_t board_size = BOARD_SIZE_DEFAULT;
+/**
+ * @file    new_board.c
+ *
+ * @brief   Board data structures and functions.
+ *
+ * Represents all board data structures and their
+ * necessary functions.
+ *
+ */
 
-row_t *board_black;
-row_t *board_white;
-row_t *board_off;
+typedef unsigned long row_t;    //!< Defines a row of the board.
+
+bsize_t board_size = BOARD_SIZE_DEFAULT;    //!< Sets the boardsize to the default.
+
+row_t *board_black;     //!< Defines board for black stones.
+row_t *board_white;     //!< Defines board for white stones.
+row_t *board_off;       //!< Defines board for determining inside and ouside of board.
+row_t *board_hoshi;     //!< Defines the star points on the board.
 
 
+/**
+ *  @brief Allocates memory for all board data structures.
+ *
+ *  Allocates memory for the data structures board_black, board_white and
+ *  board_off. Its sets the board rows to empty.
+ *
+ *  @param[in]  board_size  Integer of intended board size
+ *  @return     nothing
+ *
+ */
 void init_board( bsize_t board_size )
 {
     row_t i;
@@ -25,35 +47,162 @@ void init_board( bsize_t board_size )
     board_black = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
     board_white = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
     board_off   = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
-    if ( board_black == NULL || board_white == NULL ) {
-        fprintf( stderr, "cannot allocate memory\n" );
+    board_hoshi = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
+    if ( board_black == NULL || board_white == NULL || board_off == NULL || board_hoshi == NULL ) {
+        fprintf( stderr, "cannot allocate memory for board\n" );
         exit(1);
     }
 
     for ( i = 0; i < board_size + 2; i++ ) {
         board_black[i] = 0;
         board_white[i] = 0;
-        board_off[i]   = 0;
+        board_hoshi[i] = 0;
+        board_off[i]   = 0xFFFFFFFF;
+        board_off[i]   = ( board_off[i] >> ( board_size + 1 ) ) | 0x80000000;
+    }
+    board_off[0]                = 0xFFFFFFFF;
+    board_off[ board_size + 1 ] = 0xFFFFFFFF;
+
+    init_hoshi();
+
+    return;
+}
+
+/**
+ * @brief       Defines hoshi points.
+ *
+ * Defines the star points on the current board, depending on board size.
+ *
+ * @return      Nothing
+ */
+void init_hoshi(void)
+{
+    switch ( get_board_size() ) {
+        case 19:
+            set_hoshi( 3, 3   );
+            set_hoshi( 3, 9   );
+            set_hoshi( 3, 15  );
+            set_hoshi( 9, 3   );
+            set_hoshi( 9, 9   );
+            set_hoshi( 9, 15  );
+            set_hoshi( 15, 3  );
+            set_hoshi( 15, 9  );
+            set_hoshi( 15, 15 );
+            break;
+        case 13:
+            set_hoshi( 3, 3   );
+            set_hoshi( 3, 9   );
+            set_hoshi( 9, 3   );
+            set_hoshi( 9, 9   );
+            set_hoshi( 6, 6   );
+            break;
+        case 9:
+            set_hoshi( 2, 2   );
+            set_hoshi( 2, 6   );
+            set_hoshi( 6, 2   );
+            set_hoshi( 6, 6   );
+            set_hoshi( 4, 4   );
+            break;
     }
 
     return;
 }
 
-
+/**
+ * @brief Frees the memory allocated for all board data structures.
+ *
+ * Frees the memory which has been allocated for the board_black, board_white
+ * and board_off structures.
+ *
+ * @return  nothing
+ * @sa      init_board()
+ * @note    The pointers to board_black, board_white and board_off are also set to NULL, so a check
+ *          whether the pointers are still valid or not is possible.
+ */
 void free_board(void)
 {
     free(board_black);
     free(board_white);
     free(board_off);
+    free(board_hoshi);
 
     board_black = NULL;
     board_white = NULL;
     board_off   = NULL;
+    board_hoshi = NULL;
 
     return;
 }
 
+/**
+ * @brief       Defines vertex as hoshi
+ *
+ * Defines the the given vertex as star point.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Nothing
+ */
+void set_hoshi( int i, int j )
+{
+    int   J = j + 1;
+    row_t I = 0x80000000 >> ( i + 1 );  // Bit 31 set to 1 is 0x80000000
 
+    board_hoshi[J] |= I;
+
+    return;
+}
+
+/**
+ * @brief       Checks if all board pointers are NULL.
+ *
+ * Returns true if all pointers to board_* are NULL.
+ *
+ * @return      true|false
+ * @note        This function is needed for testing only.
+ */
+bool is_board_null(void)
+{
+    bool is_null = false;
+
+    if ( board_black == NULL && board_white == NULL && board_off == NULL && board_hoshi == NULL ) {
+        is_null = true;
+    }
+
+    return is_null;
+}
+
+/**
+ * @brief       Checks if vertex is valid board vertex.
+ *
+ * Checks if the given vertex is still within board range.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      true | false
+ */
+bool is_on_board( int i, int j )
+{
+    bool  is_on = true;
+    int   J     = j + 1;
+    row_t I     = 0x80000000 >> ( i + 1 );  // Bit 31 set to 1 is 0x80000000
+
+    if ( board_off[J] & I ) {
+        is_on = false;
+    }
+
+    return is_on;
+}
+
+/**
+ * @brief       Sets board size.
+ *
+ * Sets the size of the board to the given value.
+ *
+ * @param[in]   size    New size of the board.
+ * @note        The board size must be a value from BOARD_SIZE_MIN to BOARD_SIZE_MAN.
+ * @return      Nothing
+ */
 void set_board_size( bsize_t size )
 {
     if ( size < BOARD_SIZE_MIN || size > BOARD_SIZE_MAX ) {
@@ -66,11 +215,35 @@ void set_board_size( bsize_t size )
     return;
 }
 
+/**
+ * @brief   Returns current board size.
+ *
+ * Returns the current board size.
+ *
+ * @return      nothing
+ * @sa          init_board() which sets the current board size.
+ * @note        The valid board size is defined by BOARD_SIZE_MIN and
+ *              BOARD_SIZE_MAX. The default board size is defined by
+ *              BOARD_SIZE_DEFAULT.
+ */
 bsize_t get_board_size(void)
 {
     return board_size;
 }
 
+/**
+ * @brief   Sets or unsets a stone on a given vertex.
+ *
+ * A given color, which may be BLACK, WHITE or EMPTY, is stored for a given
+ * vertex in the board data structures. So this function may set a stone or
+ * delete it.
+ *
+ * @param[in]   color   Color of the stone (BLACK, WHITE) or EMPTY
+ * @param[in]   i       horizontal coordinate
+ * @param[in]   j       vertical coordinate
+ * @return      nothing
+ * @note        Remember that this function may set a stone or delete a stone.
+ */
 void set_vertex( int color, int i, int j )
 {
     int   J = j + 1;
@@ -94,6 +267,15 @@ void set_vertex( int color, int i, int j )
     return;
 }
 
+/**
+ * @brief       Returns the color of the given vertex.
+ *
+ * Returns the color of the stone on a given vertex or EMPTY.
+ *
+ * @param[in]   i   horizontal coordinate
+ * @param[in]   j   vertex coordinate
+ * @return      BLACK|WHITE|EMPTY
+ */
 int get_vertex( int i, int j )
 {
     int color;
@@ -113,6 +295,18 @@ int get_vertex( int i, int j )
     return color;
 }
 
+/**
+ * @brief   Constructs ASCII board
+ *
+ * Constructs a complete ASCII board with coordinates, depending on the current boardsize, ready for printing.
+ *
+ * @param[out]  board_output    String representation of board
+ * @return      nothing
+ * @note        This function only constructs the board string. It does not
+ *              print it.
+ * @sa          The output should look exactly like the one from GnuGo. See
+ *              'gnugo --mode gtp' and then the command 'showboard'.
+ */
 void get_board_as_string( char board_output[] )
 {
     int i;      // Index for x-axis
@@ -201,8 +395,20 @@ void get_board_as_string( char board_output[] )
 
     return;
 }
-void get_label_x( int i, char x[] )
 
+/**
+ * @brief Creates horizontal board coordinate.
+ *
+ * Creates the horizontal board coordinate for a given number.
+ *
+ * @param[in]   i   The number of the horizontal coordinate
+ * @param[out]  x   The string representing the horizontal coordinate
+ * @return      nothing
+ * @sa          get_label_y_left(), get_label_y_right()
+ * @note        The letter coordinate is returned as string, not as char.
+ *              The character 'I' is not used in Go boards.
+ */
+void get_label_x( int i, char x[] )
 {
     if ( i >= 8 ) {
         i++;
@@ -214,6 +420,18 @@ void get_label_x( int i, char x[] )
     return;
 }
 
+/**
+ * @brief   Creates left vertical coordinate.
+ *
+ * Creates the vertical coordinate on the left side of the board. The
+ * coordinate on the left hand side are aligned to the right hand side.
+ *
+ * @param[in]   j   The number of the vertical coordinate.
+ * @param[out]  y   The string representing the vertical coordinate
+ * @return      nothing
+ * @note        The coordinates on the left side are right aligned.
+ * @sa          get_label_y_right(), get_label_x()
+ */
 void get_label_y_left( int j, char y[] )
 {
     j++;
@@ -228,6 +446,18 @@ void get_label_y_left( int j, char y[] )
     return;
 }
 
+/**
+ * @brief   Creates right vertical coordinate.
+ *
+ * Creates the vertical coordinate on the right side of the board. The
+ * coordinate on the right hand side are aligned to the left hand side.
+ *
+ * @param[in]   j   The number of the vertical coordinate.
+ * @param[out]  y   The string representing the vertical coordinate
+ * @return      nothing
+ * @note        The coordinates on the right side are left aligned.
+ * @sa          get_label_y_left(), get_label_x()
+ */
 void get_label_y_right( int j, char y[] )
 {
     j++;
@@ -243,18 +473,75 @@ void get_label_y_right( int j, char y[] )
     return;
 }
 
-int get_white_captured(void)
-{
-    return 0;
-}
-
+/**
+ * @brief       Returns the number of white stones black has captured.
+ *
+ * Returns the number of white stones black has captured in total.
+ *
+ * @return      Number of captured stones by black
+ * @sa          get_white_captured()
+ * @warning     This does not return the number of captured black stones!
+ * @todo        Not implemented yet!
+ */
 int get_black_captured(void)
 {
     return 0;
 }
 
+/**
+ * @brief       Returns the number of black stones captured by white.
+ *
+ * Returns the number of black stones that white has captured in total.
+ *
+ * @return      Number of black stones white has captured.
+ * @sa          get_black_captured()
+ * @warning     This does not return the number of captured white stones!
+ * @todo        Not implemented yet!
+ */
+int get_white_captured(void)
+{
+    return 0;
+}
+
+/**
+ * @brief   Checks if a given vertex is a star point.
+ *
+ * Checks if a given vertex (with its separate coordinates) is a star point
+ * (hoshi). The hoshi points depend on the board size.
+ *
+ * @param[in]   i   horizontal coordinate
+ * @param[in]   j   vertical coordinate
+ * @return      true | false
+ * @note        Currently only for the default board sizes (9x9, 13x13, 19x19)
+ *              hoshi points are defined in init_board().
+ */
 bool is_hoshi( int i, int j )
 {
-    return false;
+    bool is_hoshi_point = false;
+
+    int   J = j + 1;
+    row_t I = 0x80000000 >> ( i + 1 );  // Bit 31 set to 1 is 0x80000000
+
+    if ( board_hoshi[J] & I ) {
+        is_hoshi_point = true;
+    }
+
+    return is_hoshi_point;
+}
+
+/**
+ * @brief       Creates a list of worms.
+ *
+ * Scans the board to create a list of black and white worms.
+ *
+ * @return      Nothing
+ * @note        This replaces the former create_groups() function.
+ * @todo        Maybe this should be called by something like a scan(level = 1) function.
+ * @todo        Maybe this should not be part of the external interface.
+ */
+void create_worms(void)
+{
+
+    return;
 }
 

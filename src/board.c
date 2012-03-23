@@ -471,7 +471,7 @@ void get_label_y_right( int j, char y[] )
 /**
  * @brief       Creates groups of stones.
  *
- * This function creates groups of stone and assigns numbers to them. These
+ * This function creates groups of stones and assigns numbers to them. These
  * numbers are stored in the group data structure. Black groups have positive
  * numbers, white groups have negative numbers. Empty fields are marked with
  * zero.
@@ -535,7 +535,7 @@ bool is_hoshi( int i, int j )
  *
  * Returns the current board size.
  *
- * @return      nothing
+ * @return      Size of board
  * @sa          init_board() which sets the current board size.
  * @note        The valid board size is defined by BOARD_SIZE_MIN and
  *              BOARD_SIZE_MAX. The default board size is defined by
