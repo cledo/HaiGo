@@ -23,7 +23,7 @@ bsize_t board_size = BOARD_SIZE_DEFAULT;    //!< Sets the boardsize to the defau
 
 row_t *board_black;     //!< Defines board for black stones.
 row_t *board_white;     //!< Defines board for white stones.
-row_t *board_off;       //!< Defines board for determining inside and ouside of board.
+row_t *board_on;       //!< Defines board for determining inside and ouside of board.
 row_t *board_hoshi;     //!< Defines the star points on the board.
 
 
@@ -31,7 +31,7 @@ row_t *board_hoshi;     //!< Defines the star points on the board.
  *  @brief Allocates memory for all board data structures.
  *
  *  Allocates memory for the data structures board_black, board_white and
- *  board_off. Its sets the board rows to empty.
+ *  board_on. Its sets the board rows to empty.
  *
  *  @param[in]  board_size  Integer of intended board size
  *  @return     nothing
@@ -46,9 +46,9 @@ void init_board( bsize_t board_size )
     // Add a lower and an upper boundary row; therefore we take board_size + 2
     board_black = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
     board_white = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
-    board_off   = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
+    board_on    = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
     board_hoshi = malloc( (size_t)( ( board_size + 2 ) * sizeof(row_t) ) );
-    if ( board_black == NULL || board_white == NULL || board_off == NULL || board_hoshi == NULL ) {
+    if ( board_black == NULL || board_white == NULL || board_on == NULL || board_hoshi == NULL ) {
         fprintf( stderr, "cannot allocate memory for board\n" );
         exit(1);
     }
@@ -57,11 +57,11 @@ void init_board( bsize_t board_size )
         board_black[i] = 0;
         board_white[i] = 0;
         board_hoshi[i] = 0;
-        board_off[i]   = 0xFFFFFFFF;
-        board_off[i]   = ( board_off[i] >> ( board_size + 1 ) ) | 0x80000000;
+        board_on[i]    = 0xFFFFFFFF;
+        board_on[i]    = ~( ( board_on[i] >> ( board_size + 1 ) ) | 0x80000000 );
     }
-    board_off[0]                = 0xFFFFFFFF;
-    board_off[ board_size + 1 ] = 0xFFFFFFFF;
+    board_on[0]                = 0x00000000;
+    board_on[ board_size + 1 ] = 0x00000000;
 
     init_hoshi();
 
@@ -112,23 +112,23 @@ void init_hoshi(void)
  * @brief Frees the memory allocated for all board data structures.
  *
  * Frees the memory which has been allocated for the board_black, board_white
- * and board_off structures.
+ * and board_on structures.
  *
  * @return  nothing
  * @sa      init_board()
- * @note    The pointers to board_black, board_white and board_off are also set to NULL, so a check
+ * @note    The pointers to board_black, board_white and board_on are also set to NULL, so a check
  *          whether the pointers are still valid or not is possible.
  */
 void free_board(void)
 {
     free(board_black);
     free(board_white);
-    free(board_off);
+    free(board_on);
     free(board_hoshi);
 
     board_black = NULL;
     board_white = NULL;
-    board_off   = NULL;
+    board_on    = NULL;
     board_hoshi = NULL;
 
     return;
@@ -165,7 +165,7 @@ bool is_board_null(void)
 {
     bool is_null = false;
 
-    if ( board_black == NULL && board_white == NULL && board_off == NULL && board_hoshi == NULL ) {
+    if ( board_black == NULL && board_white == NULL && board_on == NULL && board_hoshi == NULL ) {
         is_null = true;
     }
 
@@ -183,12 +183,12 @@ bool is_board_null(void)
  */
 bool is_on_board( int i, int j )
 {
-    bool  is_on = true;
+    bool  is_on = false;
     int   J     = j + 1;
     row_t I     = 0x80000000 >> ( i + 1 );  // Bit 31 set to 1 is 0x80000000
 
-    if ( board_off[J] & I ) {
-        is_on = false;
+    if ( board_on[J] & I ) {
+        is_on = true;
     }
 
     return is_on;
@@ -541,14 +541,12 @@ bool is_hoshi( int i, int j )
  */
 void scan_board(void)
 {
-    int   shift_count;
     int   J;
     row_t I;
 
     for ( J = 1; J <= board_size; J++ ) {
-        I = 0x80000000;
-        for ( shift_count = 1; shift_count <= board_size; shift_count++ ) {
-            I >>= 1;
+        I = 0x80000000 >> 1;
+        while ( board_on[1] & I ) {
 
             // Current vertex:
             if ( board_black[J] & I ) {
@@ -563,7 +561,7 @@ void scan_board(void)
 
             // North vertex:
             J++;
-            if ( board_off[J] | I ) {
+            if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
                     printf("    N is B\n");
                 }
@@ -576,7 +574,7 @@ void scan_board(void)
             J--;
             // South vertex:
             J--;
-            if ( board_off[J] | I ) {
+            if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
                     printf("    S is B\n");
                 }
@@ -589,7 +587,7 @@ void scan_board(void)
             J++;
             // East vertex:
             I >>= 1;
-            if ( board_off[J] | I ) {
+            if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
                     printf("    E is B\n");
                 }
@@ -602,7 +600,7 @@ void scan_board(void)
             I <<= 1;
             // West vertex:
             I <<= 1;
-            if ( board_off[J] | I ) {
+            if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
                     printf("    W is B\n");
                 }
@@ -612,7 +610,9 @@ void scan_board(void)
                 else {
                 }
             }
-            I >>= 1;
+            I >>= 2;
+
+            //I >>= 1;
         }
     }
 
