@@ -25,7 +25,7 @@ void get_board_as_string( char board_output[] );
 void set_vertex( int color, int i, int j );
 int  get_vertex( int i, int j );
 
-void create_worms(void);
+void scan_board(void);
 
 #endif
 

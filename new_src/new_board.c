@@ -530,17 +530,91 @@ bool is_hoshi( int i, int j )
 }
 
 /**
- * @brief       Creates a list of worms.
+ * @brief       Scans the board.
  *
- * Scans the board to create a list of black and white worms.
+ * Scans the board to create various data.
  *
  * @return      Nothing
  * @note        This replaces the former create_groups() function.
  * @todo        Maybe this should be called by something like a scan(level = 1) function.
  * @todo        Maybe this should not be part of the external interface.
  */
-void create_worms(void)
+void scan_board(void)
 {
+    int   shift_count;
+    int   J;
+    row_t I;
+
+    for ( J = 1; J <= board_size; J++ ) {
+        I = 0x80000000;
+        for ( shift_count = 1; shift_count <= board_size; shift_count++ ) {
+            I >>= 1;
+
+            // Current vertex:
+            if ( board_black[J] & I ) {
+                printf("B\n");
+            }
+            else if ( board_white[J] & I ) {
+                printf("W\n");
+            }
+            else {
+                printf("E\n");
+            }
+
+            // North vertex:
+            J++;
+            if ( board_off[J] | I ) {
+                if ( board_black[J] & I ) {
+                    printf("    N is B\n");
+                }
+                else if ( board_white[J] & I ) {
+                    printf("    N is W\n");
+                }
+                else {
+                }
+            }
+            J--;
+            // South vertex:
+            J--;
+            if ( board_off[J] | I ) {
+                if ( board_black[J] & I ) {
+                    printf("    S is B\n");
+                }
+                else if ( board_white[J] & I ) {
+                    printf("    S is W\n");
+                }
+                else {
+                }
+            }
+            J++;
+            // East vertex:
+            I >>= 1;
+            if ( board_off[J] | I ) {
+                if ( board_black[J] & I ) {
+                    printf("    E is B\n");
+                }
+                else if ( board_white[J] & I ) {
+                    printf("    E is W\n");
+                }
+                else {
+                }
+            }
+            I <<= 1;
+            // West vertex:
+            I <<= 1;
+            if ( board_off[J] | I ) {
+                if ( board_black[J] & I ) {
+                    printf("    W is B\n");
+                }
+                else if ( board_white[J] & I ) {
+                    printf("    W is W\n");
+                }
+                else {
+                }
+            }
+            I >>= 1;
+        }
+    }
 
     return;
 }

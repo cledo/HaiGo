@@ -35,6 +35,7 @@ int main(void)
     set_vertex( BLACK, 0, 0 );
     set_vertex( WHITE, 18, 18 );
 
+
     get_board_as_string(board_output);
     printf( "%s\n", board_output );
 
@@ -44,8 +45,14 @@ int main(void)
     board_output[0] = '\0';
 
     init_board(board_size);
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( BLACK, 0, 1 );
+    set_vertex( WHITE, 12, 12 );
+    set_vertex( WHITE, 12, 11 );
     get_board_as_string(board_output);
     printf( "%s\n", board_output );
+
+    scan_board();
 
     free_board();
 
