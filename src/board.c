@@ -73,10 +73,10 @@ typedef struct {
     int group_size_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX];      //!< List of group size per empty group.
     int group_liberties_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per black group.
     int group_liberties_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX]; //!< List of group liberties per white group.
-    int empty_to_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
-    int empty_to_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];        //!< Connection between empty space groups to black and white groups.
-    int black_to_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];
-    int white_to_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];
+    int empty_to_black[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];       //!< Connection between empty space groups to black and white groups.
+    int empty_to_white[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];       //!< Connection between empty space groups to black and white groups.
+    int black_to_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];       //!< Connection between black groups to empty space groups.
+    int white_to_empty[BOARD_SIZE_MAX * BOARD_SIZE_MAX][BOARD_SIZE_MAX * BOARD_SIZE_MAX];       //!< Connection between white groups to empty space groups.
     int kosumis_black;      //!< Number of black kosumis.
     int kosumis_white;      //!< Number of white kosumis.
     int chains_black;       //!< Number of black chains.
@@ -2520,6 +2520,15 @@ int get_count_kosumis( int color )
     return count;
 }
 
+/**
+ * @brief       Returns the difference between black and white groups having one eye only.
+ *
+ * The black and white groups that have only one eye are counted and the difference is returned.
+ *
+ * @param[in]   color   BLACK|WHITE
+ * @return      Difference between black and white
+ * @warning     Does not work as expected ...
+ */
 int get_one_eye_groups( int color )
 {
     int k, l;
