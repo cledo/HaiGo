@@ -22,7 +22,7 @@ void init_hoshi(void);
 void set_hoshi( int i, int j );
 bool is_hoshi( int i, int j );
 int  get_vertex_intern( row_t I, int J );
-void create_worm( row_t I, int J, int i, int j );
+void create_worm( row_t I, int J, int index_1d );
 
 void get_label_x( int i, char x[] );
 void get_label_y_left( int j, char y[] );

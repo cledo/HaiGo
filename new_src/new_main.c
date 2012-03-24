@@ -54,6 +54,7 @@ int main(void)
     printf( "%s\n", board_output );
 
     scan_board();
+    print_worms();
 
     free_board();
 
