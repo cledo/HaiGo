@@ -47,6 +47,7 @@ int main(void)
     init_board(board_size);
     set_vertex( BLACK, 0, 0 );
     set_vertex( BLACK, 0, 1 );
+    set_vertex( BLACK, 1, 1 );
     set_vertex( WHITE, 12, 12 );
     set_vertex( WHITE, 12, 11 );
     get_board_as_string(board_output);

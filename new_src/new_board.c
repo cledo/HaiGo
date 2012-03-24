@@ -17,14 +17,44 @@
  *
  */
 
-typedef unsigned long row_t;    //!< Defines a row of the board.
+#define NORTH   0
+#define EAST    1
+#define SOUTH   2
+#define WEST    3
+
+//! Data structure representing a worm.
+typedef struct worm_st {
+    unsigned short number;
+} worm_t;
+
+unsigned short MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
 
 bsize_t board_size = BOARD_SIZE_DEFAULT;    //!< Sets the boardsize to the default.
 
+worm_t *black_worms;    //!< List of worm structs for black.
+worm_t *white_worms;    //!< List of worm structs for white.
+
+//unsigned short *black_worm_nr;  //!< 1D-board with black worm numbers
+//unsigned short *white_worm_nr;  //!< 1D-board with white worm numbers
+//unsigned short *empty_worm_nr;  //!< 1D-board with empty worm numbers
+unsigned short *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE+1,EMPTY+1,BLACK+1)
+
+//unsigned short black_worm_nr_max;   //!< Sets the highest black worm number currently in use.
+//unsigned short white_worm_nr_max;   //!< Sets the highest white worm number currently in use.
+//unsigned short empty_worm_nr_max;   //!< Sets the highest empty worm number currently in use.
+unsigned short worm_nr_max[3];      //!< List of current highest worm numbers (for WHITE+1,EMPTY+1,BLACK+1).
+
 row_t *board_black;     //!< Defines board for black stones.
 row_t *board_white;     //!< Defines board for white stones.
-row_t *board_on;       //!< Defines board for determining inside and ouside of board.
+row_t *board_on;        //!< Defines board for determining inside and ouside of board.
 row_t *board_hoshi;     //!< Defines the star points on the board.
+
+//! Struct with coordinates for different board type.
+typedef struct {
+    row_t I;
+    int   J;
+    int   index_1d;
+} vertex_t;
 
 
 /**
@@ -63,7 +93,32 @@ void init_board( bsize_t board_size )
     board_on[0]                = 0x00000000;
     board_on[ board_size + 1 ] = 0x00000000;
 
+    // Define star points:
     init_hoshi();
+
+    // Initialise worms array:
+    if ( board_size & (bsize_t) 1 ) {
+        // board_size is odd
+        MAX_WORM_COUNT = ( board_size * board_size + 1 ) / 2;
+    }
+    else {
+        // board_size is even
+        MAX_WORM_COUNT = board_size * board_size / 2;
+    }
+    black_worms = malloc( (size_t)( MAX_WORM_COUNT * sizeof(worm_t) ) );
+    white_worms = malloc( (size_t)( MAX_WORM_COUNT * sizeof(worm_t) ) );
+    if ( black_worms == NULL || white_worms == NULL ) {
+        fprintf( stderr, "cannot allocate memory for worms" );
+        exit(1);
+    }
+
+    // Initialise worm boards:
+    worm_nr[BLACK+1] = malloc( (size_t)( board_size * board_size * sizeof( unsigned short ) ) );
+    worm_nr[WHITE+1] = malloc( (size_t)( board_size * board_size * sizeof( unsigned short ) ) );
+    worm_nr[EMPTY+1] = malloc( (size_t)( board_size * board_size * sizeof( unsigned short ) ) );
+    worm_nr_max[BLACK+1] = 0;
+    worm_nr_max[WHITE+1] = 0;
+    worm_nr_max[EMPTY+1] = 0;
 
     return;
 }
@@ -130,6 +185,18 @@ void free_board(void)
     board_white = NULL;
     board_on    = NULL;
     board_hoshi = NULL;
+
+    free(black_worms);
+    free(white_worms);
+    free(worm_nr[BLACK+1]);
+    free(worm_nr[WHITE+1]);
+    free(worm_nr[EMPTY+1]);
+
+    black_worms   = NULL;
+    white_worms   = NULL;
+    worm_nr[BLACK+1] = NULL;
+    worm_nr[WHITE+1] = NULL;
+    worm_nr[EMPTY+1] = NULL;
 
     return;
 }
@@ -275,12 +342,43 @@ void set_vertex( int color, int i, int j )
  * @param[in]   i   horizontal coordinate
  * @param[in]   j   vertex coordinate
  * @return      BLACK|WHITE|EMPTY
+ * @sa          get_vertex_intern()
  */
 int get_vertex( int i, int j )
 {
     int color;
     int   J = j + 1;
     row_t I = 0x80000000 >> ( i + 1 );  // Bit 31 set to 1 is 0x80000000
+
+    if ( board_black[J] & I ) {
+        color = BLACK;
+    }
+    else if ( board_white[J] & I ) {
+        color = WHITE;
+    }
+    else {
+        color = EMPTY;
+    }
+
+    return color;
+}
+
+/**
+ * @brief       Returns the color of the given vertex.
+ *
+ * Returns the color of the stone on a given vertex or EMPTY. The coordinates
+ * must have been converted to internal data!
+ *
+ * @param[in]   I   horizontal coordinate of row_t data type
+ * @param[in]   J   vertex coordinate, which is j + 1
+ * @return      BLACK|WHITE|EMPTY
+ * @sa          get_vertex()
+ * @note        Use get_vertex() if you have external coordinated i, j.
+ * @todo        Check if inline makes sense here.
+ */
+inline int get_vertex_intern( row_t I, int J )
+{
+    int color;
 
     if ( board_black[J] & I ) {
         color = BLACK;
@@ -536,37 +634,41 @@ bool is_hoshi( int i, int j )
  *
  * @return      Nothing
  * @note        This replaces the former create_groups() function.
- * @todo        Maybe this should be called by something like a scan(level = 1) function.
- * @todo        Maybe this should not be part of the external interface.
  */
 void scan_board(void)
 {
     int   J;
     row_t I;
+    int   index_1d;
+    int   i, j;
 
     for ( J = 1; J <= board_size; J++ ) {
         I = 0x80000000 >> 1;
+        j = J - 1;
+        i = -1;
         while ( board_on[1] & I ) {
+            i++;
+            index_1d = j * board_size + 1;
+
+            // Check for worm number:
+            if ( ( worm_nr[BLACK+1][index_1d] & worm_nr[WHITE+1][index_1d] & worm_nr[EMPTY+1][index_1d] ) == 0 ) {
+                create_worm( I, J, i, j );
+            }
 
             // Current vertex:
             if ( board_black[J] & I ) {
-                printf("B\n");
             }
             else if ( board_white[J] & I ) {
-                printf("W\n");
             }
             else {
-                printf("E\n");
             }
 
             // North vertex:
             J++;
             if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
-                    printf("    N is B\n");
                 }
                 else if ( board_white[J] & I ) {
-                    printf("    N is W\n");
                 }
                 else {
                 }
@@ -576,10 +678,8 @@ void scan_board(void)
             J--;
             if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
-                    printf("    S is B\n");
                 }
                 else if ( board_white[J] & I ) {
-                    printf("    S is W\n");
                 }
                 else {
                 }
@@ -589,10 +689,8 @@ void scan_board(void)
             I >>= 1;
             if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
-                    printf("    E is B\n");
                 }
                 else if ( board_white[J] & I ) {
-                    printf("    E is W\n");
                 }
                 else {
                 }
@@ -602,10 +700,8 @@ void scan_board(void)
             I <<= 1;
             if ( board_on[J] & I ) {
                 if ( board_black[J] & I ) {
-                    printf("    W is B\n");
                 }
                 else if ( board_white[J] & I ) {
-                    printf("    W is W\n");
                 }
                 else {
                 }
@@ -614,6 +710,86 @@ void scan_board(void)
 
             //I >>= 1;
         }
+    }
+
+    return;
+}
+
+void create_worm( row_t I, int J, int i, int j )
+{
+    unsigned short worm_number;
+
+    int color    = get_vertex_intern( I, J );
+    int index_1d = j * board_size + i;
+    int count    = 0;
+
+    vertex_t neighbours[4];
+    memset( neighbours, 0, sizeof(vertex_t) * 4 );
+
+    // Check neighbour NORTH:
+    J++;
+    if ( board_on[J] & I ) {
+        if ( get_vertex_intern( I, J ) == color ) {
+            neighbours[count].I = I;
+            neighbours[count].J = J;
+            neighbours[count].index_1d = index_1d + board_size;
+            count++;
+        }
+    }
+    J--;
+    // Check neighbour EAST:
+    I >>= 1;
+    if ( board_on[J] & I ) {
+        if ( get_vertex_intern( I, J ) == color ) {
+            neighbours[count].I = I;
+            neighbours[count].J = J;
+            neighbours[count].index_1d = index_1d + 1;
+            count++;
+        }
+    }
+    I <<= 1;
+    // Check neighbour SOUTH:
+    J--;
+    if ( board_on[J] & I ) {
+        if ( get_vertex_intern( I, J ) == color ) {
+            neighbours[count].I = I;
+            neighbours[count].J = J;
+            neighbours[count].index_1d = index_1d - board_size;
+            count++;
+        }
+    }
+    J++;
+    // Check neighbour WEST:
+    I <<= 1;
+    if ( board_on[J] & I ) {
+        if ( get_vertex_intern( I, J ) == color ) {
+            neighbours[count].I = I;
+            neighbours[count].J = J;
+            neighbours[count].index_1d = index_1d - 1;
+            count++;
+        }
+    }
+    I >>= 1;
+
+    switch (count) {
+        case 0:
+            // No neighbours of same color; field gets the next worm number:
+            worm_nr[color+1][index_1d] = ++worm_nr_max[color+1];
+            break;
+        case 1:
+            // One neighbour of same color:
+            if ( ( worm_number = worm_nr[color+1][ neighbours[0].index_1d ] ) ) {
+                // Neighbour has worm number:
+                worm_nr[color+1][index_1d] = worm_number;
+            }
+            else {
+                // Neighbour has no worm number:
+            }
+            break;
+        case 2:
+        case 3:
+        case 4:
+            break;
     }
 
     return;
