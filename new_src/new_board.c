@@ -18,44 +18,45 @@
  *
  */
 
-#define NORTH   0
-#define EAST    1
-#define SOUTH   2
-#define WEST    3
+#define NORTH   0   //!< Sets index for neighbours list.
+#define EAST    1   //!< Sets index for neighbours list.
+#define SOUTH   2   //!< Sets index for neighbours list.
+#define WEST    3   //!< Sets index for neighbours list.
 
-//! Data structure representing a worm.
-typedef struct worm_st {
-    unsigned short number;
-} worm_t;
-
-unsigned short MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
+//////////////////////////////
+//                          //
+//  Board data structures   //
+//                          //
+//////////////////////////////
 
 bsize_t board_size = BOARD_SIZE_DEFAULT;    //!< Sets the boardsize to the default.
-
-worm_t *black_worms;    //!< List of worm structs for black.
-worm_t *white_worms;    //!< List of worm structs for white.
-
-//unsigned short *black_worm_nr;  //!< 1D-board with black worm numbers
-//unsigned short *white_worm_nr;  //!< 1D-board with white worm numbers
-//unsigned short *empty_worm_nr;  //!< 1D-board with empty worm numbers
-unsigned short *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE+1,EMPTY+1,BLACK+1)
-
-//unsigned short black_worm_nr_max;   //!< Sets the highest black worm number currently in use.
-//unsigned short white_worm_nr_max;   //!< Sets the highest white worm number currently in use.
-//unsigned short empty_worm_nr_max;   //!< Sets the highest empty worm number currently in use.
-unsigned short worm_nr_max[3];      //!< List of current highest worm numbers (for WHITE+1,EMPTY+1,BLACK+1).
 
 row_t *board_black;     //!< Defines board for black stones.
 row_t *board_white;     //!< Defines board for white stones.
 row_t *board_on;        //!< Defines board for determining inside and ouside of board.
 row_t *board_hoshi;     //!< Defines the star points on the board.
 
-//! Struct with coordinates for different board type.
+
+//! Data structure representing a worm.
+typedef struct worm_st {
+    unsigned short number;  //!< Worm number
+} worm_t;
+
+unsigned short MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
+
+unsigned short *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE+1,EMPTY+1,BLACK+1)
+unsigned short worm_nr_max[3];      //!< List of current highest worm numbers (for WHITE+1,EMPTY+1,BLACK+1).
+
+worm_t *black_worms;    //!< List of worm structs for black.
+worm_t *white_worms;    //!< List of worm structs for white.
+
+
+//! Struct with coordinates for different board types and additional data.
 typedef struct {
-    row_t I;
-    int   J;
-    int   index_1d;
-    unsigned short worm_nr;
+    row_t I;                //!< Horizontal coordinate for binary board.
+    int   J;                //!< Vertical coordinate for binary board.
+    int   index_1d;         //!< Coordinate for 1D-board.
+    unsigned short worm_nr; //!< Worm number.
 } vertex_t;
 
 
@@ -725,6 +726,17 @@ void scan_board(void)
     return;
 }
 
+/**
+ * @brief       Creates worms.
+ *
+ * Creates worms by assigning worm numbers to BLACK, WHITE and EMPTY fields.
+ *
+ * @param[in]   I           Horizontal coordinate for binary board.
+ * @param[in]   J           Vertical coordinate for binary board.
+ * @param[in]   index_1d    Coordinate for 1D-board.
+ * @return      Nothing
+ * @note        This is a recursive function.
+ */
 void create_worm( row_t I, int J, int index_1d )
 {
     int n;
@@ -844,6 +856,14 @@ void create_worm( row_t I, int J, int index_1d )
     return;
 }
 
+
+/**
+ * @brief       TEST: Prints worms
+ *
+ * TEST: Prints worms
+ *
+ * @note        May be removed later!
+ */
 void print_worms(void)
 {
     int i;
