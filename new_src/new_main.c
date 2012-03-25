@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "new_board.h"
 #include "../src/global_const.h"
 
@@ -26,39 +27,62 @@
  */
 int main(void)
 {
+    unsigned long k, l;
+    unsigned long max_k = 1000000;
+    unsigned long max_l = 100;
+
+    // For valgrind test:
+    //unsigned long max_k = 10000;
+    //unsigned long max_l = 1;
+
+    int i, j;
+    int stone_count;
+    int color = BLACK;
     bsize_t board_size = 19;
 
     char board_output[MAX_OUTPUT_LENGTH];
 
-    init_board(board_size);
+    // Variables for measuring time:
+    time_t start;
+    time_t stop;
+    time_t diff_time;
+    time_t sum_time = 0;
 
-    set_vertex( BLACK, 0, 0 );
-    set_vertex( WHITE, 18, 18 );
+
+    srand( time(NULL) );
+
+    for ( l = 1; l <= max_l; l++ ) {
+        init_board(board_size);
+
+        stone_count = rand() % ( board_size * board_size );
+        for ( k = 1; k <= stone_count; k++ ) {
+            i = rand() % board_size;
+            j = rand() % board_size;
+            set_vertex( color, i, j );
+            color *= -1;
+        }
+
+        get_board_as_string(board_output);
+        printf( "\n%s\n", board_output );
+
+        (void) time(&start);
+        for ( k = 1; k <= max_k; k++ ) {
+            scan_board();
+        }
+        (void) time(&stop);
+        diff_time = stop - start;
+        sum_time += diff_time;
+
+        printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
+        //print_worms();
+
+        free_board();
+    }
+
+    printf( "\nTime:   %lu\n", sum_time );
+    printf( "Scan/s: %lu\n", (l-1) * (k-1) / sum_time );
 
 
-    get_board_as_string(board_output);
-    printf( "%s\n", board_output );
-
-    free_board();
-
-    board_size = 13;
-    board_output[0] = '\0';
-
-    init_board(board_size);
-    set_vertex( BLACK, 0, 0 );
-    set_vertex( BLACK, 0, 1 );
-    set_vertex( BLACK, 1, 1 );
-    set_vertex( BLACK, 2, 1 );
-    set_vertex( BLACK, 3, 0 );
-    set_vertex( WHITE, 12, 12 );
-    set_vertex( WHITE, 12, 11 );
-    get_board_as_string(board_output);
-    printf( "%s\n", board_output );
-
-    scan_board();
-    print_worms();
-
-    free_board();
 
     return EXIT_SUCCESS;
 }
