@@ -48,6 +48,8 @@ int main(void)
     set_vertex( BLACK, 0, 0 );
     set_vertex( BLACK, 0, 1 );
     set_vertex( BLACK, 1, 1 );
+    set_vertex( BLACK, 2, 1 );
+    set_vertex( BLACK, 3, 0 );
     set_vertex( WHITE, 12, 12 );
     set_vertex( WHITE, 12, 11 );
     get_board_as_string(board_output);

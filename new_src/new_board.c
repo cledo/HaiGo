@@ -648,6 +648,9 @@ void scan_board(void)
     memset( worm_nr[BLACK+1], 0, board_size * board_size * sizeof( unsigned short ) );
     memset( worm_nr[WHITE+1], 0, board_size * board_size * sizeof( unsigned short ) );
     memset( worm_nr[EMPTY+1], 0, board_size * board_size * sizeof( unsigned short ) );
+    worm_nr_max[BLACK+1] = 0;
+    worm_nr_max[WHITE+1] = 0;
+    worm_nr_max[EMPTY+1] = 0;
 
     for ( J = 1; J <= board_size; J++ ) {
         I = 0x80000000 >> 1;
