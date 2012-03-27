@@ -800,7 +800,7 @@ void create_worm( row_t I, int J, int index_1d, int color )
     // Check neighbour WEST:
     I <<= 1;
     if ( board_on[J] & I ) {
-        i = index_1d + 1;
+        i = index_1d - 1;
         if ( worm_nr[color_index][i] ) {
             neighbours[count].I = I;
             neighbours[count].J = J;

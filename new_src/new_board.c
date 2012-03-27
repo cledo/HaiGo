@@ -23,7 +23,8 @@
 #define SOUTH   2   //!< Sets index for neighbours list.
 #define WEST    3   //!< Sets index for neighbours list.
 
-#define BOARD_OFF   INT_MAX;
+#define BOARD_OFF   INT_MAX
+#define INDEX(i,j)  ( ( ( (j)+1 ) * ( board_size+1 ) ) + (i) )
 
 //////////////////////////////
 //                          //
@@ -59,8 +60,6 @@ worm_t *white_worms;    //!< List of worm structs for white.
 
 //! Struct with coordinates for different board types and additional data.
 typedef struct {
-    //row_t I;                //!< Horizontal coordinate for binary board.
-    //int   J;                //!< Vertical coordinate for binary board.
     int   index_1d;         //!< Coordinate for 1D-board.
     unsigned short worm_nr; //!< Worm number.
 } vertex_t;
@@ -78,7 +77,8 @@ typedef struct {
  */
 void init_board( bsize_t board_size )
 {
-    int i, j;
+    int i = 0;
+    int j = 0;
     int index_1d;
     int index_1d_max;
 
@@ -94,17 +94,18 @@ void init_board( bsize_t board_size )
         fprintf( stderr, "cannot allocate memory for board\n" );
         exit(EXIT_FAILURE);
     }
-    if ( worm_nr[BLACK+1] == NULL || worm_nr[WHITE+1] == NULL || worm_nr[EMPTY+1] ) {
+    if ( worm_nr[BLACK+1] == NULL || worm_nr[WHITE+1] == NULL || worm_nr[EMPTY+1] == NULL ) {
         fprintf( stderr, "cannot allocate memory for worm_nr\n" );
         exit(EXIT_FAILURE);
     }
 
+    // Initialise board data structures:
     for ( index_1d = 0; index_1d <= index_1d_max; index_1d++ ) {
         if ( index_1d <= board_size ) {
             // Setting lower boundary
-            board[index_id] = BOARD_OFF;
+            board[index_1d] = BOARD_OFF;
         }
-        else if ( index_1d < (board_size+1) * (board_size+1) ) {
+        else if ( index_1d > (board_size+1) * (board_size+1) - 1) {
             // Setting upper boundary
             board[index_1d] = BOARD_OFF;
         }
@@ -115,11 +116,14 @@ void init_board( bsize_t board_size )
         else {
             board[index_1d] = EMPTY;
         }
-        worm_nr[BLACK+1][index_id] = EMPTY;
-        worm_nr[WHITE+1][index_id] = EMPTY;
-        worm_nr[EMPTY+1][index_id] = EMPTY;
+        worm_nr[BLACK+1][index_1d] = EMPTY;
+        worm_nr[WHITE+1][index_1d] = EMPTY;
+        worm_nr[EMPTY+1][index_1d] = EMPTY;
     }
 
+    worm_nr_max[BLACK+1] = 0;
+    worm_nr_max[WHITE+1] = 0;
+    worm_nr_max[EMPTY+1] = 0;
 
     // Define star points:
     init_hoshi();
@@ -139,16 +143,20 @@ void init_board( bsize_t board_size )
         fprintf( stderr, "cannot allocate memory for worms" );
         exit(EXIT_FAILURE);
     }
-
-    // Initialise worm boards:
-    /*
-    worm_nr[BLACK+1] = malloc( (size_t)( board_size * board_size * sizeof( unsigned short ) ) );
-    worm_nr[WHITE+1] = malloc( (size_t)( board_size * board_size * sizeof( unsigned short ) ) );
-    worm_nr[EMPTY+1] = malloc( (size_t)( board_size * board_size * sizeof( unsigned short ) ) );
-    */
-    worm_nr_max[BLACK+1] = 0;
-    worm_nr_max[WHITE+1] = 0;
-    worm_nr_max[EMPTY+1] = 0;
+    
+    index_1d = 0;
+    for ( i = 0; i <= board_size+1; i++ ) {
+        for ( j = 0; j <= board_size; j++ ) {
+            if ( board[index_1d] == BOARD_OFF ) {
+                printf( " X " );
+            }
+            else {
+                printf( " %d ", board[index_1d] );
+            }
+            index_1d++;
+        }
+        printf("\n");
+    }
 
     return;
 }
@@ -238,7 +246,7 @@ void free_board(void)
  */
 void set_hoshi( int i, int j )
 {
-    board_hoshi[ (j+1) * (board_size+1) + i ] = 1;
+    board_hoshi[ INDEX(i,j) ] = 1;
 
     return;
 }
@@ -273,9 +281,9 @@ bool is_board_null(void)
  */
 bool is_on_board( int i, int j )
 {
-    bool  is_on = false;
+    bool is_on = false;
 
-    if ( board[ (j+1) * (board_size+1) + i ] != BOARD_OFF ) {
+    if ( board[ INDEX(i,j) ] != BOARD_OFF ) {
         is_on = true;
     }
 
@@ -334,9 +342,7 @@ bsize_t get_board_size(void)
  */
 void set_vertex( int color, int i, int j )
 {
-    int index_1d = ( (j+1) * (board_size+1) ) + i;
-
-    board[index_1d] = color;
+    board[ INDEX(i,j) ] = color;
 
     return;
 }
@@ -354,7 +360,7 @@ void set_vertex( int color, int i, int j )
 int get_vertex( int i, int j )
 {
 
-    return board[ ( (j+1) * (board_size+1) ) + i ];
+    return board[ INDEX(i,j) ];
 }
 
 /**
@@ -599,7 +605,7 @@ bool is_hoshi( int i, int j )
 {
     bool is_hoshi_point = false;
 
-    if ( board_hoshi[ (j+1) * (board_size+1) + 1 ] ) {
+    if ( board_hoshi[ INDEX(i,j) ] ) {
         is_hoshi_point = true;
     }
 
@@ -616,8 +622,8 @@ bool is_hoshi( int i, int j )
  */
 void scan_board(void)
 {
-    int   index_1d;
-    int   color;
+    int index_1d;
+    int color;
 
     // Maybe this should be moved to init_board():
     memset( worm_nr[BLACK+1], 0, (board_size+1) * (board_size+2) * sizeof(int));
@@ -636,8 +642,6 @@ void scan_board(void)
         if ( ( worm_nr[BLACK+1][index_1d] & worm_nr[WHITE+1][index_1d] & worm_nr[EMPTY+1][index_1d] ) == 0 ) {
             color = board[index_1d];
             create_worm( index_1d, color );
-        }
-
         }
     }
 
@@ -669,14 +673,13 @@ void create_worm( int index_1d, int color )
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
     if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
-            neighbours[count].index_id = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
         }
+        count++;
     }
     // Check neighbour EAST:
     i = index_1d + 1;
@@ -684,46 +687,33 @@ void create_worm( int index_1d, int color )
         neighbours[count].index_1d = i;
         neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
     }
     // Check neighbour SOUTH:
-    J--;
-    if ( board_on[J] & I ) {
-        i = index_1d - board_size;
-        if ( worm_nr[color_index][i] ) {
-            neighbours[count].I = I;
-            neighbours[count].J = J;
-            neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+    i = index_1d - (board_size + 1);
+    if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
         }
+        count++;
     }
-    J++;
-    i = index_1d - board_size + 1;
     // Check neighbour WEST:
-    I <<= 1;
-    if ( board_on[J] & I ) {
-        i = index_1d + 1;
-        if ( worm_nr[color_index][i] ) {
-            neighbours[count].I = I;
-            neighbours[count].J = J;
-            neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+    i = index_1d - 1;
+    if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
         }
+        count++;
     }
-    I >>= 1;
 
     switch (count) {
         case 0:
@@ -735,14 +725,13 @@ void create_worm( int index_1d, int color )
         case 2:
         case 3:
         case 4:
-            // At least one neighbour has a worm number; we take the
-            // lowest one:
+            // We take the lowest of all neighbouring worm numbers:
             worm_nr[color_index][index_1d] = worm_nr_min;
             for ( n = 0; n < count; n++ ) {
                 // Call create_worm() on all neighbours that have not the
                 // minimum worm number:
                 if ( neighbours[n].worm_nr > worm_nr_min ) {
-                    create_worm( neighbours[n].I, neighbours[n].J, neighbours[n].index_1d, color );
+                    create_worm( neighbours[n].index_1d, color );
                 }
             }
             break;
@@ -763,31 +752,42 @@ void print_worms(void)
 {
     int i;
 
-    for ( i = 0; i < board_size * board_size; i++ ) {
-        if ( ( i % (board_size) ) == 0 ) {
-            printf("\n");
+    printf("\n");
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+2) - 1; i++ ) {
+        if ( board[i] == BOARD_OFF ) {
+            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
+                printf("\n");
+            }
+            continue;
         }
-        printf(" %d ", worm_nr[BLACK+1][i] );
+        printf( " %2d ", worm_nr[BLACK+1][i] );
     }
     printf("\n");
+
     printf("\n");
-    for ( i = 0; i < board_size * board_size; i++ ) {
-        if ( ( i % (board_size) ) == 0 ) {
-            printf("\n");
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+2) - 1; i++ ) {
+        if ( board[i] == BOARD_OFF ) {
+            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
+                printf("\n");
+            }
+            continue;
         }
-        printf(" %d ", worm_nr[WHITE+1][i] );
+        printf( " %2d ", worm_nr[WHITE+1][i] );
     }
     printf("\n");
+
     printf("\n");
-    for ( i = 0; i < board_size * board_size; i++ ) {
-        if ( ( i % (board_size) ) == 0 ) {
-            printf("\n");
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+2) - 1; i++ ) {
+        if ( board[i] == BOARD_OFF ) {
+            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
+                printf("\n");
+            }
+            continue;
         }
-        printf(" %d ", worm_nr[EMPTY+1][i] );
+        printf( " %2d ", worm_nr[EMPTY+1][i] );
     }
     printf("\n");
 
     return;
 }
-
 

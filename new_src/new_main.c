@@ -30,6 +30,8 @@ int main(void)
     unsigned long k, l;
     unsigned long max_k = 1000000;
     unsigned long max_l = 100;
+    //unsigned long max_k = 1;
+    //unsigned long max_l = 1;
 
     // For valgrind test:
     //unsigned long max_k = 10000;
@@ -39,6 +41,7 @@ int main(void)
     int stone_count;
     int color = BLACK;
     bsize_t board_size = 19;
+    //bsize_t board_size = 6;
 
     char board_output[MAX_OUTPUT_LENGTH];
 
@@ -74,7 +77,7 @@ int main(void)
         sum_time += diff_time;
 
         printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
-        //print_worms();
+        print_worms();
 
         free_board();
     }
