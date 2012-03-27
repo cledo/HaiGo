@@ -77,7 +77,7 @@ int main(void)
         sum_time += diff_time;
 
         printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
-        print_worms();
+        //print_worms();
 
         free_board();
     }

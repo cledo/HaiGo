@@ -77,8 +77,8 @@ typedef struct {
  */
 void init_board( bsize_t board_size )
 {
-    int i = 0;
-    int j = 0;
+    //int i = 0;
+    //int j = 0;
     int index_1d;
     int index_1d_max;
 
@@ -144,6 +144,7 @@ void init_board( bsize_t board_size )
         exit(EXIT_FAILURE);
     }
     
+    /*
     index_1d = 0;
     for ( i = 0; i <= board_size+1; i++ ) {
         for ( j = 0; j <= board_size; j++ ) {
@@ -157,6 +158,7 @@ void init_board( bsize_t board_size )
         }
         printf("\n");
     }
+    */
 
     return;
 }
