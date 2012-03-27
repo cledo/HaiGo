@@ -18,10 +18,6 @@
  *
  */
 
-#define NORTH   0   //!< Sets index for neighbours list.
-#define EAST    1   //!< Sets index for neighbours list.
-#define SOUTH   2   //!< Sets index for neighbours list.
-#define WEST    3   //!< Sets index for neighbours list.
 
 #define BOARD_OFF   INT_MAX
 #define INDEX(i,j)  ( ( ( (j)+1 ) * ( board_size+1 ) ) + (i) )
@@ -57,6 +53,8 @@ unsigned short worm_nr_max[3];  //!< List of current highest worm numbers (for W
 worm_t *black_worms;    //!< List of worm structs for black.
 worm_t *white_worms;    //!< List of worm structs for white.
 
+int *liberty[3];        //!< List of empty fields (index_1d) that are a liberty to worm.
+int liberty_nr_max[3];  //!< Current highest index of *liberty[color+1]
 
 //! Struct with coordinates for different board types and additional data.
 typedef struct {
@@ -143,6 +141,12 @@ void init_board( bsize_t board_size )
         fprintf( stderr, "cannot allocate memory for worms" );
         exit(EXIT_FAILURE);
     }
+
+    liberty[BLACK+1] = malloc( board_size * board_size * sizeof(int) );
+    liberty[WHITE+1] = malloc( board_size * board_size * sizeof(int) );
+
+    liberty_nr_max[BLACK+1] = 0;
+    liberty_nr_max[WHITE+1] = 0;
     
     /*
     index_1d = 0;
@@ -228,11 +232,17 @@ void free_board(void)
     free(worm_nr[WHITE+1]);
     free(worm_nr[EMPTY+1]);
 
-    black_worms   = NULL;
-    white_worms   = NULL;
+    free(liberty[BLACK+1]);
+    free(liberty[WHITE+1]);
+
+    black_worms      = NULL;
+    white_worms      = NULL;
     worm_nr[BLACK+1] = NULL;
     worm_nr[WHITE+1] = NULL;
     worm_nr[EMPTY+1] = NULL;
+
+    liberty[BLACK+1] = NULL;
+    liberty[WHITE+1] = NULL;
 
     return;
 }
@@ -283,9 +293,14 @@ bool is_board_null(void)
  */
 bool is_on_board( int i, int j )
 {
-    bool is_on = false;
+    bool is_on    = false;
+    int  index_1d = INDEX(i,j);
 
-    if ( board[ INDEX(i,j) ] != BOARD_OFF ) {
+    if ( index_1d < 0 ) {
+        return false;
+    }
+
+    if ( board[index_1d] != BOARD_OFF ) {
         is_on = true;
     }
 
@@ -627,6 +642,9 @@ void scan_board(void)
     int index_1d;
     int color;
 
+    // Only those functions should be called here, which are necessary to make
+    // a valid move! Consider this to be kind of a scan level nr. 1.
+
     // Maybe this should be moved to init_board():
     memset( worm_nr[BLACK+1], 0, (board_size+1) * (board_size+2) * sizeof(int));
     memset( worm_nr[WHITE+1], 0, (board_size+1) * (board_size+2) * sizeof(int));
@@ -635,7 +653,15 @@ void scan_board(void)
     worm_nr_max[WHITE+1] = 0;
     worm_nr_max[EMPTY+1] = 0;
 
+    memset( liberty[BLACK+1], 0, board_size * board_size * sizeof(int) );
+    memset( liberty[WHITE+1], 0, board_size * board_size * sizeof(int) );
+    liberty_nr_max[BLACK+1] = 0;
+    liberty_nr_max[WHITE+1] = 0;
+
     for ( index_1d = board_size + 1; index_1d < (board_size+1) * (board_size+1) - 1; index_1d++ ) {
+
+        // Current vertex is index_1d.
+
         if ( board[index_1d] == BOARD_OFF ) {
             continue;
         }
@@ -646,6 +672,9 @@ void scan_board(void)
             create_worm( index_1d, color );
         }
     }
+
+    printf( "# LibBlack: %d\n", liberty_nr_max[BLACK+1] );
+    printf( "# LibWhite: %d\n", liberty_nr_max[WHITE+1] );
 
     return;
 }
@@ -669,52 +698,87 @@ void create_worm( int index_1d, int color )
     int count = 0;
     unsigned short worm_nr_min = USHRT_MAX;
     int color_index = color + 1;
+    int neighbour_color;
 
     vertex_t neighbours[4];
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
-    if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
-        neighbours[count].index_1d = i;
-        neighbours[count].worm_nr  = worm_nr[color_index][i];
+    if ( board[i] != BOARD_OFF ) {
+        // Check for neighbour of same color:
+        if ( worm_nr[color_index][i] ) {
+            neighbours[count].index_1d = i;
+            neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-        if ( neighbours[count].worm_nr < worm_nr_min ) {
-            worm_nr_min = neighbours[count].worm_nr;
+            if ( neighbours[count].worm_nr < worm_nr_min ) {
+                worm_nr_min = neighbours[count].worm_nr;
+            }
+            count++;
         }
-        count++;
+
+        // Check for BLACK/WHITE neighbour if field is EMPTY:
+        if ( board[index_1d] == EMPTY && board[i] != EMPTY ) {
+            neighbour_color = board[i] + 1;
+            liberty[neighbour_color][ liberty_nr_max[neighbour_color]++ ] = index_1d;
+        }
+
     }
     // Check neighbour EAST:
     i = index_1d + 1;
-    if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
-        neighbours[count].index_1d = i;
-        neighbours[count].worm_nr  = worm_nr[color_index][i];
+    if ( board[i] != BOARD_OFF ) {
+        if ( worm_nr[color_index][i] ) {
+            neighbours[count].index_1d = i;
+            neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-        if ( neighbours[count].worm_nr < worm_nr_min ) {
-            worm_nr_min = neighbours[count].worm_nr;
+            if ( neighbours[count].worm_nr < worm_nr_min ) {
+                worm_nr_min = neighbours[count].worm_nr;
+            }
+            count++;
         }
-        count++;
+
+        // Check for BLACK/WHITE neighbour if field is EMPTY:
+        if ( board[index_1d] == EMPTY && board[i] != EMPTY ) {
+            neighbour_color = board[i] + 1;
+            liberty[neighbour_color][ liberty_nr_max[neighbour_color]++ ] = index_1d;
+        }
     }
     // Check neighbour SOUTH:
     i = index_1d - (board_size + 1);
-    if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
-        neighbours[count].index_1d = i;
-        neighbours[count].worm_nr  = worm_nr[color_index][i];
+    if ( board[i] != BOARD_OFF ) {
+        if ( worm_nr[color_index][i] ) {
+            neighbours[count].index_1d = i;
+            neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-        if ( neighbours[count].worm_nr < worm_nr_min ) {
-            worm_nr_min = neighbours[count].worm_nr;
+            if ( neighbours[count].worm_nr < worm_nr_min ) {
+                worm_nr_min = neighbours[count].worm_nr;
+            }
+            count++;
         }
-        count++;
+
+        // Check for BLACK/WHITE neighbour if field is EMPTY:
+        if ( board[index_1d] == EMPTY && board[i] != EMPTY ) {
+            neighbour_color = board[i] + 1;
+            liberty[neighbour_color][ liberty_nr_max[neighbour_color]++ ] = index_1d;
+        }
     }
     // Check neighbour WEST:
     i = index_1d - 1;
-    if ( board[i] != BOARD_OFF && worm_nr[color_index][i] ) {
-        neighbours[count].index_1d = i;
-        neighbours[count].worm_nr  = worm_nr[color_index][i];
+    if ( board[i] != BOARD_OFF ) {
+        if ( worm_nr[color_index][i] ) {
+            neighbours[count].index_1d = i;
+            neighbours[count].worm_nr  = worm_nr[color_index][i];
 
-        if ( neighbours[count].worm_nr < worm_nr_min ) {
-            worm_nr_min = neighbours[count].worm_nr;
+            if ( neighbours[count].worm_nr < worm_nr_min ) {
+                worm_nr_min = neighbours[count].worm_nr;
+            }
+            count++;
         }
-        count++;
+
+        // Check for BLACK/WHITE neighbour if field is EMPTY:
+        if ( board[index_1d] == EMPTY && board[i] != EMPTY ) {
+            neighbour_color = board[i] + 1;
+            liberty[neighbour_color][ liberty_nr_max[neighbour_color]++ ] = index_1d;
+        }
     }
 
     switch (count) {
