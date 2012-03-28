@@ -28,10 +28,10 @@
 int main(void)
 {
     unsigned long k, l;
-    //unsigned long max_k = 1000000;
-    //unsigned long max_l = 100;
-    unsigned long max_k = 1;
-    unsigned long max_l = 1;
+    unsigned long max_k = 1000000;
+    unsigned long max_l = 100;
+    //unsigned long max_k = 1;
+    //unsigned long max_l = 1;
 
     // For valgrind test:
     //unsigned long max_k = 10000;
