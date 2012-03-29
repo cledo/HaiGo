@@ -28,10 +28,10 @@
 int main(void)
 {
     unsigned long k, l;
-    //unsigned long max_k = 1000000;
-    //unsigned long max_l = 100;
     unsigned long max_k = 1000000;
-    unsigned long max_l = 10;
+    unsigned long max_l = 100;
+    //unsigned long max_k = 1000000;
+    //unsigned long max_l = 10;
 
     // For valgrind test:
     //unsigned long max_k = 10000;
@@ -65,8 +65,8 @@ int main(void)
             color *= -1;
         }
 
-        get_board_as_string(board_output);
-        printf( "\n%s\n", board_output );
+        //get_board_as_string(board_output);
+        //printf( "\n%s\n", board_output );
 
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {
@@ -77,8 +77,9 @@ int main(void)
         sum_time += diff_time;
 
         printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
+
         //print_worm_boards();
-        print_worm_lists();
+        //print_worm_lists();
 
         free_board();
     }
