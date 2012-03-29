@@ -44,24 +44,12 @@ int *board_hoshi;
 //                          //
 //////////////////////////////
 
-//! Data structure representing a worm.
-typedef struct worm_st {
-    unsigned short number;  //!< Worm number
-    unsigned short count;   //!< Number of stones (or fields)
-} worm_t;
-
 unsigned short MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
 
 unsigned short *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1)
 unsigned short worm_nr_max[3];  //!< List of current highest worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1).
 
-worm_t *worms[3];    //!< List of worm structs for black.
-
-//! Start and end pointers to worm_t lists:
-worm_t *worms_start[3];
-worm_t *worms_end[3];
-
-
+worm_t *worms[3];    //!< List of worm structs for black. Index is worm_nr.
 
 //! Struct with coordinates for different board types and additional data.
 typedef struct {
@@ -142,16 +130,13 @@ void init_board( bsize_t board_size )
         // board_size is even
         MAX_WORM_COUNT = board_size * board_size / 2;
     }
-    worms[BLACK_INDEX] = malloc( (size_t)( MAX_WORM_COUNT * sizeof(worm_t) ) );
-    worms[WHITE_INDEX] = malloc( (size_t)( MAX_WORM_COUNT * sizeof(worm_t) ) );
-    worms[EMPTY_INDEX] = malloc( (size_t)( MAX_WORM_COUNT * sizeof(worm_t) ) );
+    worms[BLACK_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
+    worms[WHITE_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
+    worms[EMPTY_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
     if ( worms[BLACK_INDEX] == NULL || worms[WHITE_INDEX] == NULL || worms[EMPTY_INDEX] == NULL ) {
         fprintf( stderr, "cannot allocate memory for worms" );
         exit(EXIT_FAILURE);
     }
-    worms_start[BLACK_INDEX] = worms_end[BLACK_INDEX] = worms[BLACK_INDEX];
-    worms_start[WHITE_INDEX] = worms_end[WHITE_INDEX] = worms[WHITE_INDEX];
-    worms_start[EMPTY_INDEX] = worms_end[EMPTY_INDEX] = worms[EMPTY_INDEX];
 
     /*
     index_1d = 0;
@@ -643,10 +628,6 @@ void scan_board(void)
     int index_1d;
     int index_1d_max;
     int color;
-    int color_index;
-    unsigned short worm_nr_current;
-    bool exists_worm;
-    worm_t *w;
 
     // Only those functions should be called here, which are necessary to make
     // a valid move! Consider this to be kind of a scan level nr. 1.
@@ -658,12 +639,10 @@ void scan_board(void)
     worm_nr_max[BLACK_INDEX] = 0;
     worm_nr_max[WHITE_INDEX] = 0;
     worm_nr_max[EMPTY_INDEX] = 0;
-    worms_start[BLACK_INDEX] = worms_end[BLACK_INDEX] = worms[BLACK_INDEX];
-    worms_start[WHITE_INDEX] = worms_end[WHITE_INDEX] = worms[WHITE_INDEX];
-    worms_start[EMPTY_INDEX] = worms_end[EMPTY_INDEX] = worms[EMPTY_INDEX];
-    worms_end[BLACK_INDEX]--;
-    worms_end[WHITE_INDEX]--;
-    worms_end[EMPTY_INDEX]--;
+
+    memset( worms[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worms[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worms[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
 
     index_1d_max = ( board_size + 1 ) * ( board_size + 1 ) - 1;
 
@@ -679,7 +658,7 @@ void scan_board(void)
         // Check for worm number:
         if ( ( worm_nr[BLACK_INDEX][index_1d] & worm_nr[WHITE_INDEX][index_1d] & worm_nr[EMPTY_INDEX][index_1d] ) == 0 ) {
             color = board[index_1d];
-            create_worm( index_1d, color );
+            create_worm_data( index_1d, color );
         }
     }
 
@@ -691,33 +670,23 @@ void scan_board(void)
             continue;
         }
 
-        color           = board[index_1d];
-        color_index     = color + 1;
-        worm_nr_current = worm_nr[color_index][index_1d];
-        exists_worm     = false;
+        build_worms(index_1d);
 
-        w = worms_start[color_index];
+        // Number of worms is still unknown here, because a first level scan
+        // does not need this information!
 
-        // Check if worm struct for this worm exists already in worms list:
-        if ( worms_start[color_index] <= worms_end[color_index] ) {
-            // Worm list is not empty:
-            // TODO: Replace this loop with temp flag list of existing worms.
-            for ( w = worms_start[color_index]; w <= worms_end[color_index]; ++w ) {
-                if ( w->number == worm_nr_current ) {
-                    exists_worm = true;
-                    break;
-                }
-            }
+    }
+
+    // Third scan:
+    // Count liberties of every worm.
+    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
         }
 
-        if ( ! exists_worm ) {
-            w = ++(worms_end[color_index]);
-            w->number = worm_nr_current;
-            w->count  = 1;
-        }
-        else {
-            w->number = worm_nr_current;
-            (w->count)++;
+        if ( board[index_1d] == EMPTY ) {
+            // count_worm_liberties(index_1d)
         }
     }
 
@@ -725,18 +694,16 @@ void scan_board(void)
 }
 
 /**
- * @brief       Creates worms.
+ * @brief       Creates board data for worms.
  *
  * Creates worms by assigning worm numbers to BLACK, WHITE and EMPTY fields.
  *
- * @param[in]   I           Horizontal coordinate for binary board.
- * @param[in]   J           Vertical coordinate for binary board.
  * @param[in]   index_1d    Coordinate for 1D-board.
  * @param[in]   color       Color of the given field.
  * @return      Nothing
  * @note        This is a recursive function.
  */
-void create_worm( int index_1d, int color )
+void create_worm_data( int index_1d, int color )
 {
     int n;
     int i;
@@ -816,7 +783,7 @@ void create_worm( int index_1d, int color )
                 // Call create_worm() on all neighbours that have not the
                 // minimum worm number:
                 if ( neighbours[n].worm_nr > worm_nr_min ) {
-                    create_worm( neighbours[n].index_1d, color );
+                    create_worm_data( neighbours[n].index_1d, color );
                 }
             }
             break;
@@ -825,15 +792,43 @@ void create_worm( int index_1d, int color )
     return;
 }
 
+/**
+ * @brief       Builds list of worm structs.
+ *
+ * From the information on the worm boards, builds a list of worm structs.
+ *
+ * @param[in]   index_1d    Coordinate for 1D-board.
+ * @return      Nothing
+ * @note        The function create_worm_data() must have been called already.
+ */
+inline void build_worms( int index_1d )
+{
+    int color       = board[index_1d];
+    int color_index = color + 1;
+    unsigned short worm_nr_current = worm_nr[color_index][index_1d];
+    worm_t *w;
+
+    w = worms[color_index];
+
+    if ( w[worm_nr_current].number == 0 ) {
+        w[worm_nr_current].number = worm_nr_current;
+        w[worm_nr_current].count  = 1;
+    }
+    else {
+        w[worm_nr_current].count++;
+    }
+
+    return;
+}
 
 /**
- * @brief       TEST: Prints worms
+ * @brief       TEST: Prints worm boards
  *
- * TEST: Prints worms
+ * TEST: Prints worm boards
  *
  * @note        May be removed later!
  */
-void print_worms(void)
+void print_worm_boards(void)
 {
     int i;
 
@@ -876,3 +871,45 @@ void print_worms(void)
     return;
 }
 
+/**
+ * @brief       TEST: Prints worm structs list
+ *
+ * TEST: Prints worm structs list.
+ *
+ * @note        May be removed later.
+ */
+void print_worm_lists(void)
+{
+    int i;
+    worm_t *w;
+
+    //w = worms[BLACK_INDEX];
+    //w = worms[WHITE_INDEX];
+    w = worms[EMPTY_INDEX];
+
+    for ( i = 0; i < MAX_WORM_COUNT; i++ ) {
+        if ( w[i].number == 0 ) {
+            continue;
+        }
+
+        printf( "Nr.: %hu\tCount: %hu\n", w[i].number, w[i].count );
+    }
+
+    return;
+}
+
+/**
+ * @brief       TEST: Returns struct for given worm number.
+ *
+ * For the given color and worm number the worm struct is returned.
+ *
+ * @param[in]   color   BLACK|WHITE|EMPTY
+ * @param[in]   worm_nr Worm number.
+ * @return      Struct of given worm.
+ * @note        [any note about the function you might have]
+ */
+worm_t get_worm( int color, unsigned short worm_nr )
+{
+
+    return worms[color+1][worm_nr];
+}

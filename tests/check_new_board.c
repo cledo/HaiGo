@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>  // TEST
 #include <stdbool.h>
 #include <check.h>
 #include "../src/global_const.h"
@@ -188,6 +189,106 @@ START_TEST (test_vertex)
 }
 END_TEST
 
+START_TEST (test_worms_1)
+{
+    bsize_t s = 3;
+
+    init_board(s);
+
+    set_vertex( BLACK, 0, 0 );
+    set_vertex( BLACK, 0, 2 );
+    set_vertex( BLACK, 2, 0 );
+    set_vertex( BLACK, 2, 2 );
+
+    scan_board();
+
+    fail_unless(  get_worm( BLACK, 1 ).count  == 1 );
+    fail_unless(  get_worm( BLACK, 1 ).number == 1 );
+    fail_unless(  get_worm( BLACK, 2 ).count  == 1 );
+    fail_unless(  get_worm( BLACK, 2 ).number == 2 );
+    fail_unless(  get_worm( BLACK, 3 ).count  == 1 );
+    fail_unless(  get_worm( BLACK, 3 ).number == 3 );
+    fail_unless(  get_worm( BLACK, 4 ).count  == 1 );
+    fail_unless(  get_worm( BLACK, 4 ).number == 4 );
+
+    fail_unless( get_worm( WHITE, 1 ).count  == 0 );
+    fail_unless( get_worm( WHITE, 1 ).number == 0 );
+
+    fail_unless( get_worm( EMPTY, 1 ).count  == 5 );
+    fail_unless( get_worm( EMPTY, 1 ).number == 1 );
+
+    set_vertex( BLACK, 0, 1 );
+    set_vertex( BLACK, 1, 0 );
+    set_vertex( BLACK, 2, 1 );
+    set_vertex( BLACK, 1, 2 );
+
+    scan_board();
+
+    fail_unless( get_worm( BLACK, 1 ).count  == 8 );
+    fail_unless( get_worm( BLACK, 1 ).number == 1 );
+    fail_unless( get_worm( BLACK, 2 ).count  == 0 );
+    fail_unless( get_worm( BLACK, 2 ).number == 0 );
+
+    fail_unless( get_worm( WHITE, 1 ).count  == 0 );
+    fail_unless( get_worm( WHITE, 1 ).number == 0 );
+
+    fail_unless( get_worm( EMPTY, 1 ).count  == 1 );
+    fail_unless( get_worm( EMPTY, 1 ).number == 1 );
+
+    free_board();
+}
+END_TEST
+
+START_TEST (test_worms_2)
+{
+    bsize_t s = 3;
+
+    init_board(s);
+
+    set_vertex( WHITE, 0, 0 );
+    set_vertex( WHITE, 0, 2 );
+    set_vertex( WHITE, 2, 0 );
+    set_vertex( WHITE, 2, 2 );
+
+    scan_board();
+
+    fail_unless(  get_worm( WHITE, 1 ).count  == 1 );
+    fail_unless(  get_worm( WHITE, 1 ).number == 1 );
+    fail_unless(  get_worm( WHITE, 2 ).count  == 1 );
+    fail_unless(  get_worm( WHITE, 2 ).number == 2 );
+    fail_unless(  get_worm( WHITE, 3 ).count  == 1 );
+    fail_unless(  get_worm( WHITE, 3 ).number == 3 );
+    fail_unless(  get_worm( WHITE, 4 ).count  == 1 );
+    fail_unless(  get_worm( WHITE, 4 ).number == 4 );
+
+    fail_unless( get_worm( BLACK, 1 ).count  == 0 );
+    fail_unless( get_worm( BLACK, 1 ).number == 0 );
+
+    fail_unless( get_worm( EMPTY, 1 ).count  == 5 );
+    fail_unless( get_worm( EMPTY, 1 ).number == 1 );
+
+    set_vertex( WHITE, 0, 1 );
+    set_vertex( WHITE, 1, 0 );
+    set_vertex( WHITE, 2, 1 );
+    set_vertex( WHITE, 1, 2 );
+
+    scan_board();
+
+    fail_unless( get_worm( WHITE, 1 ).count  == 8 );
+    fail_unless( get_worm( WHITE, 1 ).number == 1 );
+    fail_unless( get_worm( WHITE, 2 ).count  == 0 );
+    fail_unless( get_worm( WHITE, 2 ).number == 0 );
+
+    fail_unless( get_worm( BLACK, 1 ).count  == 0 );
+    fail_unless( get_worm( BLACK, 1 ).number == 0 );
+
+    fail_unless( get_worm( EMPTY, 1 ).count  == 1 );
+    fail_unless( get_worm( EMPTY, 1 ).number == 1 );
+
+    free_board();
+}
+END_TEST
+
 
 Suite * board_suite(void)
 {
@@ -197,6 +298,7 @@ Suite * board_suite(void)
     TCase *tc_board_size = tcase_create("board_size");
     TCase *tc_hoshi      = tcase_create("hoshi");
     TCase *tc_vertex     = tcase_create("vertex");
+    TCase *tc_worms      = tcase_create("worms");
 
     tcase_add_exit_test( tc_init_board, test_init_board_1, EXIT_SUCCESS );
     tcase_add_exit_test( tc_init_board, test_init_board_2, EXIT_FAILURE );
@@ -213,10 +315,14 @@ Suite * board_suite(void)
 
     tcase_add_test( tc_vertex, test_vertex );
 
+    tcase_add_test( tc_worms, test_worms_1 );
+    tcase_add_test( tc_worms, test_worms_2 );
+
     suite_add_tcase( s, tc_init_board );
     suite_add_tcase( s, tc_board_size );
     suite_add_tcase( s, tc_hoshi      );
     suite_add_tcase( s, tc_vertex     );
+    suite_add_tcase( s, tc_worms      );
 
     return s;
 }

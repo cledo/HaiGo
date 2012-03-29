@@ -26,7 +26,8 @@ void set_vertex( int color, int i, int j );
 int  get_vertex( int i, int j );
 
 void scan_board(void);
-void print_worms(void);
+void print_worm_boards(void);
+void print_worm_lists(void);
 
 #endif
 
