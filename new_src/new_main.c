@@ -65,8 +65,8 @@ int main(void)
             color *= -1;
         }
 
-        //get_board_as_string(board_output);
-        //printf( "\n%s\n", board_output );
+        get_board_as_string(board_output);
+        printf( "\n%s\n", board_output );
 
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {

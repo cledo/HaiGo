@@ -44,17 +44,19 @@ int *board_hoshi;
 //                          //
 //////////////////////////////
 
-unsigned short MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
 
-unsigned short *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1)
-unsigned short worm_nr_max[3];  //!< List of current highest worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1).
+worm_nr_t MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
+
+worm_nr_t *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1)
+worm_nr_t worm_nr_max[3];  //!< List of current highest worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1).
 
 worm_t *worms[3];    //!< List of worm structs for black. Index is worm_nr.
+
 
 //! Struct with coordinates for different board types and additional data.
 typedef struct {
     int   index_1d;         //!< Coordinate for 1D-board.
-    unsigned short worm_nr; //!< Worm number.
+    worm_nr_t worm_nr;      //!< Worm number.
 } vertex_t;
 
 
@@ -80,9 +82,9 @@ void init_board( bsize_t board_size )
 
     board            = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
     board_hoshi      = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
-    worm_nr[BLACK_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(unsigned short) ) );
-    worm_nr[WHITE_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(unsigned short) ) );
-    worm_nr[EMPTY_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(unsigned short) ) );
+    worm_nr[BLACK_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_nr[WHITE_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_nr[EMPTY_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
     if ( board == NULL || board_hoshi == NULL ) {
         fprintf( stderr, "cannot allocate memory for board\n" );
         exit(EXIT_FAILURE);
@@ -279,7 +281,6 @@ bool is_board_null(void)
  */
 bool is_on_board( int i, int j )
 {
-    bool is_on    = false;
     int  index_1d = INDEX(i,j);
 
     if ( index_1d < 0 ) {
@@ -287,10 +288,10 @@ bool is_on_board( int i, int j )
     }
 
     if ( board[index_1d] != BOARD_OFF ) {
-        is_on = true;
+        return true;
     }
 
-    return is_on;
+    return false;
 }
 
 /**
@@ -606,13 +607,12 @@ int get_white_captured(void)
  */
 bool is_hoshi( int i, int j )
 {
-    bool is_hoshi_point = false;
 
     if ( board_hoshi[ INDEX(i,j) ] ) {
-        is_hoshi_point = true;
+        return true;
     }
 
-    return is_hoshi_point;
+    return false;
 }
 
 /**
@@ -633,9 +633,9 @@ void scan_board(void)
     // a valid move! Consider this to be kind of a scan level nr. 1.
 
     // Maybe this should be moved to init_board():
-    memset( worm_nr[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(unsigned short));
-    memset( worm_nr[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(unsigned short));
-    memset( worm_nr[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(unsigned short));
+    memset( worm_nr[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_nr[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_nr[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
     worm_nr_max[BLACK_INDEX] = 0;
     worm_nr_max[WHITE_INDEX] = 0;
     worm_nr_max[EMPTY_INDEX] = 0;
@@ -681,13 +681,10 @@ void scan_board(void)
     // Count liberties of every worm.
     for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
 
-        if ( board[index_1d] == BOARD_OFF ) {
-            continue;
+        if ( board[index_1d] == BLACK || board[index_1d] == WHITE ) {
+            count_worm_liberties(index_1d);
         }
 
-        if ( board[index_1d] == EMPTY ) {
-            // count_worm_liberties(index_1d)
-        }
     }
 
     return;
@@ -708,7 +705,7 @@ void create_worm_data( int index_1d, int color )
     int n;
     int i;
     int count = 0;
-    unsigned short worm_nr_min = USHRT_MAX;
+    worm_nr_t worm_nr_min = USHRT_MAX;
     int color_index = color + 1;
 
     vertex_t neighbours[4];
@@ -741,7 +738,7 @@ void create_worm_data( int index_1d, int color )
         }
     }
     // Check neighbour SOUTH:
-    i = index_1d - (board_size + 1);
+    i = index_1d - board_size - 1;
     if ( board[i] != BOARD_OFF ) {
         if ( worm_nr[color_index][i] ) {
             neighbours[count].index_1d = i;
@@ -803,22 +800,111 @@ void create_worm_data( int index_1d, int color )
  */
 inline void build_worms( int index_1d )
 {
-    int color       = board[index_1d];
-    int color_index = color + 1;
-    unsigned short worm_nr_current = worm_nr[color_index][index_1d];
-    worm_t *w;
+    int color                      = board[index_1d];
+    int color_index                = color + 1;
+    worm_nr_t worm_nr_current = worm_nr[color_index][index_1d];
+    worm_t *w                      = &worms[color_index][worm_nr_current];
 
-    w = worms[color_index];
-
-    if ( w[worm_nr_current].number == 0 ) {
-        w[worm_nr_current].number = worm_nr_current;
-        w[worm_nr_current].count  = 1;
+    if ( w->number == 0 ) {
+        w->number    = worm_nr_current;
+        w->count     = 1;
+        w->liberties = 0;
     }
     else {
-        w[worm_nr_current].count++;
+        w->count++;
     }
 
     return;
+}
+
+/**
+ * @brief       Counts liberties.
+ *
+ * Counts the liberties of black and white worms and writes them into the worm
+ * struct list.
+ *
+ * @param[in]   index_1d    Coordinate for 1D-board.
+ * @return      Nothing
+ */
+void count_worm_liberties( int index_1d )
+{
+    int i;
+    int count;
+    int color = board[index_1d];
+    worm_nr_t worm_nr_current = worm_nr[color+1][index_1d];
+
+    // Check neighbour NORTH:
+    i = index_1d + board_size + 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr_current, color );
+        if (count) {
+            worms[color+1][worm_nr_current].liberties += 12 / count;
+        }
+    }
+
+    // Check neighbour EAST:
+    i = index_1d + 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr_current, color );
+        if (count) {
+            worms[color+1][worm_nr_current].liberties += 12 / count;
+        }
+    }
+
+    // Check neighbour SOUTH:
+    i = index_1d - board_size - 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr_current, color );
+        if (count) {
+            worms[color+1][worm_nr_current].liberties += 12 / count;
+        }
+    }
+
+    // Check neighbour WEST:
+    i = index_1d - 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr_current, color );
+        if (count) {
+            worms[color+1][worm_nr_current].liberties += 12 / count;
+        }
+    }
+
+    return;
+}
+
+int get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color )
+{
+    int i;
+    int count = 0;
+    worm_nr_t *w = worm_nr[color+1];
+
+    // todo: is BOARD_OFF check necessary here?
+
+    // Check neighbour NORTH:
+    i = index_1d + board_size + 1;
+    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+        count++;
+    }
+
+    // Check neighbour EAST:
+    i = index_1d + 1;
+    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+        count++;
+    }
+
+    // Check neighbour SOUTH:
+    i = index_1d - board_size - 1;
+    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+        count++;
+    }
+
+    // Check neighbour WEST:
+    i = index_1d - 1;
+    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+        count++;
+    }
+
+    return count;
 }
 
 /**
@@ -840,7 +926,7 @@ void print_worm_boards(void)
             }
             continue;
         }
-        printf( " %2d ", worm_nr[BLACK_INDEX][i] );
+        printf( " %2hu ", worm_nr[BLACK_INDEX][i] );
     }
     printf("\n");
 
@@ -852,7 +938,7 @@ void print_worm_boards(void)
             }
             continue;
         }
-        printf( " %2d ", worm_nr[WHITE_INDEX][i] );
+        printf( " %2hu ", worm_nr[WHITE_INDEX][i] );
     }
     printf("\n");
 
@@ -864,7 +950,7 @@ void print_worm_boards(void)
             }
             continue;
         }
-        printf( " %2d ", worm_nr[EMPTY_INDEX][i] );
+        printf( " %2hu ", worm_nr[EMPTY_INDEX][i] );
     }
     printf("\n");
 
@@ -908,7 +994,7 @@ void print_worm_lists(void)
  * @return      Struct of given worm.
  * @note        [any note about the function you might have]
  */
-worm_t get_worm( int color, unsigned short worm_nr )
+worm_t get_worm( int color, worm_nr_t worm_nr )
 {
 
     return worms[color+1][worm_nr];

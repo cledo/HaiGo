@@ -48,7 +48,7 @@
 //! Defines the minimum board size which is accepted.
 #define BOARD_SIZE_MIN   2
 //! Defines the maximum board size which is accepted.
-#define BOARD_SIZE_MAX  25
+#define BOARD_SIZE_MAX  21
 //! Defines the default board size.
 #define BOARD_SIZE_DEFAULT  19
 

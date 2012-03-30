@@ -16,10 +16,13 @@
 
 //typedef unsigned long row_t;    //!< Defines a row of the board.
 
+typedef unsigned short worm_nr_t;
+
 //! Data structure representing a worm.
 typedef struct worm_st {
-    unsigned short number;  //!< Worm number
-    unsigned short count;   //!< Number of stones (or fields)
+    worm_nr_t number;           //!< Worm number
+    unsigned short count;       //!< Number of stones (or fields)
+    unsigned short liberties;   //!< Number of liberties
 } worm_t;
 
 bool is_board_null(void);
@@ -32,6 +35,8 @@ void create_worm_data( int index_1d, int color );
 void build_worms( int index_1d );
 //int  get_vertex_intern( row_t I, int J );
 //void create_worm( row_t I, int J, int index_1d, int color );
+void count_worm_liberties( int index_1d );
+int  get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color );
 
 void get_label_x( int i, char x[] );
 void get_label_y_left( int j, char y[] );
@@ -39,7 +44,8 @@ void get_label_y_right( int j, char y[] );
 
 int get_white_captured(void);
 int get_black_captured(void);
-worm_t get_worm( int color, unsigned short worm_nr );
+worm_t get_worm( int color, worm_nr_t worm_nr );
+
 
 
 #endif
