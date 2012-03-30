@@ -832,13 +832,14 @@ void count_worm_liberties( int index_1d )
     int count;
     int color = board[index_1d];
     worm_nr_t worm_nr_current = worm_nr[color+1][index_1d];
+    worm_t *w = worms[color+1];
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr_current, color );
         if (count) {
-            worms[color+1][worm_nr_current].liberties += 12 / count;
+            w[worm_nr_current].liberties += ( 12 / count );
         }
     }
 
@@ -847,7 +848,7 @@ void count_worm_liberties( int index_1d )
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr_current, color );
         if (count) {
-            worms[color+1][worm_nr_current].liberties += 12 / count;
+            w[worm_nr_current].liberties += ( 12 / count );
         }
     }
 
@@ -856,7 +857,7 @@ void count_worm_liberties( int index_1d )
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr_current, color );
         if (count) {
-            worms[color+1][worm_nr_current].liberties += 12 / count;
+            w[worm_nr_current].liberties += ( 12 / count );
         }
     }
 
@@ -865,42 +866,40 @@ void count_worm_liberties( int index_1d )
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr_current, color );
         if (count) {
-            worms[color+1][worm_nr_current].liberties += 12 / count;
+            w[worm_nr_current].liberties += ( 12 / count );
         }
     }
 
     return;
 }
 
-int get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color )
+inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color )
 {
     int i;
     int count = 0;
     worm_nr_t *w = worm_nr[color+1];
 
-    // todo: is BOARD_OFF check necessary here?
-
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
-    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr_current ) {
         count++;
     }
 
     // Check neighbour EAST:
     i = index_1d + 1;
-    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr_current ) {
         count++;
     }
 
     // Check neighbour SOUTH:
     i = index_1d - board_size - 1;
-    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr_current ) {
         count++;
     }
 
     // Check neighbour WEST:
     i = index_1d - 1;
-    if ( board[i] != BOARD_OFF && w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr_current ) {
         count++;
     }
 
@@ -970,15 +969,16 @@ void print_worm_lists(void)
     worm_t *w;
 
     //w = worms[BLACK_INDEX];
-    //w = worms[WHITE_INDEX];
-    w = worms[EMPTY_INDEX];
+    w = worms[WHITE_INDEX];
+    //w = worms[EMPTY_INDEX];
 
     for ( i = 0; i < MAX_WORM_COUNT; i++ ) {
         if ( w[i].number == 0 ) {
             continue;
         }
 
-        printf( "Nr.: %hu\tCount: %hu\n", w[i].number, w[i].count );
+        printf( "Nr.: %hu\tCount: %hu Lib: %hu\n"
+            , w[i].number, w[i].count, w[i].liberties );
     }
 
     return;

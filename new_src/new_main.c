@@ -78,8 +78,8 @@ int main(void)
 
         printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
 
-        //print_worm_boards();
-        //print_worm_lists();
+        print_worm_boards();
+        print_worm_lists();
 
         free_board();
     }
