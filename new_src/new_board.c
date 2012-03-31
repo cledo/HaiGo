@@ -45,12 +45,12 @@ int *board_hoshi;
 //////////////////////////////
 
 
-worm_nr_t MAX_WORM_COUNT;  //!< Stores the maximum of possible worms for one color.
+worm_nr_t MAX_WORM_COUNT;   //!< Stores the maximum of possible worms for one color.
 
-worm_nr_t *worm_nr[3] ;    //!< Three 1D-Boards with worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1)
-worm_nr_t worm_nr_max[3];  //!< List of current highest worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK+1).
+worm_nr_t *worm_board[3] ;  //!< Three 1D-Boards with worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK_INDEX).
+worm_nr_t worm_nr_max[3];   //!< List of current highest worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK_INDEX).
 
-worm_t *worms[3];    //!< List of worm structs for black. Index is worm_nr.
+worm_t *worm_list[3];       //!< List of worm structs for black. Index is worm_nr.
 
 
 //! Struct with coordinates for different board types and additional data.
@@ -82,15 +82,15 @@ void init_board( bsize_t board_size )
 
     board            = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
     board_hoshi      = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
-    worm_nr[BLACK_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
-    worm_nr[WHITE_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
-    worm_nr[EMPTY_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_board[BLACK_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_board[WHITE_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_board[EMPTY_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
     if ( board == NULL || board_hoshi == NULL ) {
         fprintf( stderr, "cannot allocate memory for board\n" );
         exit(EXIT_FAILURE);
     }
-    if ( worm_nr[BLACK_INDEX] == NULL || worm_nr[WHITE_INDEX] == NULL || worm_nr[EMPTY_INDEX] == NULL ) {
-        fprintf( stderr, "cannot allocate memory for worm_nr\n" );
+    if ( worm_board[BLACK_INDEX] == NULL || worm_board[WHITE_INDEX] == NULL || worm_board[EMPTY_INDEX] == NULL ) {
+        fprintf( stderr, "cannot allocate memory for worm_board\n" );
         exit(EXIT_FAILURE);
     }
 
@@ -111,9 +111,9 @@ void init_board( bsize_t board_size )
         else {
             board[index_1d] = EMPTY;
         }
-        worm_nr[BLACK_INDEX][index_1d] = EMPTY;
-        worm_nr[WHITE_INDEX][index_1d] = EMPTY;
-        worm_nr[EMPTY_INDEX][index_1d] = EMPTY;
+        worm_board[BLACK_INDEX][index_1d] = EMPTY;
+        worm_board[WHITE_INDEX][index_1d] = EMPTY;
+        worm_board[EMPTY_INDEX][index_1d] = EMPTY;
     }
 
     worm_nr_max[BLACK_INDEX] = 0;
@@ -132,11 +132,11 @@ void init_board( bsize_t board_size )
         // board_size is even
         MAX_WORM_COUNT = board_size * board_size / 2;
     }
-    worms[BLACK_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
-    worms[WHITE_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
-    worms[EMPTY_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
-    if ( worms[BLACK_INDEX] == NULL || worms[WHITE_INDEX] == NULL || worms[EMPTY_INDEX] == NULL ) {
-        fprintf( stderr, "cannot allocate memory for worms" );
+    worm_list[BLACK_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
+    worm_list[WHITE_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
+    worm_list[EMPTY_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
+    if ( worm_list[BLACK_INDEX] == NULL || worm_list[WHITE_INDEX] == NULL || worm_list[EMPTY_INDEX] == NULL ) {
+        fprintf( stderr, "cannot allocate memory for worm_list" );
         exit(EXIT_FAILURE);
     }
 
@@ -218,19 +218,19 @@ void free_board(void)
     board       = NULL;
     board_hoshi = NULL;
 
-    free(worms[BLACK_INDEX]);
-    free(worms[WHITE_INDEX]);
-    free(worms[EMPTY_INDEX]);
-    free(worm_nr[BLACK_INDEX]);
-    free(worm_nr[WHITE_INDEX]);
-    free(worm_nr[EMPTY_INDEX]);
+    free(worm_list[BLACK_INDEX]);
+    free(worm_list[WHITE_INDEX]);
+    free(worm_list[EMPTY_INDEX]);
+    free(worm_board[BLACK_INDEX]);
+    free(worm_board[WHITE_INDEX]);
+    free(worm_board[EMPTY_INDEX]);
 
-    worms[BLACK_INDEX]   = NULL;
-    worms[WHITE_INDEX]   = NULL;
-    worms[EMPTY_INDEX]   = NULL;
-    worm_nr[BLACK_INDEX] = NULL;
-    worm_nr[WHITE_INDEX] = NULL;
-    worm_nr[EMPTY_INDEX] = NULL;
+    worm_list[BLACK_INDEX]   = NULL;
+    worm_list[WHITE_INDEX]   = NULL;
+    worm_list[EMPTY_INDEX]   = NULL;
+    worm_board[BLACK_INDEX] = NULL;
+    worm_board[WHITE_INDEX] = NULL;
+    worm_board[EMPTY_INDEX] = NULL;
 
     return;
 }
@@ -633,16 +633,16 @@ void scan_board(void)
     // a valid move! Consider this to be kind of a scan level nr. 1.
 
     // Maybe this should be moved to init_board():
-    memset( worm_nr[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    memset( worm_nr[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    memset( worm_nr[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_board[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_board[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_board[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
     worm_nr_max[BLACK_INDEX] = 0;
     worm_nr_max[WHITE_INDEX] = 0;
     worm_nr_max[EMPTY_INDEX] = 0;
 
-    memset( worms[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    memset( worms[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    memset( worms[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
 
     index_1d_max = ( board_size + 1 ) * ( board_size + 1 ) - 1;
 
@@ -656,7 +656,7 @@ void scan_board(void)
         }
 
         // Check for worm number:
-        if ( ( worm_nr[BLACK_INDEX][index_1d] & worm_nr[WHITE_INDEX][index_1d] & worm_nr[EMPTY_INDEX][index_1d] ) == 0 ) {
+        if ( ( worm_board[BLACK_INDEX][index_1d] & worm_board[WHITE_INDEX][index_1d] & worm_board[EMPTY_INDEX][index_1d] ) == 0 ) {
             color = board[index_1d];
             create_worm_data( index_1d, color );
         }
@@ -714,9 +714,9 @@ void create_worm_data( int index_1d, int color )
     i = index_1d + board_size + 1;
     if ( board[i] != BOARD_OFF ) {
         // Check for neighbour of same color:
-        if ( worm_nr[color_index][i] ) {
+        if ( worm_board[color_index][i] ) {
             neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+            neighbours[count].worm_nr  = worm_board[color_index][i];
 
             if ( neighbours[count].worm_nr < worm_nr_min ) {
                 worm_nr_min = neighbours[count].worm_nr;
@@ -727,9 +727,9 @@ void create_worm_data( int index_1d, int color )
     // Check neighbour EAST:
     i = index_1d + 1;
     if ( board[i] != BOARD_OFF ) {
-        if ( worm_nr[color_index][i] ) {
+        if ( worm_board[color_index][i] ) {
             neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+            neighbours[count].worm_nr  = worm_board[color_index][i];
 
             if ( neighbours[count].worm_nr < worm_nr_min ) {
                 worm_nr_min = neighbours[count].worm_nr;
@@ -740,9 +740,9 @@ void create_worm_data( int index_1d, int color )
     // Check neighbour SOUTH:
     i = index_1d - board_size - 1;
     if ( board[i] != BOARD_OFF ) {
-        if ( worm_nr[color_index][i] ) {
+        if ( worm_board[color_index][i] ) {
             neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+            neighbours[count].worm_nr  = worm_board[color_index][i];
 
             if ( neighbours[count].worm_nr < worm_nr_min ) {
                 worm_nr_min = neighbours[count].worm_nr;
@@ -753,9 +753,9 @@ void create_worm_data( int index_1d, int color )
     // Check neighbour WEST:
     i = index_1d - 1;
     if ( board[i] != BOARD_OFF ) {
-        if ( worm_nr[color_index][i] ) {
+        if ( worm_board[color_index][i] ) {
             neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_nr[color_index][i];
+            neighbours[count].worm_nr  = worm_board[color_index][i];
 
             if ( neighbours[count].worm_nr < worm_nr_min ) {
                 worm_nr_min = neighbours[count].worm_nr;
@@ -766,16 +766,16 @@ void create_worm_data( int index_1d, int color )
 
     switch (count) {
         case 0:
-            worm_nr[color_index][index_1d] = ++worm_nr_max[color_index];
+            worm_board[color_index][index_1d] = ++worm_nr_max[color_index];
             break;
         case 1:
-            worm_nr[color_index][index_1d] = neighbours[0].worm_nr;
+            worm_board[color_index][index_1d] = neighbours[0].worm_nr;
             break;
         case 2:
         case 3:
         case 4:
             // We take the lowest of all neighbouring worm numbers:
-            worm_nr[color_index][index_1d] = worm_nr_min;
+            worm_board[color_index][index_1d] = worm_nr_min;
             for ( n = 0; n < count; n++ ) {
                 // Call create_worm() on all neighbours that have not the
                 // minimum worm number:
@@ -802,8 +802,8 @@ inline void build_worms( int index_1d )
 {
     int color                      = board[index_1d];
     int color_index                = color + 1;
-    worm_nr_t worm_nr_current = worm_nr[color_index][index_1d];
-    worm_t *w                      = &worms[color_index][worm_nr_current];
+    worm_nr_t worm_nr_current = worm_board[color_index][index_1d];
+    worm_t *w                      = &worm_list[color_index][worm_nr_current];
 
     if ( w->number == 0 ) {
         w->number    = worm_nr_current;
@@ -830,76 +830,76 @@ void count_worm_liberties( int index_1d )
 {
     int i;
     int count;
-    int color = board[index_1d];
-    worm_nr_t worm_nr_current = worm_nr[color+1][index_1d];
-    worm_t *w = worms[color+1];
+    int color_i       = board[index_1d] + 1;
+    worm_nr_t worm_nr = worm_board[color_i][index_1d];
+    worm_t w          = worm_list[color_i][worm_nr];
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
     if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr_current, color );
+        count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w[worm_nr_current].liberties += ( 12 / count );
+            w.liberties += ( 12 / count );
         }
     }
 
     // Check neighbour EAST:
     i = index_1d + 1;
     if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr_current, color );
+        count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w[worm_nr_current].liberties += ( 12 / count );
+            w.liberties += ( 12 / count );
         }
     }
 
     // Check neighbour SOUTH:
     i = index_1d - board_size - 1;
     if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr_current, color );
+        count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w[worm_nr_current].liberties += ( 12 / count );
+            w.liberties += ( 12 / count );
         }
     }
 
     // Check neighbour WEST:
     i = index_1d - 1;
     if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr_current, color );
+        count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w[worm_nr_current].liberties += ( 12 / count );
+            w.liberties += ( 12 / count );
         }
     }
 
     return;
 }
 
-inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color )
+inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr, int color_i )
 {
     int i;
     int count = 0;
-    worm_nr_t *w = worm_nr[color+1];
+    worm_nr_t *w = worm_board[color_i];
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
-    if ( w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr) {
         count++;
     }
 
     // Check neighbour EAST:
     i = index_1d + 1;
-    if ( w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr) {
         count++;
     }
 
     // Check neighbour SOUTH:
     i = index_1d - board_size - 1;
-    if ( w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr) {
         count++;
     }
 
     // Check neighbour WEST:
     i = index_1d - 1;
-    if ( w[i] == worm_nr_current ) {
+    if ( w[i] == worm_nr) {
         count++;
     }
 
@@ -925,7 +925,7 @@ void print_worm_boards(void)
             }
             continue;
         }
-        printf( " %2hu ", worm_nr[BLACK_INDEX][i] );
+        printf( " %2hu ", worm_board[BLACK_INDEX][i] );
     }
     printf("\n");
 
@@ -937,7 +937,7 @@ void print_worm_boards(void)
             }
             continue;
         }
-        printf( " %2hu ", worm_nr[WHITE_INDEX][i] );
+        printf( " %2hu ", worm_board[WHITE_INDEX][i] );
     }
     printf("\n");
 
@@ -949,7 +949,7 @@ void print_worm_boards(void)
             }
             continue;
         }
-        printf( " %2hu ", worm_nr[EMPTY_INDEX][i] );
+        printf( " %2hu ", worm_board[EMPTY_INDEX][i] );
     }
     printf("\n");
 
@@ -968,9 +968,9 @@ void print_worm_lists(void)
     int i;
     worm_t *w;
 
-    //w = worms[BLACK_INDEX];
-    w = worms[WHITE_INDEX];
-    //w = worms[EMPTY_INDEX];
+    //w = worm_list[BLACK_INDEX];
+    w = worm_list[WHITE_INDEX];
+    //w = worm_list[EMPTY_INDEX];
 
     for ( i = 0; i < MAX_WORM_COUNT; i++ ) {
         if ( w[i].number == 0 ) {
@@ -997,6 +997,6 @@ void print_worm_lists(void)
 worm_t get_worm( int color, worm_nr_t worm_nr )
 {
 
-    return worms[color+1][worm_nr];
+    return worm_list[color+1][worm_nr];
 }
 

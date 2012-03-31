@@ -36,7 +36,7 @@ void build_worms( int index_1d );
 //int  get_vertex_intern( row_t I, int J );
 //void create_worm( row_t I, int J, int index_1d, int color );
 void count_worm_liberties( int index_1d );
-int  get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color );
+int  get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color_i );
 
 void get_label_x( int i, char x[] );
 void get_label_y_left( int j, char y[] );

@@ -43,7 +43,7 @@ int main(void)
     bsize_t board_size = 19;
     //bsize_t board_size = 6;
 
-    char board_output[MAX_OUTPUT_LENGTH];
+    //char board_output[MAX_OUTPUT_LENGTH];
 
     // Variables for measuring time:
     time_t start;
@@ -65,8 +65,8 @@ int main(void)
             color *= -1;
         }
 
-        get_board_as_string(board_output);
-        printf( "\n%s\n", board_output );
+        //get_board_as_string(board_output);
+        //printf( "\n%s\n", board_output );
 
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {
@@ -78,8 +78,8 @@ int main(void)
 
         printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
 
-        print_worm_boards();
-        print_worm_lists();
+        //print_worm_boards();
+        //print_worm_lists();
 
         free_board();
     }
