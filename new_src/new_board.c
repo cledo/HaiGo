@@ -72,13 +72,11 @@ typedef struct {
  */
 void init_board( bsize_t board_size )
 {
-    //int i = 0;
-    //int j = 0;
     int index_1d;
     int index_1d_max;
 
     set_board_size(board_size);
-    index_1d_max = (board_size+1) * (board_size+2) - 1; // Make macro of this ...
+    index_1d_max = (board_size+1) * (board_size+2) - 1;
 
     board            = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
     board_hoshi      = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
@@ -139,22 +137,6 @@ void init_board( bsize_t board_size )
         fprintf( stderr, "cannot allocate memory for worm_list" );
         exit(EXIT_FAILURE);
     }
-
-    /*
-    index_1d = 0;
-    for ( i = 0; i <= board_size+1; i++ ) {
-        for ( j = 0; j <= board_size; j++ ) {
-            if ( board[index_1d] == BOARD_OFF ) {
-                printf( " X " );
-            }
-            else {
-                printf( " %d ", board[index_1d] );
-            }
-            index_1d++;
-        }
-        printf("\n");
-    }
-    */
 
     return;
 }
@@ -225,9 +207,9 @@ void free_board(void)
     free(worm_board[WHITE_INDEX]);
     free(worm_board[EMPTY_INDEX]);
 
-    worm_list[BLACK_INDEX]   = NULL;
-    worm_list[WHITE_INDEX]   = NULL;
-    worm_list[EMPTY_INDEX]   = NULL;
+    worm_list[BLACK_INDEX]  = NULL;
+    worm_list[WHITE_INDEX]  = NULL;
+    worm_list[EMPTY_INDEX]  = NULL;
     worm_board[BLACK_INDEX] = NULL;
     worm_board[WHITE_INDEX] = NULL;
     worm_board[EMPTY_INDEX] = NULL;
@@ -998,5 +980,85 @@ worm_t get_worm( int color, worm_nr_t worm_nr )
 {
 
     return worm_list[color+1][worm_nr];
+}
+
+
+/* PROXY FUNCTIONS */
+void create_groups(void)
+{
+    scan_board();
+    return;
+}
+
+void create_group_chains(void)
+{
+    return;
+}
+void count_liberties(void)
+{
+    return;
+}
+
+int get_last_group_nr( int color )
+{
+    // TODO: must differ between last nr and count of worms!
+    return 0;
+}
+
+int get_group_nr( int i, int j )
+{
+    int index_1d      = INDEX(i,j);
+    int color         = board[index_1d];
+    worm_nr_t worm_nr = worm_board[color+1][index_1d];
+
+    return worm_nr;
+}
+
+int get_nr_of_liberties( int group_nr )
+{
+    // TODO: Must give parameter color also!
+    return 0;
+}
+
+void set_groups_size(void)
+{
+    return;
+}
+
+int get_size_of_group( int group_nr )
+{
+    // TODO: Must give parameter color!
+    return 0;
+}
+
+int get_size_of_empty_group( int group_nr )
+{
+    // TODO: Should use get_size_of_group()!
+    return 0;
+}
+
+int get_group_count_atari( int color )
+{
+    return 0;
+}
+
+int get_group_count_liberties( int group_nr )
+{
+    return 0;
+}
+
+int get_last_chain_nr( int color )
+{
+    return 0;
+}
+
+int get_nr_groups_no_chain( int color )
+{
+    return 0;
+}
+
+int get_one_eye_groups( int color )
+{
+    return 0;
 }
 

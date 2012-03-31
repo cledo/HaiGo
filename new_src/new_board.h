@@ -29,5 +29,21 @@ void scan_board(void);
 void print_worm_boards(void);
 void print_worm_lists(void);
 
+/* Old interface, delete later! */
+void create_groups(void);
+void create_group_chains(void);
+void count_liberties(void);
+int get_last_group_nr( int color );
+int get_group_nr( int i, int j );
+int get_nr_of_liberties( int group_nr );
+void set_groups_size(void);
+int get_size_of_group( int group_nr );
+int get_size_of_empty_group( int group_nr );
+int get_group_count_atari( int color );
+int get_group_count_liberties( int group_nr );
+int get_last_chain_nr( int color );
+int get_nr_groups_no_chain( int color );
+int get_one_eye_groups( int color );
+
 #endif
 
