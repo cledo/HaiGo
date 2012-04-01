@@ -1,4 +1,7 @@
-bin_PROGRAMS = haigo
+bin_PROGRAMS = haigo perf
 haigo_SOURCES = main.c run_program.c io.c board.c move.c global_tools.c sgf.c search.c evaluate.c
 haigo_CFLAGS = -Wall
+
+perf_SOURCES = perf_test.c board.c
+perf_CFLAGS  = -Wall
 

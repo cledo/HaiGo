@@ -8,6 +8,8 @@
  *
  */
 
+#include <stdbool.h>
+
 void init_brains(void);
 void set_factor( int index, int factor );
 int  get_factor( int index );

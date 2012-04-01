@@ -29,8 +29,9 @@ bool is_board_null(void);
 bool is_on_board( int i, int j );
 void init_hoshi(void);
 void set_hoshi( int i, int j );
-bool is_hoshi( int i, int j );
 int  get_vertex_intern( int index_1d );
+void scan_board_1(void);
+void scan_board_2(void);
 void create_worm_data( int index_1d, int color );
 void build_worms( int index_1d );
 //int  get_vertex_intern( row_t I, int J );
@@ -42,8 +43,6 @@ void get_label_x( int i, char x[] );
 void get_label_y_left( int j, char y[] );
 void get_label_y_right( int j, char y[] );
 
-int get_white_captured(void);
-int get_black_captured(void);
 worm_t get_worm( int color, worm_nr_t worm_nr );
 
 

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "new_board.h"
-#include "../src/global_const.h"
+#include "global_const.h"
+#include "board.h"
 
 
 /**
@@ -70,7 +70,7 @@ int main(void)
 
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {
-            scan_board();
+            scan_board_1();
         }
         (void) time(&stop);
         diff_time = stop - start;
