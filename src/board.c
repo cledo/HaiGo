@@ -33,6 +33,7 @@
 //////////////////////////////
 
 bsize_t board_size = BOARD_SIZE_DEFAULT;    //!< Sets the boardsize to the default.
+int index_1d_max;
 
 int *board;
 int *board_hoshi;
@@ -63,6 +64,7 @@ typedef struct {
 int count_black;    //! Number of black stones on board.
 int count_white;    //! Number of white stones on board.
 int count_empty;    //! Number of empty fields on board.
+int count_color[3]; //! Number of WHITE, EMPTY, BLACK on board.
 
 int captured_by_black;  //!< Number of white stones captured by black.
 int captured_by_white;  //!< Number of black stones captured by white.
@@ -82,10 +84,8 @@ int captured_by_white;  //!< Number of black stones captured by white.
 void init_board( bsize_t board_size )
 {
     int index_1d;
-    int index_1d_max;
 
     set_board_size(board_size);
-    index_1d_max = (board_size+1) * (board_size+2) - 1;
 
     board            = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
     board_hoshi      = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
@@ -116,7 +116,8 @@ void init_board( bsize_t board_size )
             board[index_1d] = BOARD_OFF;
         }
         else {
-            board[index_1d] = EMPTY;
+            board[index_1d]       = EMPTY;
+            board_hoshi[index_1d] = EMPTY;
         }
         worm_board[BLACK_INDEX][index_1d] = EMPTY;
         worm_board[WHITE_INDEX][index_1d] = EMPTY;
@@ -304,7 +305,8 @@ void set_board_size( bsize_t size )
         exit(EXIT_FAILURE);
     }
 
-    board_size = size;
+    board_size   = size;
+    index_1d_max = ( board_size + 1 ) * ( board_size + 1 ) - 1;
 
     return;
 }
@@ -648,12 +650,12 @@ bool is_hoshi( int i, int j )
  * Level 1 scan.
  *
  * @return      Nothing
+ * @sa          scan_board_2()
  * @note        This replaces the former create_groups() function.
  */
 void scan_board_1(void)
 {
     int index_1d;
-    int index_1d_max;
     int color;
 
     // Only those functions should be called here, which are necessary to make
@@ -670,8 +672,6 @@ void scan_board_1(void)
     memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
     memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
     memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-
-    index_1d_max = ( board_size + 1 ) * ( board_size + 1 ) - 1;
 
     // First scan:
     // Gives a worm_nr to every field.
@@ -859,14 +859,14 @@ void count_worm_liberties( int index_1d )
     int count;
     int color_i       = board[index_1d] + 1;
     worm_nr_t worm_nr = worm_board[color_i][index_1d];
-    worm_t w          = worm_list[color_i][worm_nr];
+    worm_t *w         = &worm_list[color_i][worm_nr];
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w.liberties += ( 12 / count );
+            w->liberties += ( 12 / count );
         }
     }
 
@@ -875,7 +875,7 @@ void count_worm_liberties( int index_1d )
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w.liberties += ( 12 / count );
+            w->liberties += ( 12 / count );
         }
     }
 
@@ -884,7 +884,7 @@ void count_worm_liberties( int index_1d )
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w.liberties += ( 12 / count );
+            w->liberties += ( 12 / count );
         }
     }
 
@@ -893,9 +893,11 @@ void count_worm_liberties( int index_1d )
     if ( board[i] == EMPTY ) {
         count = get_worm_neighbours( i, worm_nr, color_i );
         if (count) {
-            w.liberties += ( 12 / count );
+            w->liberties += ( 12 / count );
         }
     }
+
+    //worm_list[color_i][worm_nr] = w;
 
     return;
 }
@@ -944,28 +946,18 @@ inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr, int color_i )
 void scan_board_2(void)
 {
     int index_1d;
-    int index_1d_max;
     int color;
 
-    index_1d_max = ( board_size + 1 ) * ( board_size + 1 ) - 1;
-
-    count_black = count_white = count_empty = 0;
+    count_color[BLACK_INDEX] = count_color[WHITE_INDEX] = count_color[EMPTY_INDEX] = 0;
 
     for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
-        if ( board[index_1d] == BOARD_OFF ) {
+        color = board[index_1d];
+
+        if ( color == BOARD_OFF ) {
             continue;
         }
 
-        color = board[index_1d];
-        if ( color == BLACK ) {
-            count_black++;
-        }
-        else if ( color == WHITE ) {
-            count_white++;
-        }
-        else {
-            count_empty++;
-        }
+        count_color[color+1]++;
     }
 
     return;
@@ -983,12 +975,37 @@ int remove_stones( int color )
 {
     int count_removed = 0;
     worm_nr_t worm_nr;
-    worm_t *w          = worm_list[color+1];
+    worm_t    *wl      = worm_list[color+1];
+    worm_nr_t *wb      = worm_board[color+1];
     worm_nr_t worm_max = worm_nr_max[color+1];
+    worm_nr_t zero_worm[worm_max];  // Lists worms with zero liberties.
+    int k = 0;
+    int l = 0;
+    int index_1d;
 
+    // Go through worm list:
     for ( worm_nr = 1; worm_nr <= worm_max; worm_nr++ ) {
-        if ( w[worm_nr].number != 0 && w[worm_nr].liberties == 0 ) {
-            // TODO: worm without liberties found!
+        if ( wl[worm_nr].number != 0 && wl[worm_nr].liberties == 0 ) {
+            zero_worm[k++] = worm_nr;
+            //wl[worm_nr].number = 0;  // ??
+        }
+    }
+    //printf("Zeros: %d\n", k );
+
+    // Go through boards:
+    if ( k > 0 ) {
+        // At least one worm has been removed:
+        for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+            if ( board[index_1d] != color ) {
+                continue;
+            }
+            for ( l = 0; l < k; l++ ) {
+                if ( wb[index_1d] == zero_worm[l] ) {
+                    //wb[index_1d]    = EMPTY;
+                    board[index_1d] = EMPTY;
+                    count_removed++;
+                }
+            }
         }
     }
 
@@ -1007,7 +1024,7 @@ void print_worm_boards(void)
     int i;
 
     printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+2) - 1; i++ ) {
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
         if ( board[i] == BOARD_OFF ) {
             if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
                 printf("\n");
@@ -1019,7 +1036,7 @@ void print_worm_boards(void)
     printf("\n");
 
     printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+2) - 1; i++ ) {
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
         if ( board[i] == BOARD_OFF ) {
             if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
                 printf("\n");
@@ -1031,7 +1048,7 @@ void print_worm_boards(void)
     printf("\n");
 
     printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+2) - 1; i++ ) {
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
         if ( board[i] == BOARD_OFF ) {
             if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
                 printf("\n");
@@ -1039,6 +1056,18 @@ void print_worm_boards(void)
             continue;
         }
         printf( " %2hu ", worm_board[EMPTY_INDEX][i] );
+    }
+    printf("\n");
+
+    printf("\n");
+    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
+        if ( board[i] == BOARD_OFF ) {
+            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
+                printf("\n");
+            }
+            continue;
+        }
+        printf( " %2hu ", board_hoshi[i] );
     }
     printf("\n");
 
@@ -1112,13 +1141,35 @@ int get_last_group_nr( int color )
     return 0;
 }
 
+int get_free_group_nr( int color )
+{
+    return (int)( worm_nr_max[color+1] + 1 ) * color;
+}
+
 int get_group_nr( int i, int j )
 {
     int index_1d      = INDEX(i,j);
     int color         = board[index_1d];
     worm_nr_t worm_nr = worm_board[color+1][index_1d];
 
-    return worm_nr;
+    if ( color == EMPTY ) {
+        worm_nr = 0;
+    }
+
+    return ( (int)worm_nr ) * color;
+}
+
+int get_size_of_group( int group_nr )
+{
+    int size;
+    int color = BLACK;
+    if ( group_nr < 0 ) {
+        color = WHITE;
+    }
+
+    size = worm_list[color+1][group_nr*color].count;
+
+    return size;
 }
 
 int get_nr_of_liberties( int group_nr )
@@ -1127,16 +1178,6 @@ int get_nr_of_liberties( int group_nr )
     return 0;
 }
 
-void set_groups_size(void)
-{
-    return;
-}
-
-int get_size_of_group( int group_nr )
-{
-    // TODO: Must give parameter color!
-    return 0;
-}
 
 int get_size_of_empty_group( int group_nr )
 {
@@ -1178,19 +1219,7 @@ void print_groups(void)
 
 int get_stone_count( int color )
 {
-    int count;
-
-    if ( color == BLACK ) {
-        count = count_black;
-    }
-    else if ( color == WHITE ) {
-        count = count_white;
-    }
-    else {
-        count = count_empty;
-    }
-
-    return count;
+    return count_color[color+1];
 }
 
 void get_bouzy_as_string( char bouzy_str[] )
@@ -1228,6 +1257,62 @@ int get_count_influence( int color )
 {
 
     return 0;
+}
+
+bool is_group_board_null(void)
+{
+    return is_board_null();
+}
+bool is_hoshi_board_null(void)
+{
+    return is_board_null();
+}
+
+int has_neighbour( int i, int j, int neighbour[][2] )
+{
+    int index;
+    int index_1d = INDEX(i,j);
+    int color = board[index_1d];
+    int count = 0;
+
+    // Check NORTH:
+    index = index_1d + board_size + 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i;
+        neighbour[count][1] = j + 1;
+        count++;
+    }
+
+    // Check EAST:
+    index = index_1d + 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i + 1;
+        neighbour[count][1] = j;
+        count++;
+    }
+
+    // Check SOUTH:
+    index = index_1d - board_size - 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i;
+        neighbour[count][1] = j - 1;
+        count++;
+    }
+
+    // Check WEST:
+    index = index_1d - 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i - 1;
+        neighbour[count][1] = j;
+        count++;
+    }
+
+    return count;
+}
+
+void set_groups_size(void)
+{
+    return;
 }
 
 /* Hashing */

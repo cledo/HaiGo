@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <check.h>
 #include "../src/global_const.h"
+#include "../src/board_intern.h"
 #include "../src/board.h"
 #include "../src/move.h"
 #include "../src/evaluate.h"
@@ -323,7 +324,7 @@ START_TEST (test_group_size_1)
 
     fail_unless( group_size == 4, "black group has size 4" );
 
-    // Black group:
+    // White group:
     set_vertex( WHITE, i, j );
     create_groups();
     set_groups_size();
@@ -931,12 +932,14 @@ Suite * board_suite(void) {
     TCase *tc_groups              = tcase_create("groups");
     TCase *tc_group_size          = tcase_create("group_size");
     TCase *tc_vertex              = tcase_create("vertex");
+    /*
     TCase *tc_liberties           = tcase_create("liberties");
     TCase *tc_remove_stones       = tcase_create("remove");
     TCase *tc_atari_groups        = tcase_create("atari");
     TCase *tc_chains              = tcase_create("chains");
     TCase *tc_kosumi              = tcase_create("kosumi");
     TCase *tc_influence           = tcase_create("influence");
+    */
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
@@ -944,6 +947,7 @@ Suite * board_suite(void) {
     tcase_add_test( tc_groups,        test_groups_2          );
     tcase_add_test( tc_group_size,    test_group_size_1      );
     tcase_add_test( tc_vertex,        test_vertex_1          );
+    /*
     tcase_add_test( tc_liberties,     test_count_liberties_1 );
     tcase_add_test( tc_remove_stones, test_remove_stones_1   );
     tcase_add_test( tc_atari_groups,  test_atari_1           );
@@ -957,18 +961,21 @@ Suite * board_suite(void) {
     tcase_add_test( tc_influence,     test_influence_2       );
     tcase_add_test( tc_influence,     test_influence_3       );
     tcase_add_test( tc_influence,     test_influence_4       );
+    */
 
     suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
     suite_add_tcase( s, tc_groups              );
     suite_add_tcase( s, tc_group_size          );
     suite_add_tcase( s, tc_vertex              );
+    /*
     suite_add_tcase( s, tc_liberties           );
     suite_add_tcase( s, tc_remove_stones       );
     suite_add_tcase( s, tc_atari_groups        );
     suite_add_tcase( s, tc_chains              );
     suite_add_tcase( s, tc_kosumi              );
     suite_add_tcase( s, tc_influence           );
+    */
 
     return s;
 }

@@ -28,10 +28,13 @@
 int main(void)
 {
     unsigned long k, l;
-    unsigned long max_k = 1000000;
+    unsigned long max_k = 1000000;    // scan_board_1
+    //unsigned long max_k = 10000000;  // scan_board_2
     unsigned long max_l = 100;
+
     //unsigned long max_k = 1000000;
     //unsigned long max_l = 10;
+
 
     // For valgrind test:
     //unsigned long max_k = 10000;
@@ -42,8 +45,9 @@ int main(void)
     int color = BLACK;
     bsize_t board_size = 19;
     //bsize_t board_size = 6;
+    int count_removed;
 
-    //char board_output[MAX_OUTPUT_LENGTH];
+    char board_output[MAX_OUTPUT_LENGTH];
 
     // Variables for measuring time:
     time_t start;
@@ -61,24 +65,32 @@ int main(void)
         for ( k = 1; k <= stone_count; k++ ) {
             i = rand() % board_size;
             j = rand() % board_size;
+            if ( get_vertex( i, j ) != EMPTY ) {
+                k--;
+                continue;
+            }
             set_vertex( color, i, j );
             color *= -1;
         }
 
-        //get_board_as_string(board_output);
-        //printf( "\n%s\n", board_output );
+        get_board_as_string(board_output);
+        printf( "\n%s\n", board_output );
 
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {
             scan_board_1();
+            //scan_board_2();
         }
+        count_removed = remove_stones(WHITE);
+        scan_board_1();
+
         (void) time(&stop);
         diff_time = stop - start;
         sum_time += diff_time;
 
-        printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
+        printf( "BoardNr.: %lu\t%lu\t(%d)\n", l, diff_time, count_removed );
 
-        //print_worm_boards();
+        print_worm_boards();
         //print_worm_lists();
 
         free_board();

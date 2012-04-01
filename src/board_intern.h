@@ -45,7 +45,12 @@ void get_label_y_right( int j, char y[] );
 
 worm_t get_worm( int color, worm_nr_t worm_nr );
 
+bool is_group_board_null(void);
+bool is_hoshi_board_null(void);
 
+int get_free_group_nr( int color );
+int has_neighbour( int i, int j, int neighbour[][2] );
+void set_groups_size(void);
 
 #endif
 
