@@ -422,7 +422,7 @@ START_TEST (test_count_liberties_1)
     group_nr  = get_group_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
-    fail_unless( liberties == 2, "%d,%d has 2 liberties", i, j );
+    fail_unless( liberties == 2, "%d,%d has 2 liberties (%d)", i, j, liberties );
 
     i = 1;
     j = 0;
@@ -932,9 +932,9 @@ Suite * board_suite(void) {
     TCase *tc_groups              = tcase_create("groups");
     TCase *tc_group_size          = tcase_create("group_size");
     TCase *tc_vertex              = tcase_create("vertex");
-    /*
     TCase *tc_liberties           = tcase_create("liberties");
     TCase *tc_remove_stones       = tcase_create("remove");
+    /*
     TCase *tc_atari_groups        = tcase_create("atari");
     TCase *tc_chains              = tcase_create("chains");
     TCase *tc_kosumi              = tcase_create("kosumi");
@@ -947,9 +947,9 @@ Suite * board_suite(void) {
     tcase_add_test( tc_groups,        test_groups_2          );
     tcase_add_test( tc_group_size,    test_group_size_1      );
     tcase_add_test( tc_vertex,        test_vertex_1          );
-    /*
     tcase_add_test( tc_liberties,     test_count_liberties_1 );
     tcase_add_test( tc_remove_stones, test_remove_stones_1   );
+    /*
     tcase_add_test( tc_atari_groups,  test_atari_1           );
     tcase_add_test( tc_chains,        test_chains_1          );
     tcase_add_test( tc_chains,        test_chains_2          );
@@ -968,9 +968,9 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_groups              );
     suite_add_tcase( s, tc_group_size          );
     suite_add_tcase( s, tc_vertex              );
-    /*
     suite_add_tcase( s, tc_liberties           );
     suite_add_tcase( s, tc_remove_stones       );
+    /*
     suite_add_tcase( s, tc_atari_groups        );
     suite_add_tcase( s, tc_chains              );
     suite_add_tcase( s, tc_kosumi              );

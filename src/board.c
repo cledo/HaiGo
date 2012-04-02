@@ -1174,8 +1174,19 @@ int get_size_of_group( int group_nr )
 
 int get_nr_of_liberties( int group_nr )
 {
-    // TODO: Must give parameter color also!
-    return 0;
+    int count;
+    int color_i;
+
+    if ( group_nr > 0 ) {
+        color_i = BLACK_INDEX;
+    }
+    else {
+        color_i = WHITE_INDEX;
+        group_nr *= -1;
+    }
+    count = (int)( worm_list[color_i][group_nr].liberties );
+    
+    return count / 12;
 }
 
 
