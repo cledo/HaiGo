@@ -69,6 +69,9 @@ int count_color[3]; //! Number of WHITE, EMPTY, BLACK on board.
 int captured_by_black;  //!< Number of white stones captured by black.
 int captured_by_white;  //!< Number of black stones captured by white.
 
+//! List of 1d-indexes where stones have been removed by remove_stones().
+int *removed[3];
+int removed_max[3];
 
 
 /**
@@ -151,6 +154,12 @@ void init_board( bsize_t board_size )
     captured_by_black = 0;
     captured_by_white = 0;
 
+    removed[WHITE_INDEX] = malloc( board_size * board_size * sizeof(int) );
+    removed[EMPTY_INDEX] = malloc( board_size * board_size * sizeof(int) );
+    removed[BLACK_INDEX] = malloc( board_size * board_size * sizeof(int) );
+
+    removed_max[BLACK_INDEX] = removed_max[WHITE_INDEX] = removed_max[EMPTY_INDEX] = 0;
+
     return;
 }
 
@@ -226,6 +235,14 @@ void free_board(void)
     worm_board[BLACK_INDEX] = NULL;
     worm_board[WHITE_INDEX] = NULL;
     worm_board[EMPTY_INDEX] = NULL;
+
+    free(removed[BLACK_INDEX]);
+    free(removed[EMPTY_INDEX]);
+    free(removed[WHITE_INDEX]);
+
+    removed[WHITE_INDEX] = NULL;
+    removed[EMPTY_INDEX] = NULL;
+    removed[BLACK_INDEX] = NULL;
 
     return;
 }
@@ -983,6 +1000,8 @@ int remove_stones( int color )
     int l = 0;
     int index_1d;
 
+    removed_max[BLACK_INDEX] = removed_max[WHITE_INDEX] = 0;
+
     // Go through worm list:
     for ( worm_nr = 1; worm_nr <= worm_max; worm_nr++ ) {
         if ( wl[worm_nr].number != 0 && wl[worm_nr].liberties == 0 ) {
@@ -1004,9 +1023,18 @@ int remove_stones( int color )
                     //wb[index_1d]    = EMPTY;
                     board[index_1d] = EMPTY;
                     count_removed++;
+
+                    removed[color+1][removed_max[color+1]++] = index_1d;
                 }
             }
         }
+    }
+
+    if ( color == WHITE ) {
+        captured_by_black += count_removed;
+    }
+    else {
+        captured_by_white += count_removed;
     }
 
     return count_removed;
@@ -1059,6 +1087,7 @@ void print_worm_boards(void)
     }
     printf("\n");
 
+    /*
     printf("\n");
     for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
         if ( board[i] == BOARD_OFF ) {
@@ -1070,6 +1099,7 @@ void print_worm_boards(void)
         printf( " %2hu ", board_hoshi[i] );
     }
     printf("\n");
+    */
 
     return;
 }
@@ -1116,6 +1146,26 @@ worm_t get_worm( int color, worm_nr_t worm_nr )
 {
 
     return worm_list[color+1][worm_nr];
+}
+
+// TEST:
+void print_removed(void)
+{
+    int k;
+
+    printf( "## removed Black: " );
+    for ( k = 0; k < removed_max[BLACK_INDEX]; k++ ) {
+        printf( "%d, ", removed[BLACK_INDEX][k] );
+    }
+    printf("\n");
+
+    printf( "## removed White: " );
+    for ( k = 0; k < removed_max[WHITE_INDEX]; k++ ) {
+        printf( "%d, ", removed[WHITE_INDEX][k] );
+    }
+    printf("\n");
+
+    return;
 }
 
 
@@ -1198,7 +1248,18 @@ int get_size_of_empty_group( int group_nr )
 
 int get_group_count_atari( int color )
 {
-    return 0;
+    int k;
+    int count       = 0;
+    worm_t *w       = worm_list[color+1];
+    worm_nr_t w_max = worm_nr_max[color+1];
+
+    for ( k = 1; k <= w_max; k++ ) {
+        if ( w[k].liberties == 12 ) {
+            count++;
+        }
+    }
+
+    return count;
 }
 
 int get_group_count_liberties( int group_nr )
@@ -1242,10 +1303,32 @@ void get_bouzy_as_string( char bouzy_str[] )
 
 int get_captured_now( int captured[][2] )
 {
-    captured[0][0] = INVALID;
-    captured[0][1] = INVALID;
+    int k;
+    int l = 0;
+    int i, j;
+    int index_1d;
 
-    return 0;
+    for ( k = 0; k < removed_max[BLACK_INDEX]; k++ ) {
+        index_1d = removed[BLACK_INDEX][k];
+        i = index_1d % board_size;
+        j = ( index_1d / board_size ) - 2;
+        captured[l][0] = i;
+        captured[l][1] = j;
+        l++;
+    }
+    for ( k = 0; k < removed_max[WHITE_INDEX]; k++ ) {
+        index_1d = removed[BLACK_INDEX][k];
+        i = index_1d % board_size;
+        j = ( index_1d / board_size ) - 2;
+        captured[l][0] = i;
+        captured[l][1] = j;
+        l++;
+    }
+
+    captured[l][0] = INVALID;
+    captured[l][1] = INVALID;
+
+    return l;
 }
 
 void do_influence(void)

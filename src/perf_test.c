@@ -82,6 +82,7 @@ int main(void)
             //scan_board_2();
         }
         count_removed = remove_stones(WHITE);
+        print_removed();
         scan_board_1();
 
         (void) time(&stop);

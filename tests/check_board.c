@@ -557,8 +557,8 @@ START_TEST (test_remove_stones_1)
     removed = get_captured_now(captured);
 
     fail_unless( removed == 1, "one black stone removed" );
-    fail_unless( captured[0][0] == i, "captured i is %d", i );
-    fail_unless( captured[0][1] == j, "captured j is %d", j );
+    fail_unless( captured[0][0] == i, "captured i is %d (%d)", i, captured[0][0] );
+    fail_unless( captured[0][1] == j, "captured j is %d (%d)", j, captured[0][1] );
 
     removed = remove_stones(WHITE);
     removed = get_captured_now(captured);
@@ -934,8 +934,8 @@ Suite * board_suite(void) {
     TCase *tc_vertex              = tcase_create("vertex");
     TCase *tc_liberties           = tcase_create("liberties");
     TCase *tc_remove_stones       = tcase_create("remove");
-    /*
     TCase *tc_atari_groups        = tcase_create("atari");
+    /*
     TCase *tc_chains              = tcase_create("chains");
     TCase *tc_kosumi              = tcase_create("kosumi");
     TCase *tc_influence           = tcase_create("influence");
@@ -949,8 +949,8 @@ Suite * board_suite(void) {
     tcase_add_test( tc_vertex,        test_vertex_1          );
     tcase_add_test( tc_liberties,     test_count_liberties_1 );
     tcase_add_test( tc_remove_stones, test_remove_stones_1   );
-    /*
     tcase_add_test( tc_atari_groups,  test_atari_1           );
+    /*
     tcase_add_test( tc_chains,        test_chains_1          );
     tcase_add_test( tc_chains,        test_chains_2          );
     tcase_add_test( tc_kosumi,        test_count_kosumi_1    );
@@ -970,8 +970,8 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_vertex              );
     suite_add_tcase( s, tc_liberties           );
     suite_add_tcase( s, tc_remove_stones       );
-    /*
     suite_add_tcase( s, tc_atari_groups        );
+    /*
     suite_add_tcase( s, tc_chains              );
     suite_add_tcase( s, tc_kosumi              );
     suite_add_tcase( s, tc_influence           );
