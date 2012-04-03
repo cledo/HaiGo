@@ -28,6 +28,8 @@ static brain_t brains[COUNT_BRAINS];    //!< List of all brain functions.
 
 int brain_capture(void);
 int brain_atari(void);
+
+// ----- Deactivated for now ------
 int brain_avg_liberties(void);
 int brain_edge_stones(void);
 int brain_hoshi_stones(void);
@@ -35,7 +37,7 @@ int brain_kosumi(void);
 int brain_chains(void);
 int brain_influence(void);
 int brain_has_eye(void);
-
+// --------------------------------
 
 /**
  * @brief       Initialises brains data structure.
@@ -82,7 +84,7 @@ void init_brains(void)
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_has_eye);
-    brains[i].factor   = 10;
+    brains[i].factor   = 0;
     brains[i++].limit  = 0;
 
     return;
@@ -252,6 +254,7 @@ int brain_hoshi_stones(void)
 {
     int i, j;
     int value      = 0;
+    /*
     int board_size = get_board_size();
 
     for ( i = 0; i < board_size; i ++ ) {
@@ -261,6 +264,7 @@ int brain_hoshi_stones(void)
             }
         }
     }
+    */
 
     return value;
 }
@@ -277,6 +281,7 @@ int brain_hoshi_stones(void)
 int brain_avg_liberties(void)
 {
     int value;
+    /*
     int value_black;
     int value_white;
     int count_groups_black;
@@ -298,6 +303,7 @@ int brain_avg_liberties(void)
 
     value_black = count_liberties_black / count_groups_black;
     value_white = count_liberties_white / count_groups_white;
+    */
 
     /*
     if ( value_black > 4 ) {
@@ -308,7 +314,8 @@ int brain_avg_liberties(void)
     }
     */
 
-    value = value_black - value_white;
+    //value = value_black - value_white;
+    value = 0;
 
     return value;
 }
@@ -325,7 +332,8 @@ int brain_kosumi(void)
 {
     int value;
 
-    value = get_count_kosumis(BLACK) - get_count_kosumis(WHITE);
+    //value = get_count_kosumis(BLACK) - get_count_kosumis(WHITE);
+    value = 0;
 
     return value;
 }
@@ -341,6 +349,7 @@ int brain_kosumi(void)
 int brain_chains(void)
 {
     int value = 0;
+    /*
     int count_black_chains   = get_last_chain_nr(BLACK);
     int count_white_chains   = get_last_chain_nr(WHITE);
     int count_black_no_chain = get_nr_groups_no_chain(BLACK);
@@ -360,6 +369,7 @@ int brain_chains(void)
     else {
         value -= 100 / count_white_chains;
     }
+    */
 
     return value;
 }
@@ -375,9 +385,10 @@ int brain_influence(void)
 {
     int value;
 
-    count_kosumi();
+    //count_kosumi();
 
-    value = get_count_influence(BLACK) - get_count_influence(WHITE);
+    //value = get_count_influence(BLACK) - get_count_influence(WHITE);
+    value = 0;
 
     return value;
 }
@@ -394,7 +405,8 @@ int brain_has_eye(void)
 {
     int value;
 
-    value = get_one_eye_groups(WHITE) - get_one_eye_groups(BLACK);
+    //value = get_one_eye_groups(WHITE) - get_one_eye_groups(BLACK);
+    value = 0;
 
     return value;
 }

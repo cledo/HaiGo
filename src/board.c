@@ -672,6 +672,7 @@ bool is_hoshi( int i, int j )
  */
 void scan_board_1(void)
 {
+    int k;
     int index_1d;
     int color;
 
@@ -689,6 +690,14 @@ void scan_board_1(void)
     memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
     memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
     memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+
+    /*
+    for ( k = 0; k < MAX_WORM_COUNT; k++ ) {
+        worm_list[BLACK_INDEX][k].number = 0;
+        worm_list[EMPTY_INDEX][k].number = 0;
+        worm_list[WHITE_INDEX][k].number = 0;
+    }
+    */
 
     // First scan:
     // Gives a worm_nr to every field.
@@ -753,6 +762,7 @@ void create_worm_data( int index_1d, int color )
     int color_index = color + 1;
 
     vertex_t neighbours[4];
+    memset( neighbours, 0, 4 * sizeof(vertex_t) );
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
