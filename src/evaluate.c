@@ -201,13 +201,13 @@ int brain_atari(void)
     
     for ( k = 0; k <= last_white_group; k++ ) {
         if ( get_nr_of_liberties( k * -1 ) == 1 ) {
-            count_atari_white += get_size_of_group( k * -1 );
+            count_atari_white += get_size_of_worm( k * -1 );
         }
     }
 
     for ( k = 0; k <= last_black_group; k++ ) {
         if ( get_nr_of_liberties(k) == 1 ) {
-            count_atari_black += get_size_of_group(k);
+            count_atari_black += get_size_of_worm(k);
         }
     }
 
@@ -252,7 +252,7 @@ int brain_edge_stones(void)
  */
 int brain_hoshi_stones(void)
 {
-    int i, j;
+    //int i, j;
     int value      = 0;
     /*
     int board_size = get_board_size();

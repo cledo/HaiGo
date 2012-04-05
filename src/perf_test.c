@@ -3,16 +3,16 @@
 #include <time.h>
 #include "global_const.h"
 #include "board.h"
+#include "board_intern.h"
 
 
 /**
- * @file    new_main.c
+ * @file    perf_test.c
  *
- * Placeholder for main.
+ * A simple main function for testing.
  *
- * A simple temporary placeholder
- * for main.c until the new_board stuff may be integrated into the main
- * program.
+ * A simple main function where performance testing for selected functions can
+ * be done.
  *
  */
 

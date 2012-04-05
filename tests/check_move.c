@@ -481,6 +481,8 @@ START_TEST (test_get_valid_move_list)
     int valid_moves[BOARD_SIZE_MAX * BOARD_SIZE_MAX][4];
     int nr_of_valid_moves;
 
+    int i, j;
+
     init_board(s);
     init_brains();
 
@@ -503,17 +505,48 @@ START_TEST (test_get_valid_move_list)
 
     // Check for black moves:
     color = BLACK;
-    //valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     fail_unless( nr_of_valid_moves == 4, "4 valid moves (%d)", nr_of_valid_moves );
+
+    i = valid_moves[0][0];
+    j = valid_moves[0][1];
+    fail_unless( i == 0 && j == 0, "i is 0, j is 0 (%d,%d)", i, j );
+
+    i = valid_moves[1][0];
+    j = valid_moves[1][1];
+    fail_unless( i == 0 && j == 1, "i is 0, j is 1 (%d,%d)", i, j );
+
+    i = valid_moves[2][0];
+    j = valid_moves[2][1];
+    fail_unless( i == 1 && j == 0, "i is 1, j is 0 (%d,%d)", i, j );
+
+    i = valid_moves[3][0];
+    j = valid_moves[3][1];
+    fail_unless( i == 1 && j == 1, "i is 1, j is 1 (%d,%d)", i, j );
 
     // Check for white moves:
     color = WHITE;
-    //valid_moves_count = get_pseudo_valid_move_list( color, valid_moves );
     nr_of_valid_moves = get_valid_move_list( color, valid_moves );
 
     fail_unless( nr_of_valid_moves == 4, "4 valid moves (%d)", nr_of_valid_moves );
+
+    i = valid_moves[0][0];
+    j = valid_moves[0][1];
+    fail_unless( i == 0 && j == 0, "i is 0, j is 0 (%d,%d)", i, j );
+
+    i = valid_moves[1][0];
+    j = valid_moves[1][1];
+    fail_unless( i == 0 && j == 1, "i is 0, j is 1 (%d,%d)", i, j );
+
+    i = valid_moves[2][0];
+    j = valid_moves[2][1];
+    fail_unless( i == 1 && j == 0, "i is 1, j is 0 (%d,%d)", i, j );
+
+    i = valid_moves[3][0];
+    j = valid_moves[3][1];
+    fail_unless( i == 1 && j == 1, "i is 1, j is 1 (%d,%d)", i, j );
+
 }
 END_TEST
 

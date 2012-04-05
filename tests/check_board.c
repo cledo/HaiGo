@@ -125,14 +125,12 @@ START_TEST (test_init_board_1)
     init_board(s);
 
     fail_if( is_board_null(),       "board is initialized"       );
-    fail_if( is_group_board_null(), "group board is initialized" );
-    fail_if( is_hoshi_board_null(), "hoshi board is initialized" );
 
     for ( i = 0; i < s; i++ ) {
         for ( j = 0; j < s; j++ ) {
             fail_unless( get_vertex( i, j ) == EMPTY
                 , "field %d,%d is EMPTY", i, j );
-            fail_unless( get_group_nr( i, j ) == 0
+            fail_unless( get_worm_nr( i, j ) == 0
                 , "group_nr for %d,%d is 0", i, j );
             fail_unless( is_hoshi( i, j ) == true || is_hoshi( i, j ) == false
                 , "hoshi is initialized for %d,%d", i, j );
@@ -144,8 +142,6 @@ START_TEST (test_init_board_1)
     free_board();
 
     fail_unless( is_board_null(),       "board is NULL"       );
-    fail_unless( is_group_board_null(), "group board is NULL" );
-    fail_unless( is_hoshi_board_null(), "hoshi board is NULL" );
 }
 END_TEST
 
@@ -185,37 +181,37 @@ START_TEST (test_groups_1)
     fail_if( get_free_group_nr(WHITE) != -1, "next group for white is -1" );
 
     set_vertex( BLACK, 0, 0 );
-    create_groups();
+    scan_board_1();
 
     fail_if( get_free_group_nr(BLACK) !=  2, "next group for black is 2"  );
     fail_if( get_free_group_nr(WHITE) != -1, "next group for white is -1" );
 
     set_vertex( WHITE, 0, 1 );
-    create_groups();
+    scan_board_1();
 
     fail_if( get_free_group_nr(BLACK) !=  2, "next group for black is 2"  );
     fail_if( get_free_group_nr(WHITE) != -2, "next group for white is -2" );
 
     set_vertex( BLACK, 10, 10 );
-    create_groups();
+    scan_board_1();
 
     fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
     fail_if( get_free_group_nr(WHITE) != -2, "next group for white is -2" );
 
     set_vertex( WHITE, 15, 15 );
-    create_groups();
+    scan_board_1();
 
     fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
     fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
 
     set_vertex( BLACK, 10, 11 );
-    create_groups();
+    scan_board_1();
 
     fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
     fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
 
     set_vertex( WHITE, 15, 16 );
-    create_groups();
+    scan_board_1();
 
     fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
     fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
@@ -297,67 +293,60 @@ START_TEST (test_group_size_1)
 
     // Black group:
     set_vertex( BLACK, i, j );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr   = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr   = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 1, "black group has size 1" );
 
     set_vertex( BLACK, i+1, j+1 );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr   = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr   = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 1, "black group has size 1" );
 
     set_vertex( BLACK, i+1, j );
     set_vertex( BLACK, i, j+1 );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr   = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr   = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 4, "black group has size 4" );
 
     // White group:
     set_vertex( WHITE, i, j );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr  = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 1, "white group has size 1" );
 
     set_vertex( WHITE, i+1, j );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr  = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 2, "white group has size 2" );
 
     set_vertex( WHITE, i, j+1 );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr  = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 3, "white group has size 3" );
 
     set_vertex( WHITE, i+1, j+1 );
-    create_groups();
-    set_groups_size();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
-    group_size = get_size_of_group(group_nr);
+    group_nr  = get_worm_nr( i, j );
+    group_size = get_size_of_worm(group_nr);
 
     fail_unless( group_size == 4, "white group has size 4" );
 }
@@ -415,11 +404,9 @@ START_TEST (test_count_liberties_1)
     j = 0;
     set_vertex( BLACK, i, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 2, "%d,%d has 2 liberties (%d)", i, j, liberties );
@@ -428,11 +415,9 @@ START_TEST (test_count_liberties_1)
     j = 0;
     set_vertex( BLACK, i, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 3, "%d,%d has 3 liberties", i, j );
@@ -440,21 +425,17 @@ START_TEST (test_count_liberties_1)
     set_vertex( WHITE, 0, 1 );
     set_vertex( WHITE, 1, 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 1, "%d,%d has 1 liberty", i, j );
 
     set_vertex( WHITE, 2, 0 );
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 0, "%d,%d has no liberties", i, j );
@@ -465,55 +446,45 @@ START_TEST (test_count_liberties_1)
     j = 9;
     set_vertex( BLACK, i, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 4, "%d,%d has 4 liberties", i, j );
 
     set_vertex( WHITE, i-1, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 3, "%d,%d has 3 liberties", i, j );
 
     set_vertex( WHITE, i, j-1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 2, "%d,%d has 2 liberties", i, j );
 
     set_vertex( WHITE, i+1, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 1, "%d,%d has 1 liberties", i, j );
 
     set_vertex( WHITE, i, j+1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( i, j );
+    group_nr  = get_worm_nr( i, j );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 0, "%d,%d has no liberties", i, j );
@@ -522,11 +493,9 @@ START_TEST (test_count_liberties_1)
     init_board(2);
 
     set_vertex( WHITE, 0, 0 );
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
-    group_nr  = get_group_nr( 0, 0 );
+    group_nr  = get_worm_nr( 0, 0 );
     liberties = get_nr_of_liberties(group_nr);
 
     fail_unless( liberties == 2, "0,0 has 2 liberties" );
@@ -550,9 +519,7 @@ START_TEST (test_remove_stones_1)
     set_vertex( WHITE, i-1, j );
     set_vertex( WHITE, i, j-1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
     removed = remove_stones(BLACK);
     removed = get_captured_now(captured);
 
@@ -581,9 +548,7 @@ START_TEST (test_remove_stones_1)
     set_vertex( EMPTY, i, j );
     set_vertex( BLACK, i, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
     removed = remove_stones(WHITE);
 
     fail_unless( removed = s * s - 1, "all white stones removed" );
@@ -605,9 +570,7 @@ START_TEST (test_atari_1)
 
     init_board(board_size);
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_group_count_atari(BLACK) == 0, "no black groups in atari" );
     fail_unless( get_group_count_atari(WHITE) == 0, "no white groups in atari" );
@@ -615,9 +578,7 @@ START_TEST (test_atari_1)
     set_vertex( BLACK, 0, 0 );
     set_vertex( WHITE, board_size - 1, board_size - 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_group_count_atari(BLACK) == 0, "no black groups in atari" );
     fail_unless( get_group_count_atari(WHITE) == 0, "no white groups in atari" );
@@ -625,9 +586,7 @@ START_TEST (test_atari_1)
     set_vertex( WHITE, 0, 1 );
     set_vertex( BLACK, board_size - 1, board_size - 2 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_group_count_atari(BLACK) == 1, "one black group in atari" );
     fail_unless( get_group_count_atari(WHITE) == 1, "one white group in atari" );
@@ -635,9 +594,7 @@ START_TEST (test_atari_1)
     set_vertex( BLACK, 0, 2 );
     set_vertex( WHITE, board_size - 1, board_size - 3 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_group_count_atari(BLACK) == 2, "two black groups in atari" );
     fail_unless( get_group_count_atari(WHITE) == 2, "two white groups in atari" );
@@ -645,9 +602,7 @@ START_TEST (test_atari_1)
     set_vertex( WHITE, 0, 3 );
     set_vertex( BLACK, board_size - 1, board_size - 4 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_group_count_atari(BLACK) == 3, "three black groups in atari" );
     fail_unless( get_group_count_atari(WHITE) == 3, "three white groups in atari" );
@@ -665,18 +620,14 @@ START_TEST (test_chains_1)
     set_vertex( BLACK, 2, 0 );
     set_vertex( BLACK, 2, 2 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(BLACK) == 0
         , "no black chains found (%d)", get_last_chain_nr(BLACK) );
 
     set_vertex( BLACK, 1, 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(BLACK) == 1
         , "one black chain found (%d)", get_last_chain_nr(BLACK) );
@@ -686,18 +637,14 @@ START_TEST (test_chains_1)
     set_vertex( WHITE, 2, 0 );
     set_vertex( WHITE, 2, 2 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(WHITE) == 0
         , "no white chains found (%d)", get_last_chain_nr(WHITE) );
 
     set_vertex( WHITE, 1, 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(WHITE) == 1
         , "one white chain found (%d)", get_last_chain_nr(WHITE) );
@@ -715,18 +662,14 @@ START_TEST (test_chains_2)
     set_vertex( BLACK, 2, 1 );
     set_vertex( BLACK, 1, 2 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(BLACK) == 1
         , "one black chain found (%d)", get_last_chain_nr(BLACK) );
 
     set_vertex( BLACK, 1, 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(BLACK) == 0
         , "no black chain found (%d)", get_last_chain_nr(BLACK) );
@@ -736,18 +679,14 @@ START_TEST (test_chains_2)
     set_vertex( WHITE, 2, 1 );
     set_vertex( WHITE, 2, 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(WHITE) == 1
         , "one white chain found (%d)", get_last_chain_nr(WHITE) );
 
     set_vertex( WHITE, 1, 1 );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     fail_unless( get_last_chain_nr(WHITE) == 0
         , "no white chain found (%d)", get_last_chain_nr(WHITE) );

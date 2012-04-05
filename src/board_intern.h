@@ -3,9 +3,9 @@
 
 
 /**
- * @file    new_board_intern.h
+ * @file    board_intern.h
  *
- * @brief   Internal Interface for new_board.c
+ * @brief   Internal Interface for board.c
  *
  * Contains the internal interface for new_board.c,
  * collected in a separate header file for unit testing.
@@ -45,12 +45,11 @@ void get_label_y_right( int j, char y[] );
 
 worm_t get_worm( int color, worm_nr_t worm_nr );
 
-bool is_group_board_null(void);
-bool is_hoshi_board_null(void);
-
 int get_free_group_nr( int color );
 int has_neighbour( int i, int j, int neighbour[][2] );
-void set_groups_size(void);
+
+// TEST:
+void print_removed(void);
 
 #endif
 

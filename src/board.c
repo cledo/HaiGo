@@ -9,7 +9,7 @@
 
 
 /**
- * @file    new_board.c
+ * @file    board.c
  *
  * @brief   Board data structures and functions.
  *
@@ -19,12 +19,15 @@
  */
 
 
+//! Value of the board array that indicates an index which is off the board.
 #define BOARD_OFF   INT_MAX
+
+//! Macro that converts two dimensional index into one dimension.
 #define INDEX(i,j)  ( ( ( (j)+1 ) * ( board_size+1 ) ) + (i) )
 
-#define BLACK_INDEX 2
-#define WHITE_INDEX 0
-#define EMPTY_INDEX 1
+#define BLACK_INDEX 2   //!< Array index for BLACK; must be BLACK + 1
+#define WHITE_INDEX 0   //!< Array index for WHITE; must be WHITE + 1
+#define EMPTY_INDEX 1   //!< Array index for EMPTY; must be EMPTY + 1
 
 //////////////////////////////
 //                          //
@@ -61,9 +64,6 @@ typedef struct {
 } vertex_t;
 
 
-int count_black;    //! Number of black stones on board.
-int count_white;    //! Number of white stones on board.
-int count_empty;    //! Number of empty fields on board.
 int count_color[3]; //! Number of WHITE, EMPTY, BLACK on board.
 
 int captured_by_black;  //!< Number of white stones captured by black.
@@ -931,6 +931,20 @@ void count_worm_liberties( int index_1d )
     return;
 }
 
+/**
+ * @brief       Counts neighbours of same worm.
+ *
+ * Counts the the number of neighbouring stones, which are all of the same
+ * given color and worm number. This is needed for counting the liberties of a
+ * worm.
+ *
+ * @param[in]   index_1d    1d index for board
+ * @param[in]   worm_nr     Worm number
+ * @param[in]   color_i     Color turned to index (color + 1)
+ * @return      [information about return value]
+ * @sa          count_worm_liberties()
+ * @note        This is primarily a helper function for count_worm_liberties()
+ */
 inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr, int color_i )
 {
     int i;
@@ -1037,7 +1051,6 @@ int remove_stones( int color )
                     count_removed++;
 
                     removed[color+1][removed_max[color+1]++] = index_1d;
-                    //printf( "#### REMOVED: %d max: %d\n", index_1d, removed_max[color+1] );
                 }
             }
         }
@@ -1062,57 +1075,34 @@ int remove_stones( int color )
  */
 void print_worm_boards(void)
 {
-    int i;
+    int i, j;
 
     printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
-        if ( board[i] == BOARD_OFF ) {
-            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
-                printf("\n");
-            }
-            continue;
+    for ( j = ( board_size + 1 ) * board_size; j > board_size; j -= board_size + 1 ) {
+        for ( i = 0; i < board_size; i++ ) {
+            printf( " %2hu ", worm_board[BLACK_INDEX][j+i] );
         }
-        printf( " %2hu ", worm_board[BLACK_INDEX][i] );
+        printf("\n");
     }
     printf("\n");
 
     printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
-        if ( board[i] == BOARD_OFF ) {
-            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
-                printf("\n");
-            }
-            continue;
+    for ( j = ( board_size + 1 ) * board_size; j > board_size; j -= board_size + 1 ) {
+        for ( i = 0; i < board_size; i++ ) {
+            printf( " %2hu ", worm_board[WHITE_INDEX][j+i] );
         }
-        printf( " %2hu ", worm_board[WHITE_INDEX][i] );
+        printf("\n");
     }
     printf("\n");
 
     printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
-        if ( board[i] == BOARD_OFF ) {
-            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
-                printf("\n");
-            }
-            continue;
+    for ( j = ( board_size + 1 ) * board_size; j > board_size; j -= board_size + 1 ) {
+        for ( i = 0; i < board_size; i++ ) {
+            printf( " %2hu ", worm_board[EMPTY_INDEX][j+i] );
         }
-        printf( " %2hu ", worm_board[EMPTY_INDEX][i] );
+        printf("\n");
     }
     printf("\n");
-
-    /*
-    printf("\n");
-    for ( i = board_size + 1; i < (board_size+1) * (board_size+1) - 1; i++ ) {
-        if ( board[i] == BOARD_OFF ) {
-            if ( ( ( i + 1 ) % ( board_size + 1 ) ) == 0 ) {
-                printf("\n");
-            }
-            continue;
-        }
-        printf( " %2hu ", board_hoshi[i] );
-    }
-    printf("\n");
-    */
 
     return;
 }
@@ -1161,7 +1151,14 @@ worm_t get_worm( int color, worm_nr_t worm_nr )
     return worm_list[color+1][worm_nr];
 }
 
-// TEST:
+/**
+ * @brief       Prints arrays of removed stones.
+ *
+ * Prints arrays for BLACK and WHITE with the 1d indexes of removed stones.
+ * This function is for testing only.
+ *
+ * @return      Nothing
+ */
 void print_removed(void)
 {
     int k;
@@ -1181,35 +1178,16 @@ void print_removed(void)
     return;
 }
 
-
-/* PROXY FUNCTIONS */
-void create_groups(void)
-{
-    scan_board_1();
-    return;
-}
-
-void create_group_chains(void)
-{
-    return;
-}
-void count_liberties(void)
-{
-    return;
-}
-
-int get_last_group_nr( int color )
-{
-    // TODO: must differ between last nr and count of worms!
-    return 0;
-}
-
-int get_free_group_nr( int color )
-{
-    return (int)( worm_nr_max[color+1] + 1 ) * color;
-}
-
-int get_group_nr( int i, int j )
+/**
+ * @brief       Returns worm number.
+ *
+ * Returns the worm number for the given vertex.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Worm number or zero for empty field.
+ */
+int get_worm_nr( int i, int j )
 {
     int index_1d      = INDEX(i,j);
     int color         = board[index_1d];
@@ -1222,7 +1200,20 @@ int get_group_nr( int i, int j )
     return ( (int)worm_nr ) * color;
 }
 
-int get_size_of_group( int group_nr )
+/* PROXY FUNCTIONS */
+int get_last_group_nr( int color )
+{
+    // TODO: must differ between last nr and count of worms!
+    return 0;
+}
+
+int get_free_group_nr( int color )
+{
+    return (int)( worm_nr_max[color+1] + 1 ) * color;
+}
+
+
+int get_size_of_worm( int group_nr )
 {
     int size;
     int color = BLACK;
@@ -1255,7 +1246,7 @@ int get_nr_of_liberties( int group_nr )
 
 int get_size_of_empty_group( int group_nr )
 {
-    // TODO: Should use get_size_of_group()!
+    // TODO: Should use get_size_of_worm()!
     return 0;
 }
 
@@ -1293,13 +1284,6 @@ int get_nr_groups_no_chain( int color )
 int get_one_eye_groups( int color )
 {
     return 0;
-}
-
-void print_groups(void)
-{
-    print_worm_boards();
-
-    return;
 }
 
 int get_stone_count( int color )
@@ -1366,15 +1350,6 @@ int get_count_influence( int color )
     return 0;
 }
 
-bool is_group_board_null(void)
-{
-    return is_board_null();
-}
-bool is_hoshi_board_null(void)
-{
-    return is_board_null();
-}
-
 int has_neighbour( int i, int j, int neighbour[][2] )
 {
     int index;
@@ -1415,11 +1390,6 @@ int has_neighbour( int i, int j, int neighbour[][2] )
     }
 
     return count;
-}
-
-void set_groups_size(void)
-{
-    return;
 }
 
 /* Hashing */

@@ -432,9 +432,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         j = valid_moves[k][1];
 
         // Check for groups in atari before move is made:
-        create_groups();
-        set_groups_size();
-        count_liberties();
+        scan_board_1();
         atari_groups_player_before      = get_group_count_atari(color);
         atari_groups_opponent_before    = get_group_count_atari( color * -1 );
         //count_liberties_player_before   = get_group_count_liberties(color);
@@ -442,9 +440,7 @@ int get_valid_move_list( int color, int valid_moves[][4] )
 
         // Make move
         set_vertex( color, i, j );
-        create_groups();
-        set_groups_size();
-        count_liberties();
+        scan_board_1();
         nr_of_removed_stones = remove_stones( color * -1 );
 
         // Check if this move is valid:
@@ -452,33 +448,13 @@ int get_valid_move_list( int color, int valid_moves[][4] )
             is_valid = true;
         }
         else {
-            group_nr        = get_group_nr( i, j );
+            group_nr        = get_worm_nr( i, j );
             nr_of_liberties = get_nr_of_liberties(group_nr);
             if ( nr_of_liberties > 0 ) {
                 is_valid = true;
             }
         }
 
-        // Check if move gives atari:
-        /*
-        last_group_nr = get_last_group_nr( color * -1 );
-        if ( color * -1 == BLACK ) {
-            for ( l = 1; l <= last_group_nr; l++ ) {
-                if ( get_nr_of_liberties(l) == 1 ) {
-                    // Mark move as atari:
-                    valid_moves[k][3]++;
-                }
-            }
-        }
-        else {
-            for ( l = -1; l >= last_group_nr; l-- ) {
-                if ( get_nr_of_liberties(l) == 1 ) {
-                    // Mark move as atari:
-                    valid_moves[k][3]++;
-                }
-            }
-        }
-        */
         atari_groups_player_after   = get_group_count_atari(color);
         atari_groups_opponent_after = get_group_count_atari( color * -1 );
         // Check if move gives atari:

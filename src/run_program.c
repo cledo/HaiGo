@@ -296,7 +296,7 @@ void init_known_commands(void)
 
     //DEBUG:
     my_strcpy( known_commands[i].command, "showgroups", MAX_TOKEN_LENGTH );
-    known_commands[i++].function = (*print_groups);
+    known_commands[i++].function = (*print_worm_boards);
 
     if ( i != COUNT_KNOWN_COMMANDS ) {
         fprintf(
@@ -848,22 +848,18 @@ void gtp_play( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     set_vertex( color, i, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     nr_of_removed_stones = remove_stones( color * -1 );
 
     // If board has changed, rebuild groups and liberties:
     if ( nr_of_removed_stones > 0 ) {
-        create_groups();
-        set_groups_size();
-        count_liberties();
+        scan_board_1();
     }
 
-    group_nr        = get_group_nr( i, j );
+    group_nr        = get_worm_nr( i, j );
     nr_of_liberties = get_nr_of_liberties(group_nr);
-    group_size      = get_size_of_group(group_nr);
+    group_size      = get_size_of_worm(group_nr);
 
     // If liberties are zero, move is invalid
     if ( nr_of_liberties == 0 ) {
@@ -1078,14 +1074,10 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
 
     set_vertex( color, i, j );
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
     nr_of_removed_stones = remove_stones( color * -1 );
     if ( nr_of_removed_stones > 0 ) {
-        create_groups();
-        set_groups_size();
-        count_liberties();
+        scan_board_1();
     }
 
     nr_of_removed_stones = get_captured_now(captured_now);
@@ -1094,9 +1086,9 @@ void gtp_genmove( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     set_move_vertex( color, i, j );
     set_move_captured_stones(captured_now);
 
-    group_nr        = get_group_nr( i, j );
+    group_nr        = get_worm_nr( i, j );
     nr_of_liberties = get_nr_of_liberties(group_nr);
-    group_size      = get_size_of_group(group_nr);
+    group_size      = get_size_of_worm(group_nr);
 
     // Check if this is a ko:
     if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
@@ -1401,22 +1393,18 @@ bool sgf_move( int color, char *value )
 
     set_vertex( color, i, j );
 
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
 
     nr_of_removed_stones = remove_stones( color * -1 );
 
     // If board has changed, rebuild groups and liberties:
     if ( nr_of_removed_stones > 0 ) {
-        create_groups();
-        set_groups_size();
-        count_liberties();
+        scan_board_1();
     }
 
-    group_nr        = get_group_nr( i, j );
+    group_nr        = get_worm_nr( i, j );
     nr_of_liberties = get_nr_of_liberties(group_nr);
-    group_size      = get_size_of_group(group_nr);
+    group_size      = get_size_of_worm(group_nr);
 
     // If liberties are zero, move is invalid
     if ( nr_of_liberties == 0 ) {

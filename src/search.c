@@ -421,14 +421,10 @@ void make_move( int color, int i, int j )
     }
 
     set_vertex( color, i, j );
-    create_groups();
-    set_groups_size();
-    count_liberties();
+    scan_board_1();
     nr_of_removed_stones = remove_stones( color * -1 );
     if ( nr_of_removed_stones > 0 ) {
-        create_groups();
-        set_groups_size();
-        count_liberties();
+        scan_board_1();
     }
 
     nr_of_removed_stones = get_captured_now(captured_now);
@@ -437,9 +433,9 @@ void make_move( int color, int i, int j )
     set_move_vertex( color, i, j );
     set_move_captured_stones(captured_now);
 
-    group_nr        = get_group_nr( i, j );
+    group_nr        = get_worm_nr( i, j );
     nr_of_liberties = get_nr_of_liberties(group_nr);
-    group_size      = get_size_of_group(group_nr);
+    group_size      = get_size_of_worm(group_nr);
 
     // Check if this move is a ko:
     if ( nr_of_removed_stones == 1 && group_size == 1 && nr_of_liberties == 1 ) {
