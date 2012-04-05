@@ -51,7 +51,7 @@ worm_nr_t MAX_WORM_COUNT;   //!< Stores the maximum of possible worms for one co
 worm_nr_t *worm_board[3] ;  //!< Three 1D-Boards with worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK_INDEX).
 worm_nr_t worm_nr_max[3];   //!< List of current highest worm numbers (for WHITE_INDEX,EMPTY_INDEX,BLACK_INDEX).
 
-worm_t *worm_list[3];       //!< List of worm structs for black. Index is worm_nr.
+worm_t worm_list[3][BOARD_SIZE_MAX * BOARD_SIZE_MAX / 2];       //!< List of worm structs for black. Index is worm_nr.
 
 
 //! Struct with coordinates for different board types and additional data.
@@ -87,14 +87,15 @@ int removed_max[3];
 void init_board( bsize_t board_size )
 {
     int index_1d;
+    int board_index_max = ( board_size + 1 ) * ( board_size + 2 ) - 1;
 
     set_board_size(board_size);
 
-    board            = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
-    board_hoshi      = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(int) ) );
-    worm_board[BLACK_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
-    worm_board[WHITE_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
-    worm_board[EMPTY_INDEX] = malloc( (size_t)( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    board            = malloc( ( (board_size+1) * (board_size+2) * sizeof(int) ) );
+    board_hoshi      = malloc( ( (board_size+1) * (board_size+2) * sizeof(int) ) );
+    worm_board[BLACK_INDEX] = malloc( ( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_board[WHITE_INDEX] = malloc( ( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
+    worm_board[EMPTY_INDEX] = malloc( ( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
     if ( board == NULL || board_hoshi == NULL ) {
         fprintf( stderr, "cannot allocate memory for board\n" );
         exit(EXIT_FAILURE);
@@ -105,7 +106,7 @@ void init_board( bsize_t board_size )
     }
 
     // Initialise board data structures:
-    for ( index_1d = 0; index_1d <= index_1d_max; index_1d++ ) {
+    for ( index_1d = 0; index_1d <= board_index_max; index_1d++ ) {
         if ( index_1d <= board_size ) {
             // Setting lower boundary
             board[index_1d] = BOARD_OFF;
@@ -143,6 +144,7 @@ void init_board( bsize_t board_size )
         // board_size is even
         MAX_WORM_COUNT = board_size * board_size / 2;
     }
+    /*
     worm_list[BLACK_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
     worm_list[WHITE_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
     worm_list[EMPTY_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
@@ -150,6 +152,7 @@ void init_board( bsize_t board_size )
         fprintf( stderr, "cannot allocate memory for worm_list" );
         exit(EXIT_FAILURE);
     }
+    */
 
     captured_by_black = 0;
     captured_by_white = 0;
@@ -222,16 +225,16 @@ void free_board(void)
     board       = NULL;
     board_hoshi = NULL;
 
-    free(worm_list[BLACK_INDEX]);
-    free(worm_list[WHITE_INDEX]);
-    free(worm_list[EMPTY_INDEX]);
+    //free(worm_list[BLACK_INDEX]);
+    //free(worm_list[WHITE_INDEX]);
+    //free(worm_list[EMPTY_INDEX]);
     free(worm_board[BLACK_INDEX]);
     free(worm_board[WHITE_INDEX]);
     free(worm_board[EMPTY_INDEX]);
 
-    worm_list[BLACK_INDEX]  = NULL;
-    worm_list[WHITE_INDEX]  = NULL;
-    worm_list[EMPTY_INDEX]  = NULL;
+    //worm_list[BLACK_INDEX]  = NULL;
+    //worm_list[WHITE_INDEX]  = NULL;
+    //worm_list[EMPTY_INDEX]  = NULL;
     worm_board[BLACK_INDEX] = NULL;
     worm_board[WHITE_INDEX] = NULL;
     worm_board[EMPTY_INDEX] = NULL;
@@ -360,6 +363,7 @@ bsize_t get_board_size(void)
 void set_vertex( int color, int i, int j )
 {
     board[ INDEX(i,j) ] = color;
+    //printf( "## %d,%d\n", i, j );
 
     return;
 }
@@ -687,17 +691,15 @@ void scan_board_1(void)
     worm_nr_max[WHITE_INDEX] = 0;
     worm_nr_max[EMPTY_INDEX] = 0;
 
-    memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    //memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    //memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    //memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
 
-    /*
     for ( k = 0; k < MAX_WORM_COUNT; k++ ) {
         worm_list[BLACK_INDEX][k].number = 0;
         worm_list[EMPTY_INDEX][k].number = 0;
         worm_list[WHITE_INDEX][k].number = 0;
     }
-    */
 
     // First scan:
     // Gives a worm_nr to every field.
@@ -1023,7 +1025,7 @@ int remove_stones( int color )
 
     // Go through boards:
     if ( k > 0 ) {
-        // At least one worm has been removed:
+        // At least one worm has to be removed:
         for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
             if ( board[index_1d] != color ) {
                 continue;
@@ -1035,6 +1037,7 @@ int remove_stones( int color )
                     count_removed++;
 
                     removed[color+1][removed_max[color+1]++] = index_1d;
+                    //printf( "#### REMOVED: %d max: %d\n", index_1d, removed_max[color+1] );
                 }
             }
         }
@@ -1320,16 +1323,16 @@ int get_captured_now( int captured[][2] )
 
     for ( k = 0; k < removed_max[BLACK_INDEX]; k++ ) {
         index_1d = removed[BLACK_INDEX][k];
-        i = index_1d % board_size;
-        j = ( index_1d / board_size ) - 2;
+        i = index_1d % ( board_size + 1 );
+        j = ( index_1d / ( board_size + 1 ) ) - 1;
         captured[l][0] = i;
         captured[l][1] = j;
         l++;
     }
     for ( k = 0; k < removed_max[WHITE_INDEX]; k++ ) {
-        index_1d = removed[BLACK_INDEX][k];
-        i = index_1d % board_size;
-        j = ( index_1d / board_size ) - 2;
+        index_1d = removed[WHITE_INDEX][k];
+        i = index_1d % ( board_size + 1 );
+        j = ( index_1d / ( board_size + 1 ) ) - 1;
         captured[l][0] = i;
         captured[l][1] = j;
         l++;
