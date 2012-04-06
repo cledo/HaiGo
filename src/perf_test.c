@@ -81,9 +81,9 @@ int main(void)
             scan_board_1();
             //scan_board_2();
         }
-        count_removed = remove_stones(WHITE);
-        print_removed();
-        scan_board_1();
+        //count_removed = remove_stones(WHITE);
+        //print_removed();
+        //scan_board_1();
 
         (void) time(&stop);
         diff_time = stop - start;
@@ -91,7 +91,7 @@ int main(void)
 
         printf( "BoardNr.: %lu\t%lu\t(%d)\n", l, diff_time, count_removed );
 
-        print_worm_boards();
+        //print_worm_boards();
         //print_worm_lists();
 
         free_board();

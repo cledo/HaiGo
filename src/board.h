@@ -28,6 +28,7 @@ void set_vertex( int color, int i, int j );
 int  get_vertex( int i, int j );
 
 void scan_board_1(void);
+void scan_board_2(void);
 void print_worm_boards(void);
 void print_worm_lists(void);
 
@@ -42,10 +43,10 @@ bool is_hoshi( int i, int j );
 
 int get_size_of_worm( int group_nr );
 int get_worm_nr( int i, int j );
+int get_nr_of_liberties( int worm_nr );
 
 /* Old interface, delete later! */
 int  get_last_group_nr( int color );
-int  get_nr_of_liberties( int group_nr );
 int  get_size_of_empty_group( int group_nr );
 int  get_group_count_atari( int color );
 int  get_group_count_liberties( int group_nr );

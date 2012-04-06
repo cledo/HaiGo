@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <limits.h>
 #include "../src/global_const.h"
-#include "board.h"
 #include "board_intern.h"
+#include "board.h"
 
 
 /**
@@ -36,10 +36,13 @@
 //////////////////////////////
 
 bsize_t board_size = BOARD_SIZE_DEFAULT;    //!< Sets the boardsize to the default.
-int index_1d_max;
+int index_1d_max;   //!< The maximum 1d index without highest off board row.
 
-int *board;
-int *board_hoshi;
+int *board;         //!< Board data structures wich holds color per field.
+int *board_hoshi;   //!< Board that defines star points.
+
+int *bouzy_1;       //!< First influence board.
+int *bouzy_2;       //!< Second influence board.
 
 
 //////////////////////////////
@@ -64,15 +67,32 @@ typedef struct {
 } vertex_t;
 
 
-int count_color[3]; //! Number of WHITE, EMPTY, BLACK on board.
+//////////////////////////////
+//                          //
+//  Evaluation data         //
+//                          //
+//////////////////////////////
+
+int count_color[3];     //!< Number of WHITE, EMPTY, BLACK on board.
 
 int captured_by_black;  //!< Number of white stones captured by black.
 int captured_by_white;  //!< Number of black stones captured by white.
 
-//! List of 1d-indexes where stones have been removed by remove_stones().
-int *removed[3];
-int removed_max[3];
+int *removed[3];        //!< List of 1d-indexes where stones have been removed by remove_stones().
+int removed_max[3];     //!< Counts the number of elements in *removed[3].
 
+int influence_black   = 0;
+int influence_white   = 0;
+int influence_neutral = 0;
+
+/**
+ * @name    Board data structures
+ *
+ * Setting up initial board data and freeing board data.
+ *
+ */
+
+//@{
 
 /**
  *  @brief Allocates memory for all board data structures.
@@ -93,6 +113,8 @@ void init_board( bsize_t board_size )
 
     board            = malloc( ( (board_size+1) * (board_size+2) * sizeof(int) ) );
     board_hoshi      = malloc( ( (board_size+1) * (board_size+2) * sizeof(int) ) );
+    bouzy_1          = malloc( ( (board_size+1) * (board_size+2) * sizeof(int) ) );
+    bouzy_2          = malloc( ( (board_size+1) * (board_size+2) * sizeof(int) ) );
     worm_board[BLACK_INDEX] = malloc( ( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
     worm_board[WHITE_INDEX] = malloc( ( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
     worm_board[EMPTY_INDEX] = malloc( ( (board_size+1) * (board_size+2) * sizeof(worm_nr_t) ) );
@@ -144,15 +166,6 @@ void init_board( bsize_t board_size )
         // board_size is even
         MAX_WORM_COUNT = board_size * board_size / 2;
     }
-    /*
-    worm_list[BLACK_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
-    worm_list[WHITE_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
-    worm_list[EMPTY_INDEX] = malloc( MAX_WORM_COUNT * sizeof(worm_t) );
-    if ( worm_list[BLACK_INDEX] == NULL || worm_list[WHITE_INDEX] == NULL || worm_list[EMPTY_INDEX] == NULL ) {
-        fprintf( stderr, "cannot allocate memory for worm_list" );
-        exit(EXIT_FAILURE);
-    }
-    */
 
     captured_by_black = 0;
     captured_by_white = 0;
@@ -162,6 +175,9 @@ void init_board( bsize_t board_size )
     removed[BLACK_INDEX] = malloc( board_size * board_size * sizeof(int) );
 
     removed_max[BLACK_INDEX] = removed_max[WHITE_INDEX] = removed_max[EMPTY_INDEX] = 0;
+
+    //init_bouzy_1();
+    //init_bouzy_2();
 
     return;
 }
@@ -207,50 +223,6 @@ void init_hoshi(void)
 }
 
 /**
- * @brief Frees the memory allocated for all board data structures.
- *
- * Frees the memory which has been allocated for the board_black, board_white
- * and board_on structures.
- *
- * @return  nothing
- * @sa      init_board()
- * @note    The pointers to board_black, board_white and board_on are also set to NULL, so a check
- *          whether the pointers are still valid or not is possible.
- */
-void free_board(void)
-{
-    free(board);
-    free(board_hoshi);
-
-    board       = NULL;
-    board_hoshi = NULL;
-
-    //free(worm_list[BLACK_INDEX]);
-    //free(worm_list[WHITE_INDEX]);
-    //free(worm_list[EMPTY_INDEX]);
-    free(worm_board[BLACK_INDEX]);
-    free(worm_board[WHITE_INDEX]);
-    free(worm_board[EMPTY_INDEX]);
-
-    //worm_list[BLACK_INDEX]  = NULL;
-    //worm_list[WHITE_INDEX]  = NULL;
-    //worm_list[EMPTY_INDEX]  = NULL;
-    worm_board[BLACK_INDEX] = NULL;
-    worm_board[WHITE_INDEX] = NULL;
-    worm_board[EMPTY_INDEX] = NULL;
-
-    free(removed[BLACK_INDEX]);
-    free(removed[EMPTY_INDEX]);
-    free(removed[WHITE_INDEX]);
-
-    removed[WHITE_INDEX] = NULL;
-    removed[EMPTY_INDEX] = NULL;
-    removed[BLACK_INDEX] = NULL;
-
-    return;
-}
-
-/**
  * @brief       Defines vertex as hoshi
  *
  * Defines the the given vertex as star point.
@@ -267,46 +239,45 @@ void set_hoshi( int i, int j )
 }
 
 /**
- * @brief       Checks if all board pointers are NULL.
+ * @brief Frees the memory allocated for all board data structures.
  *
- * Returns true if all pointers to board_* are NULL.
+ * Frees the memory which has been allocated for the board_black, board_white
+ * and board_on structures.
  *
- * @return      true|false
- * @note        This function is needed for testing only.
+ * @return  nothing
+ * @sa      init_board()
+ * @note    The pointers to board_black, board_white and board_on are also set to NULL, so a check
+ *          whether the pointers are still valid or not is possible.
  */
-bool is_board_null(void)
+void free_board(void)
 {
-    bool is_null = false;
+    free(board);
+    free(board_hoshi);
+    free(bouzy_1);
+    free(bouzy_2);
 
-    if ( board == NULL && board_hoshi == NULL ) {
-        is_null = true;
-    }
+    board       = NULL;
+    board_hoshi = NULL;
+    bouzy_1     = NULL;
+    bouzy_2     = NULL;
 
-    return is_null;
-}
+    free(worm_board[BLACK_INDEX]);
+    free(worm_board[WHITE_INDEX]);
+    free(worm_board[EMPTY_INDEX]);
 
-/**
- * @brief       Checks if vertex is valid board vertex.
- *
- * Checks if the given vertex is still within board range.
- *
- * @param[in]   i   Horizontal coordinate
- * @param[in]   j   Vertical coordinate
- * @return      true | false
- */
-bool is_on_board( int i, int j )
-{
-    int  index_1d = INDEX(i,j);
+    worm_board[BLACK_INDEX] = NULL;
+    worm_board[WHITE_INDEX] = NULL;
+    worm_board[EMPTY_INDEX] = NULL;
 
-    if ( index_1d < 0 ) {
-        return false;
-    }
+    free(removed[BLACK_INDEX]);
+    free(removed[EMPTY_INDEX]);
+    free(removed[WHITE_INDEX]);
 
-    if ( board[index_1d] != BOARD_OFF ) {
-        return true;
-    }
+    removed[WHITE_INDEX] = NULL;
+    removed[EMPTY_INDEX] = NULL;
+    removed[BLACK_INDEX] = NULL;
 
-    return false;
+    return;
 }
 
 /**
@@ -348,6 +319,855 @@ bsize_t get_board_size(void)
 }
 
 /**
+ * @brief      Initialises the first Bouzy board.
+ *
+ * Sets the value of the first bouzy board according to the position on the
+ * board. Black stones get 128, white stones -128, empty vertexes are 0.
+ *
+ * @return      Nothing
+ * @sa          Description of Bouzy 5/21: @link6
+ */
+void init_bouzy_1(void)
+{
+    int index_1d;
+    int color;
+    int board_index_max = ( board_size + 1 ) * ( board_size + 2 ) - 1;
+
+    for ( index_1d = 0; index_1d <= board_index_max; index_1d++ ) {
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
+        }
+        color = board[index_1d];
+        switch (color) {
+            case EMPTY:
+                bouzy_1[index_1d] = 0;
+                break;
+            case BLACK:
+                bouzy_1[index_1d] = 128;
+                break;
+            case WHITE:
+                bouzy_1[index_1d] = -128;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return;
+}
+
+/**
+ * @brief       Initialises the second Bouzy board.
+ *
+ * Sets all values of the second bouzy board to zero.
+ *
+ * @return      Nothing.
+ */
+void init_bouzy_2(void)
+{
+    int index_1d;
+    int board_index_max = ( board_size + 1 ) * ( board_size + 2 ) - 1;
+
+    for ( index_1d = 0; index_1d <= board_index_max; index_1d++ ) {
+        bouzy_2[index_1d] = 0;
+    }
+
+    return;
+}
+
+//@}
+
+/**
+ * @name    Board scanning functions.
+ *
+ * Scan the board for static evaluation data.
+ *
+ */
+
+//@{
+
+/**
+ * @brief       Level 1 of board scan.
+ *
+ * Scans the board to create data necessary for making a valid move.
+ * Level 1 scan.
+ *
+ * @return      Nothing
+ * @sa          scan_board_2()
+ * @note        This replaces the former create_groups() function.
+ */
+void scan_board_1(void)
+{
+    int k;
+    int index_1d;
+    int color;
+
+    // Only those functions should be called here, which are necessary to make
+    // a valid move! Consider this to be kind of a scan level nr. 1.
+
+    // Maybe this should be moved to init_board():
+    memset( worm_board[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_board[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    memset( worm_board[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    worm_nr_max[BLACK_INDEX] = 0;
+    worm_nr_max[WHITE_INDEX] = 0;
+    worm_nr_max[EMPTY_INDEX] = 0;
+
+    //memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    //memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    //memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+
+    for ( k = 0; k < MAX_WORM_COUNT; k++ ) {
+        worm_list[BLACK_INDEX][k].number = 0;
+        worm_list[EMPTY_INDEX][k].number = 0;
+        worm_list[WHITE_INDEX][k].number = 0;
+    }
+
+    // First scan:
+    // Gives a worm_nr to every field.
+    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+        // Current vertex is index_1d.
+
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
+        }
+
+        // Check for worm number:
+        if ( ( worm_board[BLACK_INDEX][index_1d] & worm_board[WHITE_INDEX][index_1d] & worm_board[EMPTY_INDEX][index_1d] ) == 0 ) {
+            color = board[index_1d];
+            create_worm_data( index_1d, color+1 );
+        }
+    }
+
+    // Second scan:
+    // Build list of worm structs.
+    /*
+    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
+        }
+
+        build_worms(index_1d);
+
+        // Number of worms is still unknown here, because a first level scan
+        // does not need this information!
+
+    }
+
+    // Third scan:
+    // Count liberties of every worm.
+    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+
+        if ( board[index_1d] == BLACK || board[index_1d] == WHITE ) {
+            count_worm_liberties(index_1d);
+        }
+
+    }
+    */
+
+    return;
+}
+
+/**
+ * @brief       Level 2 of board scan.
+ *
+ * Scan level 2: scans the board for creating data needed for evaluation.
+ *
+ * @return      Nothing.
+ * @sa          scan_board_1()
+ */
+void scan_board_2(void)
+{
+    int index_1d;
+    int color;
+
+    count_color[BLACK_INDEX] = count_color[WHITE_INDEX] = count_color[EMPTY_INDEX] = 0;
+    influence_black = influence_white = influence_neutral = 0;
+
+    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+        color = board[index_1d];
+
+        if ( color == BOARD_OFF ) {
+            continue;
+        }
+
+        // Count stones on board:
+        count_color[color+1]++;
+
+        // Calculate influence:
+        //do_influence();
+    }
+
+    return;
+}
+
+/**
+ * @brief       Creates board data for worms.
+ *
+ * Creates worms by assigning worm numbers to BLACK, WHITE and EMPTY fields.
+ *
+ * @param[in]   index_1d    Coordinate for 1D-board.
+ * @param[in]   color       Color of the given field.
+ * @return      Nothing
+ * @note        This is a recursive function.
+ */
+void create_worm_data( int index_1d, int color_index )
+{
+    int n;
+    int i;
+    int count = 0;
+    worm_nr_t worm_nr_min = USHRT_MAX;
+    worm_nr_t *worm_board_color = worm_board[color_index];
+
+    vertex_t neighbours[4];
+    memset( neighbours, 0, 4 * sizeof(vertex_t) );
+
+    // Check neighbour NORTH:
+    i = index_1d + board_size + 1;
+    //if ( worm_board[color_index][i] && board[i] != BOARD_OFF ) {
+    if ( worm_board_color[i] && board[i] != BOARD_OFF ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+    // Check neighbour EAST:
+    i = index_1d + 1;
+    //if ( worm_board[color_index][i] && board[i] != BOARD_OFF ) {
+    if ( worm_board_color[i] && board[i] != BOARD_OFF ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+    // Check neighbour SOUTH:
+    i = index_1d - board_size - 1;
+    //if ( worm_board[color_index][i] && board[i] != BOARD_OFF ) {
+    if ( worm_board_color[i] && board[i] != BOARD_OFF ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+    // Check neighbour WEST:
+    i = index_1d - 1;
+    //if ( worm_board[color_index][i] && board[i] != BOARD_OFF ) {
+    if ( worm_board_color[i] && board[i] != BOARD_OFF ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+
+    switch (count) {
+        case 0:
+            worm_board_color[index_1d] = ++worm_nr_max[color_index];
+            break;
+        case 1:
+            worm_board_color[index_1d] = neighbours[0].worm_nr;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            // We take the lowest of all neighbouring worm numbers:
+            worm_board_color[index_1d] = worm_nr_min;
+            for ( n = 0; n < count; n++ ) {
+                // Call create_worm() on all neighbours that have not the
+                // minimum worm number:
+                if ( neighbours[n].worm_nr > worm_nr_min ) {
+                    create_worm_data( neighbours[n].index_1d, color_index );
+                }
+            }
+            break;
+    }
+
+    return;
+}
+
+/**
+ * @brief       Builds list of worm structs.
+ *
+ * From the information on the worm boards, builds a list of worm structs.
+ *
+ * @param[in]   index_1d    Coordinate for 1D-board.
+ * @return      Nothing
+ * @note        The function create_worm_data() must have been called already.
+ */
+inline void build_worms( int index_1d )
+{
+    int color                      = board[index_1d];
+    int color_index                = color + 1;
+    worm_nr_t worm_nr_current = worm_board[color_index][index_1d];
+    worm_t *w                      = &worm_list[color_index][worm_nr_current];
+
+    if ( w->number == 0 ) {
+        w->number    = worm_nr_current;
+        w->count     = 1;
+        w->liberties = 0;
+    }
+    else {
+        w->count++;
+    }
+
+    return;
+}
+
+/**
+ * @brief       Counts liberties.
+ *
+ * Counts the liberties of black and white worms and writes them into the worm
+ * struct list.
+ *
+ * @param[in]   index_1d    Coordinate for 1D-board.
+ * @return      Nothing
+ */
+void count_worm_liberties( int index_1d )
+{
+    int i;
+    int count;
+    int color_i       = board[index_1d] + 1;
+    worm_nr_t worm_nr = worm_board[color_i][index_1d];
+    worm_t *w         = &worm_list[color_i][worm_nr];
+
+    // Check neighbour NORTH:
+    i = index_1d + board_size + 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr, color_i );
+        if (count) {
+            w->liberties += ( 12 / count );
+        }
+    }
+
+    // Check neighbour EAST:
+    i = index_1d + 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr, color_i );
+        if (count) {
+            w->liberties += ( 12 / count );
+        }
+    }
+
+    // Check neighbour SOUTH:
+    i = index_1d - board_size - 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr, color_i );
+        if (count) {
+            w->liberties += ( 12 / count );
+        }
+    }
+
+    // Check neighbour WEST:
+    i = index_1d - 1;
+    if ( board[i] == EMPTY ) {
+        count = get_worm_neighbours( i, worm_nr, color_i );
+        if (count) {
+            w->liberties += ( 12 / count );
+        }
+    }
+
+    //worm_list[color_i][worm_nr] = w;
+
+    return;
+}
+
+/**
+ * @brief       Counts neighbours of same worm.
+ *
+ * Counts the the number of neighbouring stones, which are all of the same
+ * given color and worm number. This is needed for counting the liberties of a
+ * worm.
+ *
+ * @param[in]   index_1d    1d index for board
+ * @param[in]   worm_nr     Worm number
+ * @param[in]   color_i     Color turned to index (color + 1)
+ * @return      [information about return value]
+ * @sa          count_worm_liberties()
+ * @note        This is primarily a helper function for count_worm_liberties()
+ */
+inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr, int color_i )
+{
+    int i;
+    int count = 0;
+    worm_nr_t *w = worm_board[color_i];
+
+    // Check neighbour NORTH:
+    i = index_1d + board_size + 1;
+    if ( w[i] == worm_nr) {
+        count++;
+    }
+
+    // Check neighbour EAST:
+    i = index_1d + 1;
+    if ( w[i] == worm_nr) {
+        count++;
+    }
+
+    // Check neighbour SOUTH:
+    i = index_1d - board_size - 1;
+    if ( w[i] == worm_nr) {
+        count++;
+    }
+
+    // Check neighbour WEST:
+    i = index_1d - 1;
+    if ( w[i] == worm_nr) {
+        count++;
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Calculates influence.
+ *
+ * Calculates the influence on the board. The Bouzy 5/21 algorithm is used.
+ *
+ * @return      Nothing.
+ * @sa          Description of Bouzy 5/21: @link6
+ */
+void do_influence(void)
+{
+    int k;
+    int do_dilation = 5;
+    int do_erosion  = 21;
+
+    init_bouzy_1();
+    init_bouzy_2();
+
+    for ( k = 1; k <= do_dilation; k++ ) {
+        dilation();
+    }
+    for ( k = 1; k <= do_erosion; k++ ) {
+        erosion();
+    }
+
+    count_influence();
+
+    return;
+}
+
+/**
+ * @brief       Dilation for Bouzy 5/21
+ *
+ * This implements the dilation function for the algorithm Bouzy 5/21.
+ *
+ * @return      Nothing
+ * @sa          erosion()
+ * @sa          See explanation of Bouzy 5/21: @link6
+ */
+void dilation(void)
+{
+    int index_1d;
+    int *temp_ptr;
+    int temp1, temp2;
+
+    for ( index_1d = board_size + 1; index_1d <= index_1d_max; index_1d++ ) {
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
+        }
+
+        temp1 = temp2 = 0;
+        if ( bouzy_1[index_1d] >= 0 && ! has_lt_zero(index_1d) ) {
+            temp1 = count_gt_zero(index_1d);
+        }
+        if ( bouzy_1[index_1d] <= 0 && ! has_gt_zero(index_1d) ) {
+            temp2 = count_lt_zero(index_1d);
+        }
+        bouzy_2[index_1d] = bouzy_1[index_1d] + temp1 - temp2;
+    }
+
+    // Swap bouzy_1 and bouzy_2:
+    temp_ptr = bouzy_2;
+    bouzy_2  = bouzy_1;
+    bouzy_1  = temp_ptr;
+
+    return;
+}
+
+/**
+ * @brief       Checks if there is a neighbour with value below zero.
+ *
+ * Checks if the given field on the bouzy board has a neighbour with a value
+ * below zero. Returns true if there is at least one such neighbour, false
+ * otherwise.
+ *
+ * @param[in]   index_1d   1d index of board
+ * @return      Nothing
+ * @sa          has_gt_zero()
+ * @note        This is a helper function for dilation().
+ */
+bool has_lt_zero( int index_1d )
+{
+    int index;
+
+    // North:
+    index = index_1d + board_size + 1;
+    if ( board[index] != BOARD_OFF ) {
+        if ( bouzy_1[index] < 0 ) {
+            return true;
+        }
+    }
+    // South:
+    index = index_1d - board_size - 1;
+    if ( board[index] != BOARD_OFF ) {
+        if ( bouzy_1[index] < 0 ) {
+            return true;
+        }
+    }
+    // East:
+    index = index_1d + 1;
+    if ( board[index] != BOARD_OFF ) {
+        if ( bouzy_1[index] < 0 ) {
+            return true;
+        }
+    }
+    // West:
+    index = index_1d - 1;
+    if ( board[index] != BOARD_OFF ) {
+        if ( bouzy_1[index] < 0 ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @brief       Checks if there is a neighbour with value above zero.
+ *
+ * Checks if the given field on the bouzy board has a neighbour with a value
+ * above zero. Returns true if there is at least one such neighbour, false
+ * otherwise.
+ *
+ * @param[in]   index_1d   1d index of board
+ * @return      Nothing
+ * @sa          has_gt_zero()
+ * @note        This is a helper function for dilation().
+ */
+bool has_gt_zero( int index_1d )
+{
+    int index;
+
+    // North:
+    index = index_1d + board_size + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ) {
+        return true;
+    }
+    // South:
+    index = index_1d - board_size - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ) {
+        return true;
+    }
+    // East:
+    index = index_1d + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ) {
+        return true;
+    }
+    // West:
+    index = index_1d - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * @brief       Counts neighbour fields with values above zero.
+ *
+ * Counts the number of adjacent fields that have an influence value above
+ * zero. The number of such fields is returned.
+ *
+ * @param[in]   index_1d   1d index of board
+ * @return      Number of fileds with >= 0.
+ * @sa          count_lt_zero()
+ * @note        This is a helper function for dilation().
+ */
+int count_gt_zero( int index_1d )
+{
+    int index;
+    int count = 0;
+
+    // North:
+    index = index_1d + board_size + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ){
+        count++;
+    }
+    // South:
+    index = index_1d - board_size - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ){
+        count++;
+    }
+    // East:
+    index = index_1d + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ){
+        count++;
+    }
+    // West:
+    index = index_1d - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] > 0 ){
+        count++;
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Counts neighbour fields with values below zero.
+ *
+ * Counts the number of adjacent fields that have an influence value below
+ * zero. The number of such fields is returned.
+ *
+ * @param[in]   index_1d   1d index of board.
+ * @return      Number of fileds with <= 0.
+ * @sa          count_gt_zero()
+ * @note        This is a helper function for dilation().
+ */
+int count_lt_zero( int index_1d )
+{
+    int index;
+    int count = 0;
+
+    // North:
+    index = index_1d + board_size + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] < 0 ){
+        count++;
+    }
+    // South:
+    index = index_1d - board_size - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] < 0 ){
+        count++;
+    }
+    // East:
+    index = index_1d + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] < 0 ){
+        count++;
+    }
+    // West:
+    index = index_1d - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] < 0 ){
+        count++;
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Erosion for Bouzy 5/21
+ *
+ * This implements the erosion function for the algorithm Bouzy 5/21.
+ *
+ * @return      Nothing
+ * @sa          dilation()
+ * @sa          See explanation of Bouzy 5/21: @link6
+ */
+void erosion(void)
+{
+    int index_1d;
+    int *temp_ptr;
+
+    for ( index_1d = board_size + 1 ; index_1d <= index_1d_max; index_1d++ ) {
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
+        }
+
+        if ( bouzy_1[index_1d] > 0 ) {
+            bouzy_2[index_1d] = bouzy_1[index_1d] - count_le_zero(index_1d);
+            if ( bouzy_2[index_1d] < 0 ) {
+                bouzy_2[index_1d] = 0;
+            }
+        }
+        else if ( bouzy_1[index_1d] < 0 ) {
+            bouzy_2[index_1d] = bouzy_1[index_1d] + count_ge_zero(index_1d);
+            if ( bouzy_2[index_1d] > 0 ) {
+                bouzy_2[index_1d] = 0;
+            }
+        }
+        else {
+            bouzy_2[index_1d] = bouzy_1[index_1d];
+        }
+    }
+
+    // Swap bouzy_1 and bouzy_2:
+    temp_ptr = bouzy_2;
+    bouzy_2  = bouzy_1;
+    bouzy_1  = temp_ptr;
+
+    return;
+}
+
+/**
+ * @brief       Counts neighbour fields with value <= zero.
+ *
+ * Counts the number of adjacent fields with a value <= zero.
+ * The number of such fields is returned.
+ *
+ * @param[in]   index_1d   1d index of board
+ * @return      Number of fields with <= 0
+ * @sa          count_ge_zero()
+ * @note        This is a helper function for erosion().
+ */
+int count_le_zero( int index_1d )
+{
+    int index;
+    int count = 0;
+
+    // North:
+    index = index_1d + board_size + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] <= 0 ) {
+        count++;
+    }
+    // South:
+    index = index_1d - board_size - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] <= 0 ) {
+        count++;
+    }
+    // East:
+    index = index_1d + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] <= 0 ) {
+        count++;
+    }
+    // West:
+    index = index_1d - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] <= 0 ) {
+        count++;
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Counts neighbour fields with value >= zero.
+ *
+ * Counts the number of adjacent fields with a value >= zero.
+ * The number of such fields is returned.
+ *
+ * @param[in]   index_1d   1d index of board
+ * @return      Number of fields with >= 0
+ * @sa          count_le_zero()
+ * @note        This is a helper function for erosion().
+ */
+int count_ge_zero( int index_1d )
+{
+    int index;
+    int count = 0;
+
+    // North:
+    index = index_1d + board_size + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] >= 0 ) {
+        count++;
+    }
+    // South:
+    index = index_1d - board_size - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] >= 0 ) {
+        count++;
+    }
+    // East:
+    index = index_1d + 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] >= 0 ) {
+        count++;
+    }
+    // West:
+    index = index_1d - 1;
+    if ( board[index] != BOARD_OFF && bouzy_1[index] >= 0 ) {
+        count++;
+    }
+
+    return count;
+}
+
+/**
+ * @brief       Counts influence fields.
+ *
+ * Counts the number of fields of influence for black, white, and neutral.
+ * Black fields have a value above zero, white fields below zero, and neutral
+ * fields have a value of zero. The results are written into board_stats.
+ *
+ * @return      Nothing.
+ */
+void count_influence(void)
+{
+    int index_1d;
+
+    // Maybe this should be done in a general init function:
+    influence_black   = 0;
+    influence_white   = 0;
+    influence_neutral = 0;
+
+    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+        if ( board[index_1d] == BOARD_OFF ) {
+            continue;
+        }
+
+        if ( bouzy_1[index_1d] > 0 ) {
+            influence_black++;
+        }
+        else if ( bouzy_1[index_1d] < 0 ) {
+            influence_white++;
+        }
+        else {
+            influence_neutral++;
+        }
+    }
+
+    return;
+}
+
+//@}
+
+
+
+/**
+ * @name    Evaluation data
+ *
+ * Functions that retrieve evaluation data.
+ *
+ */
+
+//@{
+
+/**
+ * @brief       Returns number of stones for color
+ *
+ * Returns the number of stones for a given color, or number of empty fields
+ * if color is EMPTY.
+ *
+ * @param[in]   color   BLACK|WHITE|EMPTY
+ * @return      Number of stones or fields
+ */
+int get_stone_count( int color )
+{
+    return count_color[color+1];
+}
+
+//@}
+
+
+
+
+/**
+ * @name    Vertex related functions
+ *
+ * Setting and getting vertex information.
+ *
+ */
+
+//@{
+
+/**
  * @brief   Sets or unsets a stone on a given vertex.
  *
  * A given color, which may be BLACK, WHITE or EMPTY, is stored for a given
@@ -363,7 +1183,6 @@ bsize_t get_board_size(void)
 void set_vertex( int color, int i, int j )
 {
     board[ INDEX(i,j) ] = color;
-    //printf( "## %d,%d\n", i, j );
 
     return;
 }
@@ -401,6 +1220,360 @@ inline int get_vertex_intern( int index_1d )
 {
     return board[index_1d];
 }
+
+/**
+ * @brief       Counts number of neighbours.
+ *
+ * Counts the number of neighbours, which have the same color as the given
+ * field.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @param[out]  neighbour   List of neighbour indexes
+ * @return      Number of neighbour
+ */
+int has_neighbour( int i, int j, int neighbour[][2] )
+{
+    int index;
+    int index_1d = INDEX(i,j);
+    int color = board[index_1d];
+    int count = 0;
+
+    // Check NORTH:
+    index = index_1d + board_size + 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i;
+        neighbour[count][1] = j + 1;
+        count++;
+    }
+
+    // Check EAST:
+    index = index_1d + 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i + 1;
+        neighbour[count][1] = j;
+        count++;
+    }
+
+    // Check SOUTH:
+    index = index_1d - board_size - 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i;
+        neighbour[count][1] = j - 1;
+        count++;
+    }
+
+    // Check WEST:
+    index = index_1d - 1;
+    if ( board[index] == color ) {
+        neighbour[count][0] = i - 1;
+        neighbour[count][1] = j;
+        count++;
+    }
+
+    return count;
+}
+
+//@}
+
+
+
+/**
+ * @name    Worm related functions
+ *
+ * Functions that generate get worm related information.
+ *
+ */
+
+//@{
+
+/**
+ * @brief       TEST: Returns struct for given worm number.
+ *
+ * For the given color and worm number the worm struct is returned.
+ *
+ * @param[in]   color   BLACK|WHITE|EMPTY
+ * @param[in]   worm_nr Worm number.
+ * @return      Struct of given worm.
+ * @note        [any note about the function you might have]
+ */
+worm_t get_worm( int color, worm_nr_t worm_nr )
+{
+
+    return worm_list[color+1][worm_nr];
+}
+
+
+/**
+ * @brief       Returns worm number.
+ *
+ * Returns the worm number for the given vertex.
+ *
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      Worm number or zero for empty field.
+ */
+int get_worm_nr( int i, int j )
+{
+    int index_1d      = INDEX(i,j);
+    int color         = board[index_1d];
+    worm_nr_t worm_nr = worm_board[color+1][index_1d];
+
+    if ( color == EMPTY ) {
+        worm_nr = 0;
+    }
+
+    return (int)worm_nr * color;
+}
+
+/**
+ * @brief       Returns the next free and usable worm number.
+ *
+ * Returns the next free and usable worm number for the given color.
+ *
+ * @param[in]   color   BLACK|WHITE|EMPTY
+ * @return      Worm number
+ */
+int get_free_worm_nr( int color )
+{
+    return ( worm_nr_max[color+1] + 1 );
+}
+
+/**
+ * @brief       Returns number of liberties for given worm number.
+ *
+ * Returns number of liberties for the given worm number.
+ *
+ * @param[in]   worm_nr     Number of worm
+ * @return      Number of liberties.
+ * @note        The saved number must be divided by 12 to get the real number
+ * of liberties.
+ */
+int get_nr_of_liberties( int worm_nr )
+{
+    int count;
+    int color_i;
+
+    if ( worm_nr > 0 ) {
+        color_i = BLACK_INDEX;
+    }
+    else {
+        color_i = WHITE_INDEX;
+        worm_nr *= -1;
+    }
+    count = (int)( worm_list[color_i][worm_nr].liberties );
+
+    return count / 12;
+}
+
+/**
+ * @brief       Removes worms with zero liberties from board.
+ *
+ * Removes worms of the given color that have no liberties from the board.
+ *
+ * @param[in]   color   BLACK|WHITE
+ * @return      Number of stones removed
+ */
+int remove_stones( int color )
+{
+    int count_removed = 0;
+    worm_nr_t worm_nr;
+    worm_t    *wl      = worm_list[color+1];
+    worm_nr_t *wb      = worm_board[color+1];
+    worm_nr_t worm_max = worm_nr_max[color+1];
+    worm_nr_t zero_worm[worm_max];  // Lists worms with zero liberties.
+    int k = 0;
+    int l = 0;
+    int index_1d;
+
+    removed_max[BLACK_INDEX] = removed_max[WHITE_INDEX] = 0;
+
+    // Go through worm list:
+    for ( worm_nr = 1; worm_nr <= worm_max; worm_nr++ ) {
+        if ( wl[worm_nr].number != 0 && wl[worm_nr].liberties == 0 ) {
+            zero_worm[k++] = worm_nr;
+            //wl[worm_nr].number = 0;  // ??
+        }
+    }
+    //printf("Zeros: %d\n", k );
+
+    // Go through boards:
+    if ( k > 0 ) {
+        // At least one worm has to be removed:
+        for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
+            if ( board[index_1d] != color ) {
+                continue;
+            }
+            for ( l = 0; l < k; l++ ) {
+                if ( wb[index_1d] == zero_worm[l] ) {
+                    //wb[index_1d]    = EMPTY;
+                    board[index_1d] = EMPTY;
+                    count_removed++;
+
+                    removed[color+1][removed_max[color+1]++] = index_1d;
+                }
+            }
+        }
+    }
+
+    if ( color == WHITE ) {
+        captured_by_black += count_removed;
+    }
+    else {
+        captured_by_white += count_removed;
+    }
+
+    return count_removed;
+}
+
+/**
+ * @brief       Returns size of given worm.
+ *
+ * Returns the number of stones that a part of a given worm number.
+ *
+ * @param[in]   worm_nr     Number of worm
+ * @return      Size of worm
+ */
+int get_size_of_worm( int worm_nr )
+{
+    int size;
+    int color = BLACK;
+    if ( worm_nr < 0 ) {
+        color = WHITE;
+    }
+
+    size = worm_list[color+1][worm_nr*color].count;
+
+    return size;
+}
+
+//@}
+
+
+
+/**
+ * @name    Capture related functions
+ *
+ * Functions that get and set capture information.
+ *
+ */
+
+//@{
+
+/**
+ * @brief       Returns the number of white stones black has captured.
+ *
+ * Returns the number of white stones black has captured in total.
+ *
+ * @return      Number of captured stones by black
+ * @sa          get_white_captured()
+ * @warning     This does not return the number of captured black stones!
+ * @todo        Not implemented yet!
+ */
+int get_black_captured(void)
+{
+    return captured_by_black;
+}
+
+/**
+ * @brief       Returns the number of black stones captured by white.
+ *
+ * Returns the number of black stones that white has captured in total.
+ *
+ * @return      Number of black stones white has captured.
+ * @sa          get_black_captured()
+ * @warning     This does not return the number of captured white stones!
+ * @todo        Not implemented yet!
+ */
+int get_white_captured(void)
+{
+    return captured_by_white;
+}
+
+/**
+ * @brief       Sets the number of captured stones for black.
+ *
+ * Sets the number of white stones black has captured.
+ *
+ * @param[in]   captured    Number of captured stones.
+ * @return      Nothing
+ * @todo        Maybe this should be replaced by set_captured(color, captured)
+ */
+void set_black_captured( int captured )
+{
+    captured_by_black = captured;
+
+    return;
+}
+
+/**
+ * @brief       Sets the number of captured stones for white.
+ *
+ * Sets the number of black stones white has captured.
+ *
+ * @param[in]   captured    Number of captured stones.
+ * @return      Nothing
+ * @todo        Maybe this should be replaced by set_captured(color, captured)
+ */
+void set_white_captured( int captured )
+{
+    captured_by_white = captured;
+
+    return;
+}
+
+/**
+ * @brief       Returns currently captured stones.
+ *
+ * Returns number of currently captured stones and writes their indexes into
+ * the parameter captured[][2].
+ *
+ * @param[out]  captured    List of indexes of captured stones.
+ * @return      Number of captured stones.
+ * @sa          remove_stones()
+ * @note        The captured stones are defined by remove_stones().
+ */
+int get_captured_now( int captured[][2] )
+{
+    int k;
+    int l = 0;
+    int i, j;
+    int index_1d;
+
+    for ( k = 0; k < removed_max[BLACK_INDEX]; k++ ) {
+        index_1d = removed[BLACK_INDEX][k];
+        i = index_1d % ( board_size + 1 );
+        j = ( index_1d / ( board_size + 1 ) ) - 1;
+        captured[l][0] = i;
+        captured[l][1] = j;
+        l++;
+    }
+    for ( k = 0; k < removed_max[WHITE_INDEX]; k++ ) {
+        index_1d = removed[WHITE_INDEX][k];
+        i = index_1d % ( board_size + 1 );
+        j = ( index_1d / ( board_size + 1 ) ) - 1;
+        captured[l][0] = i;
+        captured[l][1] = j;
+        l++;
+    }
+
+    captured[l][0] = INVALID;
+    captured[l][1] = INVALID;
+
+    return l;
+}
+
+//@}
+
+
+/**
+ * @name    Output functions
+ *
+ * Functions that generate strings designed for printing.
+ *
+ */
+
+//@{
 
 /**
  * @brief   Constructs ASCII board
@@ -580,66 +1753,58 @@ void get_label_y_right( int j, char y[] )
     return;
 }
 
+//@}
+
 /**
- * @brief       Returns the number of white stones black has captured.
+ * @name    Test functions
  *
- * Returns the number of white stones black has captured in total.
+ * Test functions mostly for unit tests.
  *
- * @return      Number of captured stones by black
- * @sa          get_white_captured()
- * @warning     This does not return the number of captured black stones!
- * @todo        Not implemented yet!
  */
-int get_black_captured(void)
+
+//@{
+
+/**
+ * @brief       Checks if all board pointers are NULL.
+ *
+ * Returns true if all pointers to board_* are NULL.
+ *
+ * @return      true|false
+ * @note        This function is needed for testing only.
+ */
+bool is_board_null(void)
 {
-    return captured_by_black;
+    bool is_null = false;
+
+    if ( board == NULL && board_hoshi == NULL ) {
+        is_null = true;
+    }
+
+    return is_null;
 }
 
 /**
- * @brief       Returns the number of black stones captured by white.
+ * @brief       Checks if vertex is valid board vertex.
  *
- * Returns the number of black stones that white has captured in total.
+ * Checks if the given vertex is still within board range.
  *
- * @return      Number of black stones white has captured.
- * @sa          get_black_captured()
- * @warning     This does not return the number of captured white stones!
- * @todo        Not implemented yet!
+ * @param[in]   i   Horizontal coordinate
+ * @param[in]   j   Vertical coordinate
+ * @return      true | false
  */
-int get_white_captured(void)
+bool is_on_board( int i, int j )
 {
-    return captured_by_white;
-}
+    int  index_1d = INDEX(i,j);
 
-/**
- * @brief       Sets the number of captured stones for black.
- *
- * Sets the number of white stones black has captured.
- *
- * @param[in]   captured    Number of captured stones.
- * @return      Nothing
- * @todo        Maybe this should be replaced by set_captured(color, captured)
- */
-void set_black_captured( int captured )
-{
-    captured_by_black = captured;
+    if ( index_1d < 0 ) {
+        return false;
+    }
 
-    return;
-}
+    if ( board[index_1d] != BOARD_OFF ) {
+        return true;
+    }
 
-/**
- * @brief       Sets the number of captured stones for white.
- *
- * Sets the number of black stones white has captured.
- *
- * @param[in]   captured    Number of captured stones.
- * @return      Nothing
- * @todo        Maybe this should be replaced by set_captured(color, captured)
- */
-void set_white_captured( int captured )
-{
-    captured_by_white = captured;
-
-    return;
+    return false;
 }
 
 /**
@@ -664,412 +1829,22 @@ bool is_hoshi( int i, int j )
     return false;
 }
 
+//@}
+
 /**
- * @brief       Scans the board.
+ * @name    Debug functions
  *
- * Scans the board to create data necessary for making a valid move.
- * Level 1 scan.
+ * Functions that show debugging information. These functions may print
+ * directly to stdout.
  *
- * @return      Nothing
- * @sa          scan_board_2()
- * @note        This replaces the former create_groups() function.
  */
-void scan_board_1(void)
-{
-    int k;
-    int index_1d;
-    int color;
 
-    // Only those functions should be called here, which are necessary to make
-    // a valid move! Consider this to be kind of a scan level nr. 1.
-
-    // Maybe this should be moved to init_board():
-    memset( worm_board[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    memset( worm_board[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    memset( worm_board[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    worm_nr_max[BLACK_INDEX] = 0;
-    worm_nr_max[WHITE_INDEX] = 0;
-    worm_nr_max[EMPTY_INDEX] = 0;
-
-    //memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    //memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    //memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-
-    for ( k = 0; k < MAX_WORM_COUNT; k++ ) {
-        worm_list[BLACK_INDEX][k].number = 0;
-        worm_list[EMPTY_INDEX][k].number = 0;
-        worm_list[WHITE_INDEX][k].number = 0;
-    }
-
-    // First scan:
-    // Gives a worm_nr to every field.
-    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
-        // Current vertex is index_1d.
-
-        if ( board[index_1d] == BOARD_OFF ) {
-            continue;
-        }
-
-        // Check for worm number:
-        if ( ( worm_board[BLACK_INDEX][index_1d] & worm_board[WHITE_INDEX][index_1d] & worm_board[EMPTY_INDEX][index_1d] ) == 0 ) {
-            color = board[index_1d];
-            create_worm_data( index_1d, color );
-        }
-    }
-
-    // Second scan:
-    // Build list of worm structs.
-    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
-
-        if ( board[index_1d] == BOARD_OFF ) {
-            continue;
-        }
-
-        build_worms(index_1d);
-
-        // Number of worms is still unknown here, because a first level scan
-        // does not need this information!
-
-    }
-
-    // Third scan:
-    // Count liberties of every worm.
-    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
-
-        if ( board[index_1d] == BLACK || board[index_1d] == WHITE ) {
-            count_worm_liberties(index_1d);
-        }
-
-    }
-
-    return;
-}
+//@{
 
 /**
- * @brief       Creates board data for worms.
+ * @brief       Prints worm boards
  *
- * Creates worms by assigning worm numbers to BLACK, WHITE and EMPTY fields.
- *
- * @param[in]   index_1d    Coordinate for 1D-board.
- * @param[in]   color       Color of the given field.
- * @return      Nothing
- * @note        This is a recursive function.
- */
-void create_worm_data( int index_1d, int color )
-{
-    int n;
-    int i;
-    int count = 0;
-    worm_nr_t worm_nr_min = USHRT_MAX;
-    int color_index = color + 1;
-
-    vertex_t neighbours[4];
-    memset( neighbours, 0, 4 * sizeof(vertex_t) );
-
-    // Check neighbour NORTH:
-    i = index_1d + board_size + 1;
-    if ( board[i] != BOARD_OFF ) {
-        // Check for neighbour of same color:
-        if ( worm_board[color_index][i] ) {
-            neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_board[color_index][i];
-
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
-        }
-    }
-    // Check neighbour EAST:
-    i = index_1d + 1;
-    if ( board[i] != BOARD_OFF ) {
-        if ( worm_board[color_index][i] ) {
-            neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_board[color_index][i];
-
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
-        }
-    }
-    // Check neighbour SOUTH:
-    i = index_1d - board_size - 1;
-    if ( board[i] != BOARD_OFF ) {
-        if ( worm_board[color_index][i] ) {
-            neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_board[color_index][i];
-
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
-        }
-    }
-    // Check neighbour WEST:
-    i = index_1d - 1;
-    if ( board[i] != BOARD_OFF ) {
-        if ( worm_board[color_index][i] ) {
-            neighbours[count].index_1d = i;
-            neighbours[count].worm_nr  = worm_board[color_index][i];
-
-            if ( neighbours[count].worm_nr < worm_nr_min ) {
-                worm_nr_min = neighbours[count].worm_nr;
-            }
-            count++;
-        }
-    }
-
-    switch (count) {
-        case 0:
-            worm_board[color_index][index_1d] = ++worm_nr_max[color_index];
-            break;
-        case 1:
-            worm_board[color_index][index_1d] = neighbours[0].worm_nr;
-            break;
-        case 2:
-        case 3:
-        case 4:
-            // We take the lowest of all neighbouring worm numbers:
-            worm_board[color_index][index_1d] = worm_nr_min;
-            for ( n = 0; n < count; n++ ) {
-                // Call create_worm() on all neighbours that have not the
-                // minimum worm number:
-                if ( neighbours[n].worm_nr > worm_nr_min ) {
-                    create_worm_data( neighbours[n].index_1d, color );
-                }
-            }
-            break;
-    }
-
-    return;
-}
-
-/**
- * @brief       Builds list of worm structs.
- *
- * From the information on the worm boards, builds a list of worm structs.
- *
- * @param[in]   index_1d    Coordinate for 1D-board.
- * @return      Nothing
- * @note        The function create_worm_data() must have been called already.
- */
-inline void build_worms( int index_1d )
-{
-    int color                      = board[index_1d];
-    int color_index                = color + 1;
-    worm_nr_t worm_nr_current = worm_board[color_index][index_1d];
-    worm_t *w                      = &worm_list[color_index][worm_nr_current];
-
-    if ( w->number == 0 ) {
-        w->number    = worm_nr_current;
-        w->count     = 1;
-        w->liberties = 0;
-    }
-    else {
-        w->count++;
-    }
-
-    return;
-}
-
-/**
- * @brief       Counts liberties.
- *
- * Counts the liberties of black and white worms and writes them into the worm
- * struct list.
- *
- * @param[in]   index_1d    Coordinate for 1D-board.
- * @return      Nothing
- */
-void count_worm_liberties( int index_1d )
-{
-    int i;
-    int count;
-    int color_i       = board[index_1d] + 1;
-    worm_nr_t worm_nr = worm_board[color_i][index_1d];
-    worm_t *w         = &worm_list[color_i][worm_nr];
-
-    // Check neighbour NORTH:
-    i = index_1d + board_size + 1;
-    if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr, color_i );
-        if (count) {
-            w->liberties += ( 12 / count );
-        }
-    }
-
-    // Check neighbour EAST:
-    i = index_1d + 1;
-    if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr, color_i );
-        if (count) {
-            w->liberties += ( 12 / count );
-        }
-    }
-
-    // Check neighbour SOUTH:
-    i = index_1d - board_size - 1;
-    if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr, color_i );
-        if (count) {
-            w->liberties += ( 12 / count );
-        }
-    }
-
-    // Check neighbour WEST:
-    i = index_1d - 1;
-    if ( board[i] == EMPTY ) {
-        count = get_worm_neighbours( i, worm_nr, color_i );
-        if (count) {
-            w->liberties += ( 12 / count );
-        }
-    }
-
-    //worm_list[color_i][worm_nr] = w;
-
-    return;
-}
-
-/**
- * @brief       Counts neighbours of same worm.
- *
- * Counts the the number of neighbouring stones, which are all of the same
- * given color and worm number. This is needed for counting the liberties of a
- * worm.
- *
- * @param[in]   index_1d    1d index for board
- * @param[in]   worm_nr     Worm number
- * @param[in]   color_i     Color turned to index (color + 1)
- * @return      [information about return value]
- * @sa          count_worm_liberties()
- * @note        This is primarily a helper function for count_worm_liberties()
- */
-inline int get_worm_neighbours( int index_1d, worm_nr_t worm_nr, int color_i )
-{
-    int i;
-    int count = 0;
-    worm_nr_t *w = worm_board[color_i];
-
-    // Check neighbour NORTH:
-    i = index_1d + board_size + 1;
-    if ( w[i] == worm_nr) {
-        count++;
-    }
-
-    // Check neighbour EAST:
-    i = index_1d + 1;
-    if ( w[i] == worm_nr) {
-        count++;
-    }
-
-    // Check neighbour SOUTH:
-    i = index_1d - board_size - 1;
-    if ( w[i] == worm_nr) {
-        count++;
-    }
-
-    // Check neighbour WEST:
-    i = index_1d - 1;
-    if ( w[i] == worm_nr) {
-        count++;
-    }
-
-    return count;
-}
-
-/**
- * @brief       Scans the board for statistics.
- *
- * Scan level 2: scans the board for creating data needed for evaluation.
- *
- * @return      Nothing.
- * @sa          scan_board_1()
- */
-void scan_board_2(void)
-{
-    int index_1d;
-    int color;
-
-    count_color[BLACK_INDEX] = count_color[WHITE_INDEX] = count_color[EMPTY_INDEX] = 0;
-
-    for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
-        color = board[index_1d];
-
-        if ( color == BOARD_OFF ) {
-            continue;
-        }
-
-        count_color[color+1]++;
-    }
-
-    return;
-}
-
-/**
- * @brief       Removes worms with zero liberties from board.
- *
- * Removes worms of the given color that have no liberties from the board.
- *
- * @param[in]   color   BLACK|WHITE
- * @return      Number of stones removed
- */
-int remove_stones( int color )
-{
-    int count_removed = 0;
-    worm_nr_t worm_nr;
-    worm_t    *wl      = worm_list[color+1];
-    worm_nr_t *wb      = worm_board[color+1];
-    worm_nr_t worm_max = worm_nr_max[color+1];
-    worm_nr_t zero_worm[worm_max];  // Lists worms with zero liberties.
-    int k = 0;
-    int l = 0;
-    int index_1d;
-
-    removed_max[BLACK_INDEX] = removed_max[WHITE_INDEX] = 0;
-
-    // Go through worm list:
-    for ( worm_nr = 1; worm_nr <= worm_max; worm_nr++ ) {
-        if ( wl[worm_nr].number != 0 && wl[worm_nr].liberties == 0 ) {
-            zero_worm[k++] = worm_nr;
-            //wl[worm_nr].number = 0;  // ??
-        }
-    }
-    //printf("Zeros: %d\n", k );
-
-    // Go through boards:
-    if ( k > 0 ) {
-        // At least one worm has to be removed:
-        for ( index_1d = board_size + 1; index_1d < index_1d_max; index_1d++ ) {
-            if ( board[index_1d] != color ) {
-                continue;
-            }
-            for ( l = 0; l < k; l++ ) {
-                if ( wb[index_1d] == zero_worm[l] ) {
-                    //wb[index_1d]    = EMPTY;
-                    board[index_1d] = EMPTY;
-                    count_removed++;
-
-                    removed[color+1][removed_max[color+1]++] = index_1d;
-                }
-            }
-        }
-    }
-
-    if ( color == WHITE ) {
-        captured_by_black += count_removed;
-    }
-    else {
-        captured_by_white += count_removed;
-    }
-
-    return count_removed;
-}
-
-/**
- * @brief       TEST: Prints worm boards
- *
- * TEST: Prints worm boards
+ * Prints worm boards
  *
  * @note        May be removed later!
  */
@@ -1108,9 +1883,9 @@ void print_worm_boards(void)
 }
 
 /**
- * @brief       TEST: Prints worm structs list
+ * @brief       Prints worm structs list
  *
- * TEST: Prints worm structs list.
+ * Prints worm structs list.
  *
  * @note        May be removed later.
  */
@@ -1133,22 +1908,6 @@ void print_worm_lists(void)
     }
 
     return;
-}
-
-/**
- * @brief       TEST: Returns struct for given worm number.
- *
- * For the given color and worm number the worm struct is returned.
- *
- * @param[in]   color   BLACK|WHITE|EMPTY
- * @param[in]   worm_nr Worm number.
- * @return      Struct of given worm.
- * @note        [any note about the function you might have]
- */
-worm_t get_worm( int color, worm_nr_t worm_nr )
-{
-
-    return worm_list[color+1][worm_nr];
 }
 
 /**
@@ -1178,27 +1937,38 @@ void print_removed(void)
     return;
 }
 
+//@}
+
+
 /**
- * @brief       Returns worm number.
+ * @name    Hashing functions
  *
- * Returns the worm number for the given vertex.
+ * Hashing is currently deactivated.
  *
- * @param[in]   i   Horizontal coordinate
- * @param[in]   j   Vertical coordinate
- * @return      Worm number or zero for empty field.
  */
-int get_worm_nr( int i, int j )
+
+//@{
+
+void init_hash_table(void)
 {
-    int index_1d      = INDEX(i,j);
-    int color         = board[index_1d];
-    worm_nr_t worm_nr = worm_board[color+1][index_1d];
-
-    if ( color == EMPTY ) {
-        worm_nr = 0;
-    }
-
-    return ( (int)worm_nr ) * color;
+    return;
 }
+
+void init_hash_id(void)
+{
+    return;
+}
+
+//@}
+
+
+
+
+
+
+
+
+
 
 /* PROXY FUNCTIONS */
 int get_last_group_nr( int color )
@@ -1207,26 +1977,9 @@ int get_last_group_nr( int color )
     return 0;
 }
 
-int get_free_group_nr( int color )
-{
-    return (int)( worm_nr_max[color+1] + 1 ) * color;
-}
 
-
-int get_size_of_worm( int group_nr )
-{
-    int size;
-    int color = BLACK;
-    if ( group_nr < 0 ) {
-        color = WHITE;
-    }
-
-    size = worm_list[color+1][group_nr*color].count;
-
-    return size;
-}
-
-int get_nr_of_liberties( int group_nr )
+/*
+//int get_nr_of_liberties( int group_nr )
 {
     int count;
     int color_i;
@@ -1242,6 +1995,7 @@ int get_nr_of_liberties( int group_nr )
     
     return count / 12;
 }
+*/
 
 
 int get_size_of_empty_group( int group_nr )
@@ -1286,10 +2040,6 @@ int get_one_eye_groups( int color )
     return 0;
 }
 
-int get_stone_count( int color )
-{
-    return count_color[color+1];
-}
 
 void get_bouzy_as_string( char bouzy_str[] )
 {
@@ -1298,41 +2048,6 @@ void get_bouzy_as_string( char bouzy_str[] )
     return;
 }
 
-int get_captured_now( int captured[][2] )
-{
-    int k;
-    int l = 0;
-    int i, j;
-    int index_1d;
-
-    for ( k = 0; k < removed_max[BLACK_INDEX]; k++ ) {
-        index_1d = removed[BLACK_INDEX][k];
-        i = index_1d % ( board_size + 1 );
-        j = ( index_1d / ( board_size + 1 ) ) - 1;
-        captured[l][0] = i;
-        captured[l][1] = j;
-        l++;
-    }
-    for ( k = 0; k < removed_max[WHITE_INDEX]; k++ ) {
-        index_1d = removed[WHITE_INDEX][k];
-        i = index_1d % ( board_size + 1 );
-        j = ( index_1d / ( board_size + 1 ) ) - 1;
-        captured[l][0] = i;
-        captured[l][1] = j;
-        l++;
-    }
-
-    captured[l][0] = INVALID;
-    captured[l][1] = INVALID;
-
-    return l;
-}
-
-void do_influence(void)
-{
-
-    return;
-}
 
 int get_count_kosumis( int color )
 {
@@ -1350,56 +2065,6 @@ int get_count_influence( int color )
     return 0;
 }
 
-int has_neighbour( int i, int j, int neighbour[][2] )
-{
-    int index;
-    int index_1d = INDEX(i,j);
-    int color = board[index_1d];
-    int count = 0;
-
-    // Check NORTH:
-    index = index_1d + board_size + 1;
-    if ( board[index] == color ) {
-        neighbour[count][0] = i;
-        neighbour[count][1] = j + 1;
-        count++;
-    }
-
-    // Check EAST:
-    index = index_1d + 1;
-    if ( board[index] == color ) {
-        neighbour[count][0] = i + 1;
-        neighbour[count][1] = j;
-        count++;
-    }
-
-    // Check SOUTH:
-    index = index_1d - board_size - 1;
-    if ( board[index] == color ) {
-        neighbour[count][0] = i;
-        neighbour[count][1] = j - 1;
-        count++;
-    }
-
-    // Check WEST:
-    index = index_1d - 1;
-    if ( board[index] == color ) {
-        neighbour[count][0] = i - 1;
-        neighbour[count][1] = j;
-        count++;
-    }
-
-    return count;
-}
 
 /* Hashing */
-void init_hash_table(void)
-{
-    return;
-}
-
-void init_hash_id(void)
-{
-    return;
-}
 

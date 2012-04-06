@@ -20,7 +20,7 @@
  **/
 typedef struct {
     int (*function)();  //!< Pointer to brain function.
-    int factor;         //!< Multiply value to combine with barin function.
+    int factor;         //!< Multiply value to combine with brain function.
     int limit;          //!< Sets a limit to the brain value.
 } brain_t;
 
@@ -140,7 +140,8 @@ int evaluate_position( int value_list[], bool do_full_eval )
 
     // TEST:
     if ( do_full_eval ) {
-        do_influence();
+        //do_influence();
+        scan_board_2();
     }
 
     for ( k = 0; k < COUNT_BRAINS; k++ ) {

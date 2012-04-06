@@ -14,8 +14,7 @@
 
 #include <stdbool.h>
 
-//typedef unsigned long row_t;    //!< Defines a row of the board.
-
+//! Defines data type of worm number.
 typedef unsigned short worm_nr_t;
 
 //! Data structure representing a worm.
@@ -34,8 +33,6 @@ void scan_board_1(void);
 void scan_board_2(void);
 void create_worm_data( int index_1d, int color );
 void build_worms( int index_1d );
-//int  get_vertex_intern( row_t I, int J );
-//void create_worm( row_t I, int J, int index_1d, int color );
 void count_worm_liberties( int index_1d );
 int  get_worm_neighbours( int index_1d, worm_nr_t worm_nr_current, int color_i );
 
@@ -45,8 +42,20 @@ void get_label_y_right( int j, char y[] );
 
 worm_t get_worm( int color, worm_nr_t worm_nr );
 
-int get_free_group_nr( int color );
+int get_free_worm_nr( int color );
 int has_neighbour( int i, int j, int neighbour[][2] );
+
+void init_bouzy_1(void);
+void init_bouzy_2(void);
+void dilation(void);
+bool has_lt_zero( int index_1d );
+bool has_gt_zero( int index_1d );
+int  count_gt_zero( int index_1d );
+int  count_lt_zero( int index_1d );
+void erosion(void);
+int  count_le_zero( int index_1d );
+int  count_ge_zero( int index_1d );
+void count_influence(void);
 
 // TEST:
 void print_removed(void);

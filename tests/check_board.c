@@ -177,44 +177,53 @@ START_TEST (test_groups_1)
 
     init_board(s);
 
-    fail_if( get_free_group_nr(BLACK) !=  1, "next group for black is 1"  );
-    fail_if( get_free_group_nr(WHITE) != -1, "next group for white is -1" );
+    scan_board_1();
+
+    fail_if( get_free_worm_nr(BLACK) != 1, "next worm for black is 1" );
+    fail_if( get_free_worm_nr(WHITE) != 1, "next worm for white is 1" );
+    fail_if( get_free_worm_nr(EMPTY) != 2, "next worm for empty is 2" );
 
     set_vertex( BLACK, 0, 0 );
     scan_board_1();
 
-    fail_if( get_free_group_nr(BLACK) !=  2, "next group for black is 2"  );
-    fail_if( get_free_group_nr(WHITE) != -1, "next group for white is -1" );
+    fail_if( get_free_worm_nr(BLACK) != 2, "next worm for black is 2" );
+    fail_if( get_free_worm_nr(WHITE) != 1, "next worm for white is 1" );
+    fail_if( get_free_worm_nr(EMPTY) != 3, "next worm for empty is 3" );
 
     set_vertex( WHITE, 0, 1 );
     scan_board_1();
 
-    fail_if( get_free_group_nr(BLACK) !=  2, "next group for black is 2"  );
-    fail_if( get_free_group_nr(WHITE) != -2, "next group for white is -2" );
+    fail_if( get_free_worm_nr(BLACK) != 2, "next worm for black is 2" );
+    fail_if( get_free_worm_nr(WHITE) != 2, "next worm for white is 2" );
+    fail_if( get_free_worm_nr(EMPTY) != 3, "next worm for empty is 3" );
 
     set_vertex( BLACK, 10, 10 );
     scan_board_1();
 
-    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
-    fail_if( get_free_group_nr(WHITE) != -2, "next group for white is -2" );
+    fail_if( get_free_worm_nr(BLACK) != 3, "next worm for black is 3" );
+    fail_if( get_free_worm_nr(WHITE) != 2, "next worm for white is 2" );
+    fail_if( get_free_worm_nr(EMPTY) != 3, "next worm for empty is 3" );
 
     set_vertex( WHITE, 15, 15 );
     scan_board_1();
 
-    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
-    fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
+    fail_if( get_free_worm_nr(BLACK) != 3, "next worm for black is 3" );
+    fail_if( get_free_worm_nr(WHITE) != 3, "next worm for white is 3" );
+    fail_if( get_free_worm_nr(EMPTY) != 3, "next worm for empty is 3" );
 
     set_vertex( BLACK, 10, 11 );
     scan_board_1();
 
-    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
-    fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
+    fail_if( get_free_worm_nr(BLACK) != 3, "next worm for black is 3" );
+    fail_if( get_free_worm_nr(WHITE) != 3, "next worm for white is 3" );
+    fail_if( get_free_worm_nr(EMPTY) != 3, "next worm for empty is 3" );
 
     set_vertex( WHITE, 15, 16 );
     scan_board_1();
 
-    fail_if( get_free_group_nr(BLACK) !=  3, "next group for black is 3"  );
-    fail_if( get_free_group_nr(WHITE) != -3, "next group for white is -3" );
+    fail_if( get_free_worm_nr(BLACK) != 3, "next worm for black is 3" );
+    fail_if( get_free_worm_nr(WHITE) != 3, "next worm for white is 3" );
+    fail_if( get_free_worm_nr(EMPTY) != 3, "next worm for empty is 3" );
 
     free_board();
 }
