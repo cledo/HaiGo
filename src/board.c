@@ -426,10 +426,11 @@ void scan_board_1_upd( int i, int j )
     if ( board[index] != BOARD_OFF ) {
         worm_nr = worm_board[ ( color * -1 ) + 1 ][index];
         if ( worm_nr ) {
-            // Reduce liberties:
+            // Reduce liberties, remove worm:
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                // Update worm lists here ...
             }
         }
     }
@@ -442,6 +443,7 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                // Update worm lists here ...
             }
         }
     }
@@ -454,6 +456,7 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                // Update worm lists here ...
             }
         }
     }
@@ -466,6 +469,7 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                // Update worm lists here ...
             }
         }
     }
@@ -492,6 +496,7 @@ int remove_worm( int index_1d )
     board[index_1d] = EMPTY;
     worm_board[ color + 1 ][index_1d] = EMPTY;
     worm_board[EMPTY_INDEX][index_1d] = get_free_worm_nr(EMPTY);
+    // TODO: worm_nr must be increased somewhere ...
 
     count++;
 
