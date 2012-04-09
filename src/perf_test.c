@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "global_tools.h"
 #include "global_const.h"
 #include "board.h"
 #include "board_intern.h"
+#include "run_program.h"
 
 
 /**
@@ -31,6 +33,7 @@ int main(void)
 {
 
     //perf_scan_1();
+    perf_scan_1_upd();
 
     return EXIT_SUCCESS;
 }
@@ -97,18 +100,7 @@ inline void perf_scan_1(void)
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {
             scan_board_1();
-
-            /*
-            i = rand() % board_size;
-            j = rand() % board_size;
-            set_vertex( i, j, color * -1 );
-            scan_board_1_upd( i, j );
-            */
-            //scan_board_2();
         }
-        //count_removed = remove_stones(WHITE);
-        //print_removed();
-        //scan_board_1();
 
         (void) time(&stop);
         diff_time = stop - start;
@@ -138,8 +130,74 @@ inline void perf_scan_1(void)
  */
 void perf_scan_1_upd(void)
 {
+    struct command command_data;
 
+    //char filename[] = "SGF/book1_015.sgf";
+    //int i = 9;
+    //int j = 4;
 
+    char filename[] = "SGF/book1_007.sgf";
+    int i = 4;
+    int j = 7;
+
+    init_board(BOARD_SIZE_DEFAULT);
+    init_known_commands();
+
+    // Load SGF file:
+    command_data.id = 0;
+    my_strcpy( command_data.name, "loadsgf", MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[0], filename, MAX_TOKEN_LENGTH );
+    my_strcpy( command_data.gtp_argv[1], "0", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 2;
+
+    select_command(&command_data);
+
+    print_output( command_data.id );
+
+    // Show board:
+    command_data.id = 0;
+    my_strcpy( command_data.name, "showboard", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    //init_known_commands();
+    select_command(&command_data);
+
+    print_output( command_data.id );
+
+    // Scan level 1:
+    scan_board_1();
+
+    print_worm_boards();
+    print_worm_lists();
+
+    // Move:
+    set_vertex( BLACK, i, j );
+
+    // Show board:
+    command_data.id = 0;
+    my_strcpy( command_data.name, "showboard", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    init_known_commands();
+    select_command(&command_data);
+
+    print_output( command_data.id );
+
+    // Scan level 1 update:
+    scan_board_1_upd( i, j );
+
+    // Show board:
+    command_data.id = 0;
+    my_strcpy( command_data.name, "showboard", MAX_TOKEN_LENGTH );
+    command_data.gtp_argc = 0;
+
+    //init_known_commands();
+    select_command(&command_data);
+    print_output( command_data.id );
+    print_worm_boards();
+    print_worm_lists();
+
+    free_board();
 
     return;
 }
