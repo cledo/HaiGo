@@ -27,16 +27,12 @@ typedef struct {
 static brain_t brains[COUNT_BRAINS];    //!< List of all brain functions.
 
 int brain_capture(void);
-int brain_atari(void);
 
 // ----- Deactivated for now ------
+int brain_atari(void);
 int brain_avg_liberties(void);
 int brain_edge_stones(void);
 int brain_hoshi_stones(void);
-int brain_kosumi(void);
-int brain_chains(void);
-int brain_influence(void);
-int brain_has_eye(void);
 // --------------------------------
 
 /**
@@ -52,38 +48,22 @@ void init_brains(void)
     int i = 0;
 
     brains[i].function = (*brain_capture);
-    brains[i].factor   = 800;
+    brains[i].factor   = 1;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_atari);
-    brains[i].factor   = 200;
+    brains[i].factor   = 0;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_avg_liberties);
-    brains[i].factor   = 100;
+    brains[i].factor   = 0;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_edge_stones);
-    brains[i].factor   = 1;
+    brains[i].factor   = 0;
     brains[i++].limit  = 0;
 
     brains[i].function = (*brain_hoshi_stones);
-    brains[i].factor   = 1;
-    brains[i++].limit  = 0;
-
-    brains[i].function = (*brain_kosumi);
-    brains[i].factor   = 1; // 4
-    brains[i++].limit  = 0;
-
-    brains[i].function = (*brain_chains);
-    brains[i].factor   = 3; // 1
-    brains[i++].limit  = 0;
-
-    brains[i].function = (*brain_influence);
-    brains[i].factor   = 1;
-    brains[i++].limit  = 0;
-
-    brains[i].function = (*brain_has_eye);
     brains[i].factor   = 0;
     brains[i++].limit  = 0;
 
@@ -140,7 +120,6 @@ int evaluate_position( int value_list[], bool do_full_eval )
 
     // TEST:
     if ( do_full_eval ) {
-        //do_influence();
         scan_board_2();
     }
 
@@ -192,11 +171,12 @@ int brain_capture(void)
  */
 int brain_atari(void)
 {
-    int k;
+    //int k;
     int value             = 0;
-    int count_atari_white = 0;
-    int count_atari_black = 0;
+    //int count_atari_white = 0;
+    //int count_atari_black = 0;
 
+    /*
     int last_white_group = get_last_group_nr(WHITE) * -1;
     int last_black_group = get_last_group_nr(BLACK);
     
@@ -213,6 +193,7 @@ int brain_atari(void)
     }
 
     value = count_atari_white - count_atari_black;
+    */
 
     return value;
 }
@@ -316,97 +297,6 @@ int brain_avg_liberties(void)
     */
 
     //value = value_black - value_white;
-    value = 0;
-
-    return value;
-}
-
-/**
- * @brief       Returns value based on number of kosumis.
- *
- * The number of kosumis for black and white are counted. The returned value
- * is number of black kosumis minus number of white kosumis.
- *
- * @return      Difference in number of kosumis
- */
-int brain_kosumi(void)
-{
-    int value;
-
-    //value = get_count_kosumis(BLACK) - get_count_kosumis(WHITE);
-    value = 0;
-
-    return value;
-}
-
-/**
- * @brief       Returns a value depending on chains.
- *
- * A positional value is returned that depends on the number of chains, and
- * the number of groups not part of a chain per color.
- *
- * @return      Value depending on chains.
- */
-int brain_chains(void)
-{
-    int value = 0;
-    /*
-    int count_black_chains   = get_last_chain_nr(BLACK);
-    int count_white_chains   = get_last_chain_nr(WHITE);
-    int count_black_no_chain = get_nr_groups_no_chain(BLACK);
-    int count_white_no_chain = get_nr_groups_no_chain(WHITE);
-
-    value -= count_black_no_chain;
-    if ( count_black_chains == 0 ) {
-        value -= 100;
-    }
-    else {
-        value += 100 / count_black_chains;
-    }
-    value += count_white_no_chain;
-    if ( count_white_chains == 0 ) {
-        value += 100;
-    }
-    else {
-        value -= 100 / count_white_chains;
-    }
-    */
-
-    return value;
-}
-
-/**
- * @brief       Creates value based on board influence.
- *
- * Returns a value that is based on the board influence of black and white.
- *
- * @return      Value of influence
- */
-int brain_influence(void)
-{
-    int value;
-
-    //count_kosumi();
-
-    //value = get_count_influence(BLACK) - get_count_influence(WHITE);
-    value = 0;
-
-    return value;
-}
-
-/**
- * @brief       Counts number of groups with only one eye.
- *
- * Returns the difference between the number of groups with only one empty
- * space group of black and white.
- *
- * @return      Difference of number of groups
- */
-int brain_has_eye(void)
-{
-    int value;
-
-    //value = get_one_eye_groups(WHITE) - get_one_eye_groups(BLACK);
     value = 0;
 
     return value;

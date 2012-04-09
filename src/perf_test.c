@@ -16,6 +16,8 @@
  *
  */
 
+void perf_scan_1(void);
+void perf_scan_1_upd(void);
 
 /**
  * @brief       Dummy main function.
@@ -26,6 +28,22 @@
  * @note        May be used for simple testing.
  */
 int main(void)
+{
+
+    //perf_scan_1();
+
+    return EXIT_SUCCESS;
+}
+
+
+/**
+ * @brief       Performance test for scan_board_1
+ *
+ * Performance test for scan_board_1.
+ *
+ * @return      Nothing
+ */
+inline void perf_scan_1(void)
 {
     unsigned long k, l;
     unsigned long max_k = 1000000;    // scan_board_1
@@ -79,6 +97,13 @@ int main(void)
         (void) time(&start);
         for ( k = 1; k <= max_k; k++ ) {
             scan_board_1();
+
+            /*
+            i = rand() % board_size;
+            j = rand() % board_size;
+            set_vertex( i, j, color * -1 );
+            scan_board_1_upd( i, j );
+            */
             //scan_board_2();
         }
         //count_removed = remove_stones(WHITE);
@@ -91,8 +116,8 @@ int main(void)
 
         printf( "BoardNr.: %lu\t%lu\t(%d)\n", l, diff_time, count_removed );
 
-        //print_worm_boards();
-        //print_worm_lists();
+        print_worm_boards();
+        print_worm_lists();
 
         free_board();
     }
@@ -101,7 +126,21 @@ int main(void)
     printf( "Scan/s: %lu\n", (l-1) * (k-1) / sum_time );
 
 
+    return;
+}
 
-    return EXIT_SUCCESS;
+/**
+ * @brief       Performance test for scan_board_1_upd
+ *
+ * Performance test for scan_board_1_upd.
+ *
+ * @return      Nothing
+ */
+void perf_scan_1_upd(void)
+{
+
+
+
+    return;
 }
 

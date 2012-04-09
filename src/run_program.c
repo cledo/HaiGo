@@ -84,7 +84,6 @@ static void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_showboard( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_log( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
-static void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 static void gtp_hg_factors( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] );
 
 
@@ -118,7 +117,7 @@ int run( int argc, char **argv )
 
     // Initialization
     init_board(BOARD_SIZE_DEFAULT);
-    init_hash_table();
+    //init_hash_table();
     init_known_commands();
     init_brains();
     init_move_history();
@@ -289,8 +288,6 @@ void init_known_commands(void)
     known_commands[i++].function = (*gtp_hg_log);
     my_strcpy( known_commands[i].command, "hg-stats",         MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_hg_stats);
-    my_strcpy( known_commands[i].command, "hg-bouzy",         MAX_TOKEN_LENGTH );
-    known_commands[i++].function = (*gtp_hg_bouzy);
     my_strcpy( known_commands[i].command, "hg-factors",       MAX_TOKEN_LENGTH );
     known_commands[i++].function = (*gtp_hg_factors);
 
@@ -1273,7 +1270,7 @@ void gtp_loadsgf( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     }
 
     // Initialise hash_id for loaded position:
-    init_hash_id();
+    //init_hash_id();
 
     return;
 }
@@ -1567,8 +1564,6 @@ void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
     add_output(temp_str);
     snprintf( temp_str, 100, "# Value:     %d",   stats.value         );
     add_output(temp_str);
-    snprintf( temp_str, 100, "# Gr-Em:     %d",   ( get_one_eye_groups(WHITE) - get_one_eye_groups(BLACK) ) * 500 );
-    add_output(temp_str);
 
     return;
 }
@@ -1582,6 +1577,7 @@ void gtp_hg_stats( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
  * @param[in]   gtp_argv    Array of all arguments for GTP command
  * @return      Nothing
  */
+/*
 void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 {
     char board_output[MAX_OUTPUT_LENGTH * 10];
@@ -1591,6 +1587,7 @@ void gtp_hg_bouzy( int gtp_argc, char gtp_argv[][MAX_TOKEN_LENGTH] )
 
     return;
 }
+*/
 
 /**
  * @brief       Sets or prints evaluation factors.

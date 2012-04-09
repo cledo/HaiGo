@@ -33,7 +33,6 @@ my @known_commands = qw{
     loadsgf
     hg-log
     hg-stats
-    hg-bouzy
     hg-factors
     showgroups
 };

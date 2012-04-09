@@ -118,7 +118,7 @@ void search_tree( int color, int *i_selected, int *j_selected )
 
     //init_brains();
     init_search_stats();
-    init_hash_table();
+    //init_hash_table();
 
     best_value = ( color == BLACK ) ? INT_MIN : INT_MAX;
 

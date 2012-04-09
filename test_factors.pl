@@ -16,27 +16,16 @@ my $sc    = SC->new( { FILE => $table } );
 
 my ( $stdin, $stdout, $stderr );
 
-#my @factor       = qw( 80 20 1 1 1 1 1 1 );
-my @factor       = qw( 800 200 100 1 1 1 3 1 );
-#my @factor       = qw( 800 200 100 1 10 1 3 1 );
-#my @factor       = qw( 50 50 0 0 0 0 0 0 );
-#my @factor       = qw( 75 20 0 0 0 0 0 5 );
-#my @factor       = qw( 100 0 0 0 0 0 0 0 );
-#my @factor       = qw( 100 50 0 0 0 0 0 0 );
-#my @factor       = qw( 100 50 25 5 10 2 1 1 );
 my $count        = 0;
 my $ok_count     = 0;
 my $not_ok_count = 0;
 
 my $start_time = [ gettimeofday() ];
 
-my $pid = open3( $stdin, $stdout, $stderr
-    , 'prove -v t/80_problems.t :: ' . join q{ }, @factor );
+my $pid = open3( $stdin, $stdout, $stderr , 'prove -v t/80_problems.t' );
 
 my ($row) = $sc->get_empty_cell('A') =~ qr{^[A-Z]+(\d+)$};
 
-print 'Factors ' . join q{ }, @factor;
-print "\n";
 while ( my $line = <$stdout> ) {
     if ( $line =~ qr{^# File: (\S+) (\S+) (\S+)} ) {
         print "File $1: $2 ($3s)\n";
@@ -70,7 +59,7 @@ $sc->set_format( 'D', '7 0 0'  );
 $sc->set_format( 'E', '7 2 0'  );
 
 #$sc->set_cell( 'A0', 'Factors',     'label' );
-$sc->set_cell( 'A' . $row, "@factor",     'leftstring' );
+$sc->set_cell( 'A' . $row, 'none',     'leftstring' );
 #$sc->set_cell( 'B0', 'Tests',       'label' );
 $sc->set_cell( 'B' . $row, $count,        'label' );
 #$sc->set_cell( 'C0', 'OK',          'label' );

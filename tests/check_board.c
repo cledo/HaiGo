@@ -581,296 +581,43 @@ START_TEST (test_atari_1)
 
     scan_board_1();
 
-    fail_unless( get_group_count_atari(BLACK) == 0, "no black groups in atari" );
-    fail_unless( get_group_count_atari(WHITE) == 0, "no white groups in atari" );
+    fail_unless( get_worm_count_atari(BLACK) == 0, "no black groups in atari" );
+    fail_unless( get_worm_count_atari(WHITE) == 0, "no white groups in atari" );
 
     set_vertex( BLACK, 0, 0 );
     set_vertex( WHITE, board_size - 1, board_size - 1 );
 
     scan_board_1();
 
-    fail_unless( get_group_count_atari(BLACK) == 0, "no black groups in atari" );
-    fail_unless( get_group_count_atari(WHITE) == 0, "no white groups in atari" );
+    fail_unless( get_worm_count_atari(BLACK) == 0, "no black groups in atari" );
+    fail_unless( get_worm_count_atari(WHITE) == 0, "no white groups in atari" );
 
     set_vertex( WHITE, 0, 1 );
     set_vertex( BLACK, board_size - 1, board_size - 2 );
 
     scan_board_1();
 
-    fail_unless( get_group_count_atari(BLACK) == 1, "one black group in atari" );
-    fail_unless( get_group_count_atari(WHITE) == 1, "one white group in atari" );
+    fail_unless( get_worm_count_atari(BLACK) == 1, "one black group in atari" );
+    fail_unless( get_worm_count_atari(WHITE) == 1, "one white group in atari" );
 
     set_vertex( BLACK, 0, 2 );
     set_vertex( WHITE, board_size - 1, board_size - 3 );
 
     scan_board_1();
 
-    fail_unless( get_group_count_atari(BLACK) == 2, "two black groups in atari" );
-    fail_unless( get_group_count_atari(WHITE) == 2, "two white groups in atari" );
+    fail_unless( get_worm_count_atari(BLACK) == 2, "two black groups in atari" );
+    fail_unless( get_worm_count_atari(WHITE) == 2, "two white groups in atari" );
 
     set_vertex( WHITE, 0, 3 );
     set_vertex( BLACK, board_size - 1, board_size - 4 );
 
     scan_board_1();
 
-    fail_unless( get_group_count_atari(BLACK) == 3, "three black groups in atari" );
-    fail_unless( get_group_count_atari(WHITE) == 3, "three white groups in atari" );
+    fail_unless( get_worm_count_atari(BLACK) == 3, "three black groups in atari" );
+    fail_unless( get_worm_count_atari(WHITE) == 3, "three white groups in atari" );
 }
 END_TEST
 
-START_TEST (test_chains_1)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 0, 0 );
-    set_vertex( BLACK, 0, 2 );
-    set_vertex( BLACK, 2, 0 );
-    set_vertex( BLACK, 2, 2 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(BLACK) == 0
-        , "no black chains found (%d)", get_last_chain_nr(BLACK) );
-
-    set_vertex( BLACK, 1, 1 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(BLACK) == 1
-        , "one black chain found (%d)", get_last_chain_nr(BLACK) );
-
-    set_vertex( WHITE, 0, 0 );
-    set_vertex( WHITE, 0, 2 );
-    set_vertex( WHITE, 2, 0 );
-    set_vertex( WHITE, 2, 2 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(WHITE) == 0
-        , "no white chains found (%d)", get_last_chain_nr(WHITE) );
-
-    set_vertex( WHITE, 1, 1 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(WHITE) == 1
-        , "one white chain found (%d)", get_last_chain_nr(WHITE) );
-}
-END_TEST
-
-START_TEST (test_chains_2)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 0, 1 );
-    set_vertex( BLACK, 1, 0 );
-    set_vertex( BLACK, 2, 1 );
-    set_vertex( BLACK, 1, 2 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(BLACK) == 1
-        , "one black chain found (%d)", get_last_chain_nr(BLACK) );
-
-    set_vertex( BLACK, 1, 1 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(BLACK) == 0
-        , "no black chain found (%d)", get_last_chain_nr(BLACK) );
-
-    set_vertex( WHITE, 0, 1 );
-    set_vertex( WHITE, 1, 0 );
-    set_vertex( WHITE, 2, 1 );
-    set_vertex( WHITE, 2, 1 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(WHITE) == 1
-        , "one white chain found (%d)", get_last_chain_nr(WHITE) );
-
-    set_vertex( WHITE, 1, 1 );
-
-    scan_board_1();
-
-    fail_unless( get_last_chain_nr(WHITE) == 0
-        , "no white chain found (%d)", get_last_chain_nr(WHITE) );
-}
-END_TEST
-
-START_TEST (test_count_kosumi_1)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( WHITE, 0, 0 );
-    set_vertex( WHITE, 2, 0 );
-    set_vertex( WHITE, 0, 2 );
-    set_vertex( WHITE, 2, 2 );
-
-    count_kosumi();
-
-    fail_unless( get_count_kosumis(BLACK) == 0
-            , "no black kosumis found (%d)", get_count_kosumis(BLACK) );
-    fail_unless( get_count_kosumis(WHITE) == 0
-            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
-}
-END_TEST
-
-START_TEST (test_count_kosumi_2)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( WHITE, 0, 1 );
-    set_vertex( WHITE, 1, 0 );
-    set_vertex( WHITE, 1, 2 );
-    set_vertex( WHITE, 2, 1 );
-
-    count_kosumi();
-
-    fail_unless( get_count_kosumis(BLACK) == 0
-            , "4 black kosumis found (%d)", get_count_kosumis(BLACK) );
-    fail_unless( get_count_kosumis(WHITE) == 4
-            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
-}
-END_TEST
-
-START_TEST (test_count_kosumi_3)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 0, 0 );
-    set_vertex( BLACK, 2, 0 );
-    set_vertex( BLACK, 0, 2 );
-    set_vertex( BLACK, 2, 2 );
-
-    count_kosumi();
-
-    fail_unless( get_count_kosumis(BLACK) == 0
-            , "no black kosumis found (%d)", get_count_kosumis(BLACK) );
-    fail_unless( get_count_kosumis(WHITE) == 0
-            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
-}
-END_TEST
-
-START_TEST (test_count_kosumi_4)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 0, 1 );
-    set_vertex( BLACK, 1, 0 );
-    set_vertex( BLACK, 1, 2 );
-    set_vertex( BLACK, 2, 1 );
-
-    count_kosumi();
-
-    fail_unless( get_count_kosumis(BLACK) == 4
-            , "4 black kosumis found (%d)", get_count_kosumis(BLACK) );
-    fail_unless( get_count_kosumis(WHITE) == 0
-            , "no white kosumis found (%d)", get_count_kosumis(WHITE) );
-}
-END_TEST
-
-START_TEST (test_influence_1)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    do_influence();
-
-    fail_unless( get_count_influence(BLACK) == 0
-        , "zero influence for black (%d)", get_count_influence(BLACK) );
-    fail_unless( get_count_influence(WHITE) == 0
-        , "zero influence for white (%d)", get_count_influence(WHITE) );
-    fail_unless( get_count_influence(EMPTY) == board_size * board_size
-        , "9 influence for neutral (%d)", get_count_influence(EMPTY) );
-}
-END_TEST
-
-START_TEST (test_influence_2)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 0, 0 );
-    set_vertex( WHITE, 2, 2 );
-
-    do_influence();
-
-    fail_unless( get_count_influence(BLACK) == 1
-        , "one influence for black (%d)", get_count_influence(BLACK) );
-    fail_unless( get_count_influence(WHITE) == 1
-        , "one influence for white (%d)", get_count_influence(WHITE) );
-    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 2
-        , "7 influence for neutral (%d)", get_count_influence(EMPTY) );
-}
-END_TEST
-
-START_TEST (test_influence_3)
-{
-    int board_size = 3;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 0, 0 );
-    set_vertex( BLACK, 0, 1 );
-    set_vertex( WHITE, 2, 2 );
-    set_vertex( WHITE, 2, 1 );
-
-    do_influence();
-
-    fail_unless( get_count_influence(BLACK) == 2
-        , "two influence for black (%d)", get_count_influence(BLACK) );
-    fail_unless( get_count_influence(WHITE) == 2
-        , "two influence for white (%d)", get_count_influence(WHITE) );
-    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 4
-        , "5 influence for neutral (%d)", get_count_influence(EMPTY) );
-}
-END_TEST
-
-START_TEST (test_influence_4)
-{
-    int board_size = 9;
-
-    init_board(board_size);
-
-    set_vertex( BLACK, 3, 4 );
-    set_vertex( BLACK, 5, 4 );
-
-    do_influence();
-
-    fail_unless( get_count_influence(BLACK) == 5
-        , "two influence for black (%d)", get_count_influence(BLACK) );
-    fail_unless( get_count_influence(WHITE) == 0
-        , "two influence for white (%d)", get_count_influence(WHITE) );
-    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 5
-        , "5 influence for neutral (%d)", get_count_influence(EMPTY) );
-
-    set_vertex( WHITE, 4, 4);
-
-    do_influence();
-
-    fail_unless( get_count_influence(BLACK) == 2
-        , "two influence for black (%d)", get_count_influence(BLACK) );
-    fail_unless( get_count_influence(WHITE) == 1
-        , "two influence for white (%d)", get_count_influence(WHITE) );
-    fail_unless( get_count_influence(EMPTY) == board_size * board_size - 3
-        , "5 influence for neutral (%d)", get_count_influence(EMPTY) );
-}
-END_TEST
 
 Suite * board_suite(void) {
     Suite *s                      = suite_create("Board");
@@ -883,11 +630,6 @@ Suite * board_suite(void) {
     TCase *tc_liberties           = tcase_create("liberties");
     TCase *tc_remove_stones       = tcase_create("remove");
     TCase *tc_atari_groups        = tcase_create("atari");
-    /*
-    TCase *tc_chains              = tcase_create("chains");
-    TCase *tc_kosumi              = tcase_create("kosumi");
-    TCase *tc_influence           = tcase_create("influence");
-    */
 
     tcase_add_loop_test( tc_init_board, test_init_board_1, 0, board_count );
     tcase_add_loop_test( tc_get_board_as_string, test_get_board_as_string_1, 0, board_count );
@@ -898,18 +640,6 @@ Suite * board_suite(void) {
     tcase_add_test( tc_liberties,     test_count_liberties_1 );
     tcase_add_test( tc_remove_stones, test_remove_stones_1   );
     tcase_add_test( tc_atari_groups,  test_atari_1           );
-    /*
-    tcase_add_test( tc_chains,        test_chains_1          );
-    tcase_add_test( tc_chains,        test_chains_2          );
-    tcase_add_test( tc_kosumi,        test_count_kosumi_1    );
-    tcase_add_test( tc_kosumi,        test_count_kosumi_2    );
-    tcase_add_test( tc_kosumi,        test_count_kosumi_3    );
-    tcase_add_test( tc_kosumi,        test_count_kosumi_4    );
-    tcase_add_test( tc_influence,     test_influence_1       );
-    tcase_add_test( tc_influence,     test_influence_2       );
-    tcase_add_test( tc_influence,     test_influence_3       );
-    tcase_add_test( tc_influence,     test_influence_4       );
-    */
 
     suite_add_tcase( s, tc_init_board          );
     suite_add_tcase( s, tc_get_board_as_string );
@@ -919,11 +649,6 @@ Suite * board_suite(void) {
     suite_add_tcase( s, tc_liberties           );
     suite_add_tcase( s, tc_remove_stones       );
     suite_add_tcase( s, tc_atari_groups        );
-    /*
-    suite_add_tcase( s, tc_chains              );
-    suite_add_tcase( s, tc_kosumi              );
-    suite_add_tcase( s, tc_influence           );
-    */
 
     return s;
 }

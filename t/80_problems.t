@@ -10,9 +10,7 @@ use Test::More;
 
 use TLib qw( get_output ok_command get_pid set_timeout );
 
-my $plan = 110;
-
-my @factor = @ARGV;
+my $plan = 109;
 
 my $problems_table = './t/problems/problems.asc';
 open my $fh, q{<}, $problems_table
@@ -31,13 +29,6 @@ close $fh
 my $pid = get_pid();
 
 set_timeout(300);
-
-if ( @factor == 8 ) {
-    ok_command( 'hg-factors ' . join q{ }, @factor );
-}
-else {
-    ok( 1, 'dummy test' );
-}
 
 ok_command( 'level 0' );
 
@@ -61,9 +52,7 @@ foreach my $p (@problem) {
 
     my $diff_time = tv_interval( $start_time );
     note sprintf "%s: %.2fs", $solution, $diff_time;
-    if ( @factor == 8 ) {
-        note sprintf "File: %s %d %.2f", $file, $is_ok, $diff_time;
-    }
+    note sprintf "File: %s %d %.2f", $file, $is_ok, $diff_time;
 }
 
 ok_command( 'quit ' );

@@ -408,9 +408,9 @@ int get_valid_move_list( int color, int valid_moves[][4] )
     int  atari_groups_player_after;
     int  atari_groups_opponent_after;
     //int  count_liberties_player_before;
-    int  count_liberties_opponent_before;
+    //int  count_liberties_opponent_before;
     //int  count_liberties_player_after;
-    int  count_liberties_opponent_after;
+    //int  count_liberties_opponent_after;
 
     int value_list[COUNT_BRAINS];
 
@@ -433,10 +433,10 @@ int get_valid_move_list( int color, int valid_moves[][4] )
 
         // Check for groups in atari before move is made:
         scan_board_1();
-        atari_groups_player_before      = get_group_count_atari(color);
-        atari_groups_opponent_before    = get_group_count_atari( color * -1 );
+        atari_groups_player_before      = get_worm_count_atari(color);
+        atari_groups_opponent_before    = get_worm_count_atari( color * -1 );
         //count_liberties_player_before   = get_group_count_liberties(color);
-        count_liberties_opponent_before = get_group_count_liberties( color * -1 );
+        //count_liberties_opponent_before = get_group_count_liberties( color * -1 );
 
         // Make move
         set_vertex( color, i, j );
@@ -455,8 +455,8 @@ int get_valid_move_list( int color, int valid_moves[][4] )
             }
         }
 
-        atari_groups_player_after   = get_group_count_atari(color);
-        atari_groups_opponent_after = get_group_count_atari( color * -1 );
+        atari_groups_player_after   = get_worm_count_atari(color);
+        atari_groups_opponent_after = get_worm_count_atari( color * -1 );
         // Check if move gives atari:
         if ( atari_groups_opponent_after > atari_groups_opponent_before ) {
             temp_moves[k][3]++;
@@ -467,10 +467,12 @@ int get_valid_move_list( int color, int valid_moves[][4] )
         }
 
         //count_liberties_player_after   = get_group_count_liberties(color);
+        /*
         count_liberties_opponent_after = get_group_count_liberties( color * -1 );
         if ( count_liberties_opponent_after < count_liberties_opponent_before) {
             temp_moves[k][3]++;
         }
+        */
 
         value = evaluate_position( value_list, false );
 
