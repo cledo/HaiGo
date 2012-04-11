@@ -140,9 +140,13 @@ void perf_scan_1_upd(void)
     //int i = 4;
     //int j = 7;
 
-    char filename[] = "SGF/book1_008.sgf";
-    int i = 5;
-    int j = 7;
+    //char filename[] = "SGF/book1_008.sgf";
+    //int i = 5;
+    //int j = 7;
+
+    char filename[] = "SGF/abc.sgf";
+    int i = 6;
+    int j = 5;
 
     init_board(BOARD_SIZE_DEFAULT);
     init_known_commands();

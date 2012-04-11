@@ -41,6 +41,8 @@ int index_1d_max;   //!< The maximum 1d index without highest off board row.
 int *board;         //!< Board data structures wich holds color per field.
 int *board_hoshi;   //!< Board that defines star points.
 
+// TEST!
+int remove_worm( int index_1d );
 
 
 //////////////////////////////
@@ -405,6 +407,18 @@ void scan_board_1(void)
  * @sa          scan_board_1()
  * @note        This function must work on the same data structures as
  *              scan_board_1().
+ * @note        The following steps are performed:
+ *              - worm_board EMPTY set to zero for newly added stone.
+ *              - worm-board for color is updated, so new stone has either new
+ *                or existing worm_nr.
+ *              - worm list for opposite color is updated to catch zero
+ *                liberty worms of opposing color. This is only done for
+ *                neighbouring worms of the opposite color.
+ *              - If neighbouring worm of opposite color has its liberties
+ *                reduced to zero, that worm is removed.
+ *              - If worm has been removed, worm board empty is updated.
+ *
+ * @todo        worm lists must be updated (which? all of them?)
  */
 void scan_board_1_upd( int i, int j )
 {
@@ -418,8 +432,18 @@ void scan_board_1_upd( int i, int j )
 
     worm_board[EMPTY_INDEX][index_1d] = 0;
 
+    worm_nr = worm_nr_max[color_index];
+
     // Update worm board for given color:
     create_worm_data( index_1d, color_index );
+    if ( worm_nr_max[color_index] > worm_nr ) {
+        printf( "#### New worm created for color %d: %hu\n", color, worm_nr_max[color_index] );
+        // Create new worm list entry here: count = 1, liberties = ?, id = worm_nr_max
+        worm_nr = worm_nr_max[color_index];
+        worm_list[color_index][worm_nr].number    = worm_nr;
+        worm_list[color_index][worm_nr].count     = 1;
+        worm_list[color_index][worm_nr].liberties = 12 * 12; // Determine number of liberties here ?
+    }
 
     // Update worm list for opposite color:
     index = index_1d + board_size + 1;
@@ -430,7 +454,8 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm lists here ...
+                // Update worm list EMPTY:
+                create_worm_data( index, EMPTY_INDEX ); // Necessary here??
             }
         }
     }
@@ -443,7 +468,8 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm lists here ...
+                // Update worm list EMPTY:
+                create_worm_data( index, EMPTY_INDEX );
             }
         }
     }
@@ -456,7 +482,8 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm lists here ...
+                // Update worm list EMPTY:
+                create_worm_data( index, EMPTY_INDEX );
             }
         }
     }
@@ -469,7 +496,8 @@ void scan_board_1_upd( int i, int j )
             if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm lists here ...
+                // Update worm list EMPTY:
+                create_worm_data( index, EMPTY_INDEX );
             }
         }
     }
@@ -495,6 +523,7 @@ int remove_worm( int index_1d )
 
     board[index_1d] = EMPTY;
     worm_board[ color + 1 ][index_1d] = EMPTY;
+    //worm_board[EMPTY_INDEX][index_1d] = get_free_worm_nr(EMPTY);
     worm_board[EMPTY_INDEX][index_1d] = get_free_worm_nr(EMPTY);
     // TODO: worm_nr must be increased somewhere ...
 
@@ -503,6 +532,7 @@ int remove_worm( int index_1d )
     index = index_1d + board_size + 1;
     if ( board[index] != BOARD_OFF && worm_board[ color + 1 ][index] == worm_nr ) {
         count += remove_worm(index);
+        // If Stones have been removed we have a new empty worm:
     }
 
     index = index_1d + 1;
