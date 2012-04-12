@@ -42,7 +42,9 @@ int *board;         //!< Board data structures wich holds color per field.
 int *board_hoshi;   //!< Board that defines star points.
 
 // TEST!
-int remove_worm( int index_1d );
+void new_scan_1_upd( int i, int j );
+int  remove_worm( int index_1d );
+void update_worm_data( int index_1d, int color_index );
 
 
 //////////////////////////////
@@ -330,7 +332,7 @@ bsize_t get_board_size(void)
  */
 void scan_board_1(void)
 {
-    int k;
+    //int k;
     int index_1d;
     int color;
 
@@ -345,15 +347,17 @@ void scan_board_1(void)
     worm_nr_max[WHITE_INDEX] = 0;
     worm_nr_max[EMPTY_INDEX] = 0;
 
-    //memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    //memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
-    //memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
 
+    /*
     for ( k = 0; k < MAX_WORM_COUNT; k++ ) {
         worm_list[BLACK_INDEX][k].number = 0;
         worm_list[EMPTY_INDEX][k].number = 0;
         worm_list[WHITE_INDEX][k].number = 0;
     }
+    */
 
     // First scan:
     // Gives a worm_nr to every field.
@@ -367,7 +371,7 @@ void scan_board_1(void)
         // Check for worm number:
         if ( ( worm_board[BLACK_INDEX][index_1d] & worm_board[WHITE_INDEX][index_1d] & worm_board[EMPTY_INDEX][index_1d] ) == 0 ) {
             color = board[index_1d];
-            create_worm_data( index_1d, color+1 );
+            create_worm_data( index_1d, color+1 );  // Should be renamed to fill_worm_board() probably.
         }
     }
 
@@ -378,7 +382,7 @@ void scan_board_1(void)
         if ( board[index_1d] == BOARD_OFF ) {
             continue;
         }
-        build_worms(index_1d);
+        build_worms(index_1d);  // Should probably renamed to fill_worm_list() ....
 
         // Number of worms is still unknown here, because a first level scan
         // does not need this information!
@@ -417,8 +421,13 @@ void scan_board_1(void)
  *              - If neighbouring worm of opposite color has its liberties
  *                reduced to zero, that worm is removed.
  *              - If worm has been removed, worm board empty is updated.
+ *              - If worms of opposite color have been removed, they are
+ *                deleted from worm list.
  *
  * @todo        worm lists must be updated (which? all of them?)
+ * @todo        Newly added worm list entry has not been given correct number
+ *              of liberties.
+ * @todo        Worms of own color have to be merged.
  */
 void scan_board_1_upd( int i, int j )
 {
@@ -435,15 +444,8 @@ void scan_board_1_upd( int i, int j )
     worm_nr = worm_nr_max[color_index];
 
     // Update worm board for given color:
-    create_worm_data( index_1d, color_index );
-    if ( worm_nr_max[color_index] > worm_nr ) {
-        printf( "#### New worm created for color %d: %hu\n", color, worm_nr_max[color_index] );
-        // Create new worm list entry here: count = 1, liberties = ?, id = worm_nr_max
-        worm_nr = worm_nr_max[color_index];
-        worm_list[color_index][worm_nr].number    = worm_nr;
-        worm_list[color_index][worm_nr].count     = 1;
-        worm_list[color_index][worm_nr].liberties = 12 * 12; // Determine number of liberties here ?
-    }
+    //create_worm_data( index_1d, color_index );
+    update_worm_data( index_1d, color_index );
 
     // Update worm list for opposite color:
     index = index_1d + board_size + 1;
@@ -451,11 +453,14 @@ void scan_board_1_upd( int i, int j )
         worm_nr = worm_board[ ( color * -1 ) + 1 ][index];
         if ( worm_nr ) {
             // Reduce liberties, remove worm:
-            if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
+            if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm list EMPTY:
-                create_worm_data( index, EMPTY_INDEX ); // Necessary here??
+                // Update worm board EMPTY:
+                //create_worm_data( index, EMPTY_INDEX ); // Necessary here??
+
+                // Remove from worm list:
+                worm_list[ ( color * -1 ) + 1 ][worm_nr].number = 0;
             }
         }
     }
@@ -465,11 +470,14 @@ void scan_board_1_upd( int i, int j )
         worm_nr = worm_board[ ( color * -1 ) + 1 ][index];
         if ( worm_nr ) {
             // Reduce liberties:
-            if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
+            if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm list EMPTY:
-                create_worm_data( index, EMPTY_INDEX );
+                // Update worm board EMPTY:
+                //create_worm_data( index, EMPTY_INDEX );
+
+                // Remove from worm list:
+                worm_list[ ( color * -1 ) + 1 ][worm_nr].number = 0;
             }
         }
     }
@@ -479,11 +487,14 @@ void scan_board_1_upd( int i, int j )
         worm_nr = worm_board[ ( color * -1 ) + 1 ][index];
         if ( worm_nr ) {
             // Reduce liberties:
-            if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
+            if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm list EMPTY:
-                create_worm_data( index, EMPTY_INDEX );
+                // Update worm board EMPTY:
+                //create_worm_data( index, EMPTY_INDEX );
+
+                // Remove from worm list:
+                worm_list[ ( color * -1 ) + 1 ][worm_nr].number = 0;
             }
         }
     }
@@ -493,14 +504,19 @@ void scan_board_1_upd( int i, int j )
         worm_nr = worm_board[ ( color * -1 ) + 1 ][index];
         if ( worm_nr ) {
             // Reduce liberties:
-            if ( ( worm_list[ ( color * -1) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
+            if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
                 printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
-                // Update worm list EMPTY:
-                create_worm_data( index, EMPTY_INDEX );
+                // Update worm board EMPTY:
+                //create_worm_data( index, EMPTY_INDEX );
+
+                // Remove from worm list:
+                worm_list[ ( color * -1 ) + 1 ][worm_nr].number = 0;
             }
         }
     }
+
+    // Check if current worm has liberties, otherwise move is illegal:
 
     if (count) {
         if ( color == BLACK ) {
@@ -510,6 +526,20 @@ void scan_board_1_upd( int i, int j )
             set_white_captured( get_white_captured() + count );
         }
     }
+
+    return;
+}
+
+void new_scan_1_upd( int i, int j )
+{
+    int index_1d        = INDEX(i,j);
+    int color           = board[index_1d];
+    int color_index     = color + 1;
+
+    // Updating worm data for playing color as far as possible here:
+    update_worm_data( index_1d, color_index );
+
+    // Updating worm data for opposing color:
 
     return;
 }
@@ -673,6 +703,110 @@ void create_worm_data( int index_1d, int color_index )
     return;
 }
 
+void update_worm_data( int index_1d, int color_index )
+{
+    int n;
+    int i;
+    int count = 0;
+    worm_nr_t worm_nr_min       = USHRT_MAX;
+    worm_nr_t *worm_board_color = worm_board[color_index];
+    worm_t    *worm_list_color  = worm_list[color_index];
+    worm_nr_t worm_nr;
+
+    vertex_t neighbours[4];
+    memset( neighbours, 0, 4 * sizeof(vertex_t) );
+
+    // Check neighbour NORTH:
+    i = index_1d + board_size + 1;
+    if ( board[i] != BOARD_OFF && worm_board_color[i] ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+    // Check neighbour EAST:
+    i = index_1d + 1;
+    if ( board[i] != BOARD_OFF && worm_board_color[i] ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+    // Check neighbour SOUTH:
+    i = index_1d - board_size - 1;
+    if ( board[i] != BOARD_OFF && worm_board_color[i] ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+    // Check neighbour WEST:
+    i = index_1d - 1;
+    if ( board[i] != BOARD_OFF && worm_board_color[i] ) {
+        neighbours[count].index_1d = i;
+        neighbours[count].worm_nr  = worm_board_color[i];
+
+        if ( neighbours[count].worm_nr < worm_nr_min ) {
+            worm_nr_min = neighbours[count].worm_nr;
+        }
+        count++;
+    }
+
+    switch (count) {
+        case 0:
+            // New worm is added:
+            worm_nr = ++worm_nr_max[color_index];
+            // Updating worm board:
+            worm_board_color[index_1d] = worm_nr;
+            // Updating worm list:
+            worm_list_color[worm_nr].number    = worm_nr;
+            worm_list_color[worm_nr].count     = 1;
+            worm_list_color[worm_nr].liberties = 0; // Number of liberties not known yet.
+            worm_list_color[worm_nr].index[0]  = index_1d;
+            break;
+        case 1:
+            // New stone is merged with existing worm:
+            worm_nr = neighbours[0].worm_nr;
+            // Updating worm board:
+            worm_board_color[index_1d] = worm_nr;
+            // Updating worm list:
+            worm_list_color[worm_nr].index[ worm_list_color[worm_nr].count ] = index_1d;
+            worm_list_color[worm_nr].count += 1;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            // 2 to 4 worms are merged with the lowest found worm number:
+            worm_nr = worm_nr_min;
+            // Updating worm board:
+            worm_board_color[index_1d] = worm_nr;
+            for ( n = 0; n < count; n++ ) {
+                // Call update_worm_data() on all neighbours that do not have the
+                // minimum worm number:
+                if ( neighbours[n].worm_nr > worm_nr ) {
+                    update_worm_data( neighbours[n].index_1d, color_index );
+                    // Remove merged worm from list:
+                    worm_list_color[ neighbours[n].worm_nr].number = 0;
+                    // Update merging worm count:
+                    worm_list_color[worm_nr].index[ worm_list_color[worm_nr].count ] = index_1d;
+                    worm_list_color[worm_nr].count += 1;
+                }
+            }
+            break;
+    }
+
+    return;
+}
+
 /**
  * @brief       Builds list of worm structs.
  *
@@ -692,8 +826,10 @@ inline void build_worms( int index_1d )
         w->number    = worm_nr_current;
         w->count     = 1;
         w->liberties = 0;
+        w->index[0]  = index_1d;
     }
     else {
+        w->index[ w->count ] = index_1d;
         w->count++;
     }
 
@@ -1594,7 +1730,7 @@ void print_worm_boards(void)
  */
 void print_worm_lists(void)
 {
-    int i;
+    int i, j;
     worm_t *w;
 
     printf( "Black worm list:\n" );
@@ -1604,9 +1740,16 @@ void print_worm_lists(void)
             continue;
         }
 
-        printf( "Nr.: %hu\tCount: %hu Lib: %hu\n"
+        printf( "Nr.: %hu\tCount: %hu Lib: %hu "
             , w[i].number, w[i].count, w[i].liberties / 12 );
+
+        printf("(");
+        for ( j = 0; j < w[i].count; j++ ) {
+            printf( "%d ", w[i].index[j] );
+        }
+        printf(")\n");
     }
+
 
     printf( "White worm list:\n" );
     w = worm_list[WHITE_INDEX];
@@ -1615,8 +1758,14 @@ void print_worm_lists(void)
             continue;
         }
 
-        printf( "Nr.: %hu\tCount: %hu Lib: %hu\n"
+        printf( "Nr.: %hu\tCount: %hu Lib: %hu "
             , w[i].number, w[i].count, w[i].liberties / 12 );
+
+        printf("(");
+        for ( j = 0; j < w[i].count; j++ ) {
+            printf( "%d ", w[i].index[j] );
+        }
+        printf(")\n");
     }
 
     printf( "Empty worm list:\n" );
@@ -1626,8 +1775,14 @@ void print_worm_lists(void)
             continue;
         }
 
-        printf( "Nr.: %hu\tCount: %hu Lib: %hu\n"
+        printf( "Nr.: %hu\tCount: %hu Lib: %hu "
             , w[i].number, w[i].count, w[i].liberties / 12 );
+
+        printf("(");
+        for ( j = 0; j < w[i].count; j++ ) {
+            printf( "%d ", w[i].index[j] );
+        }
+        printf(")\n");
     }
 
     return;

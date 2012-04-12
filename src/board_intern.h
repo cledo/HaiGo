@@ -13,6 +13,7 @@
  */
 
 #include <stdbool.h>
+#include "global_const.h"
 
 //! Defines data type of worm number.
 typedef unsigned short worm_nr_t;
@@ -22,6 +23,7 @@ typedef struct worm_st {
     worm_nr_t number;           //!< Worm number
     unsigned short count;       //!< Number of stones (or fields)
     unsigned short liberties;   //!< Number of liberties
+    int index[BOARD_SIZE_MAX * BOARD_SIZE_MAX];  //!< List of indexes of worm
 } worm_t;
 
 bool is_board_null(void);

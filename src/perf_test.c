@@ -32,8 +32,8 @@ void perf_scan_1_upd(void);
 int main(void)
 {
 
-    //perf_scan_1();
-    perf_scan_1_upd();
+    perf_scan_1();
+    //perf_scan_1_upd();
 
     return EXIT_SUCCESS;
 }
@@ -66,7 +66,6 @@ inline void perf_scan_1(void)
     int color = BLACK;
     bsize_t board_size = 19;
     //bsize_t board_size = 6;
-    int count_removed;
 
     char board_output[MAX_OUTPUT_LENGTH];
 
@@ -106,7 +105,7 @@ inline void perf_scan_1(void)
         diff_time = stop - start;
         sum_time += diff_time;
 
-        printf( "BoardNr.: %lu\t%lu\t(%d)\n", l, diff_time, count_removed );
+        printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
 
         print_worm_boards();
         print_worm_lists();
@@ -193,6 +192,7 @@ void perf_scan_1_upd(void)
 
     // Scan level 1 update:
     scan_board_1_upd( i, j );
+    //new_scan_1_upd( i, j );
 
     // Show board:
     command_data.id = 0;
