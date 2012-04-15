@@ -107,8 +107,8 @@ inline void perf_scan_1(void)
 
         printf( "BoardNr.: %lu\t%lu\n", l, diff_time );
 
-        print_worm_boards();
-        print_worm_lists();
+        //print_worm_boards();
+        //print_worm_lists();
 
         free_board();
     }
@@ -166,7 +166,6 @@ void perf_scan_1_upd(void)
     my_strcpy( command_data.name, "showboard", MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 0;
 
-    //init_known_commands();
     select_command(&command_data);
 
     print_output( command_data.id );
@@ -185,7 +184,6 @@ void perf_scan_1_upd(void)
     my_strcpy( command_data.name, "showboard", MAX_TOKEN_LENGTH );
     command_data.gtp_argc = 0;
 
-    init_known_commands();
     select_command(&command_data);
 
     print_output( command_data.id );

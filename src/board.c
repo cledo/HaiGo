@@ -332,7 +332,7 @@ bsize_t get_board_size(void)
  */
 void scan_board_1(void)
 {
-    //int k;
+    int k;
     int index_1d;
     int color;
 
@@ -340,24 +340,29 @@ void scan_board_1(void)
     // a valid move! Consider this to be kind of a scan level nr. 1.
 
     // Maybe this should be moved to init_board():
-    memset( worm_board[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    memset( worm_board[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
-    memset( worm_board[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    //memset( worm_board[BLACK_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    //memset( worm_board[WHITE_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    //memset( worm_board[EMPTY_INDEX], 0, (board_size+1) * (board_size+2) * sizeof(worm_nr_t));
+    for ( k = 0; k < (board_size+1) * (board_size+2); k++ ) {
+        worm_board[BLACK_INDEX][k] = 0;
+        worm_board[WHITE_INDEX][k] = 0;
+        worm_board[EMPTY_INDEX][k] = 0;
+    }
     worm_nr_max[BLACK_INDEX] = 0;
     worm_nr_max[WHITE_INDEX] = 0;
     worm_nr_max[EMPTY_INDEX] = 0;
 
+    /*
     memset( worm_list[BLACK_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
     memset( worm_list[WHITE_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
     memset( worm_list[EMPTY_INDEX], 0, MAX_WORM_COUNT * sizeof(worm_t) );
+    */
 
-    /*
     for ( k = 0; k < MAX_WORM_COUNT; k++ ) {
         worm_list[BLACK_INDEX][k].number = 0;
         worm_list[EMPTY_INDEX][k].number = 0;
         worm_list[WHITE_INDEX][k].number = 0;
     }
-    */
 
     // First scan:
     // Gives a worm_nr to every field.
@@ -444,8 +449,8 @@ void scan_board_1_upd( int i, int j )
     worm_nr = worm_nr_max[color_index];
 
     // Update worm board for given color:
-    //create_worm_data( index_1d, color_index );
-    update_worm_data( index_1d, color_index );
+    create_worm_data( index_1d, color_index );
+    //update_worm_data( index_1d, color_index );
 
     // Update worm list for opposite color:
     index = index_1d + board_size + 1;
@@ -455,7 +460,7 @@ void scan_board_1_upd( int i, int j )
             // Reduce liberties, remove worm:
             if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
-                printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                //printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
                 // Update worm board EMPTY:
                 //create_worm_data( index, EMPTY_INDEX ); // Necessary here??
 
@@ -472,7 +477,7 @@ void scan_board_1_upd( int i, int j )
             // Reduce liberties:
             if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
-                printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                //printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
                 // Update worm board EMPTY:
                 //create_worm_data( index, EMPTY_INDEX );
 
@@ -489,7 +494,7 @@ void scan_board_1_upd( int i, int j )
             // Reduce liberties:
             if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
-                printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                //printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
                 // Update worm board EMPTY:
                 //create_worm_data( index, EMPTY_INDEX );
 
@@ -506,7 +511,7 @@ void scan_board_1_upd( int i, int j )
             // Reduce liberties:
             if ( ( worm_list[ ( color * -1 ) + 1 ][worm_nr].liberties -= 12 ) ==  0 ) {
                 count += remove_worm(index);
-                printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
+                //printf( "## Removing worm color: %d, Nr.: %hu\n", color * -1, worm_nr );
                 // Update worm board EMPTY:
                 //create_worm_data( index, EMPTY_INDEX );
 
@@ -631,7 +636,11 @@ void create_worm_data( int index_1d, int color_index )
     worm_nr_t *worm_board_color = worm_board[color_index];
 
     vertex_t neighbours[4];
-    memset( neighbours, 0, 4 * sizeof(vertex_t) );
+    //memset( neighbours, 0, 4 * sizeof(vertex_t) );
+    neighbours[0].worm_nr = 0;
+    neighbours[1].worm_nr = 0;
+    neighbours[2].worm_nr = 0;
+    neighbours[3].worm_nr = 0;
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
@@ -714,7 +723,11 @@ void update_worm_data( int index_1d, int color_index )
     worm_nr_t worm_nr;
 
     vertex_t neighbours[4];
-    memset( neighbours, 0, 4 * sizeof(vertex_t) );
+    //memset( neighbours, 0, 4 * sizeof(vertex_t) );
+    neighbours[0].worm_nr = 0;
+    neighbours[1].worm_nr = 0;
+    neighbours[2].worm_nr = 0;
+    neighbours[3].worm_nr = 0;
 
     // Check neighbour NORTH:
     i = index_1d + board_size + 1;
