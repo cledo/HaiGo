@@ -32,8 +32,8 @@ void perf_scan_1_upd(void);
 int main(void)
 {
 
-    perf_scan_1();
-    //perf_scan_1_upd();
+    //perf_scan_1();
+    perf_scan_1_upd();
 
     return EXIT_SUCCESS;
 }
@@ -188,9 +188,10 @@ void perf_scan_1_upd(void)
 
     print_output( command_data.id );
 
+    //
     // Scan level 1 update:
+    //
     scan_board_1_upd( i, j );
-    //new_scan_1_upd( i, j );
 
     // Show board:
     command_data.id = 0;

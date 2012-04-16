@@ -42,7 +42,6 @@ int *board;         //!< Board data structures wich holds color per field.
 int *board_hoshi;   //!< Board that defines star points.
 
 // TEST!
-void new_scan_1_upd( int i, int j );
 int  remove_worm( int index_1d );
 void update_worm_data( int index_1d, int color_index );
 
@@ -449,8 +448,8 @@ void scan_board_1_upd( int i, int j )
     worm_nr = worm_nr_max[color_index];
 
     // Update worm board for given color:
-    create_worm_data( index_1d, color_index );
-    //update_worm_data( index_1d, color_index );
+    //create_worm_data( index_1d, color_index );
+    update_worm_data( index_1d, color_index );
 
     // Update worm list for opposite color:
     index = index_1d + board_size + 1;
@@ -521,7 +520,7 @@ void scan_board_1_upd( int i, int j )
         }
     }
 
-    // Check if current worm has liberties, otherwise move is illegal:
+    // TODO: Check if current worm has liberties, otherwise move is illegal:
 
     if (count) {
         if ( color == BLACK ) {
@@ -531,20 +530,6 @@ void scan_board_1_upd( int i, int j )
             set_white_captured( get_white_captured() + count );
         }
     }
-
-    return;
-}
-
-void new_scan_1_upd( int i, int j )
-{
-    int index_1d        = INDEX(i,j);
-    int color           = board[index_1d];
-    int color_index     = color + 1;
-
-    // Updating worm data for playing color as far as possible here:
-    update_worm_data( index_1d, color_index );
-
-    // Updating worm data for opposing color:
 
     return;
 }
@@ -636,7 +621,7 @@ void create_worm_data( int index_1d, int color_index )
     worm_nr_t *worm_board_color = worm_board[color_index];
 
     vertex_t neighbours[4];
-    //memset( neighbours, 0, 4 * sizeof(vertex_t) );
+
     neighbours[0].worm_nr = 0;
     neighbours[1].worm_nr = 0;
     neighbours[2].worm_nr = 0;
@@ -723,7 +708,7 @@ void update_worm_data( int index_1d, int color_index )
     worm_nr_t worm_nr;
 
     vertex_t neighbours[4];
-    //memset( neighbours, 0, 4 * sizeof(vertex_t) );
+
     neighbours[0].worm_nr = 0;
     neighbours[1].worm_nr = 0;
     neighbours[2].worm_nr = 0;
