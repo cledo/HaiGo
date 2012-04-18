@@ -41,6 +41,7 @@ void set_black_captured( int captured );
 
 int remove_stones( int color );
 
+int get_worm_liberty_count( int i, int j );
 
 int get_size_of_worm( int group_nr );
 int get_worm_nr( int i, int j );

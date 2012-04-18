@@ -435,6 +435,7 @@ void scan_board_1(void)
  */
 void scan_board_1_upd( int i, int j )
 {
+    int k;
     int index;
     int count = 0;
     int index_1d            = INDEX(i,j);
@@ -520,7 +521,16 @@ void scan_board_1_upd( int i, int j )
         }
     }
 
-    // TODO: Check if current worm has liberties, otherwise move is illegal:
+    // Check if current worm has liberties, otherwise move is illegal:
+    // Get worm number of current stone:
+    worm_nr = worm_board[color_index][index_1d];
+    // Reset liberties of current worm:
+    worm_list[color_index][worm_nr].liberties = 0;
+    // Count liberties of current worm:
+    for ( k = 0; k < worm_list[color_index][worm_nr].count; k++ ) {
+        count_worm_liberties( worm_list[color_index][worm_nr].index[k]  );
+    }
+
 
     if (count) {
         if ( color == BLACK ) {
@@ -571,6 +581,15 @@ int remove_worm( int index_1d )
     }
 
     return count;
+}
+
+int get_worm_liberty_count( int i, int j )
+{
+    int index_1d      = INDEX(i,j);
+    int color_index   = board[index_1d] + 1;
+    worm_nr_t worm_nr = worm_board[color_index][index_1d];
+
+    return get_nr_of_liberties(worm_nr);
 }
 
 /**

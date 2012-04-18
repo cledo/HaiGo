@@ -192,6 +192,14 @@ void perf_scan_1_upd(void)
     // Scan level 1 update:
     //
     scan_board_1_upd( i, j );
+    if ( ! get_worm_liberty_count( i, j ) ) {
+        // Move is invalid: suicide!
+        printf( "## Move %d,%d is invalid\n", i, j );
+        // TODO: Undo move here!!
+    }
+    else {
+        printf( "## Move %d,%d is valid\n", i, j );
+    }
 
     // Show board:
     command_data.id = 0;
